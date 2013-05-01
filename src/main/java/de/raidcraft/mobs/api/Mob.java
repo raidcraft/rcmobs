@@ -1,13 +1,11 @@
 package de.raidcraft.mobs.api;
 
-import de.raidcraft.skills.api.character.CharacterTemplate;
-
-import java.util.List;
+import de.raidcraft.skills.api.character.SkilledCharacter;
 
 /**
  * @author Silthus
  */
-public interface Mob extends CharacterTemplate {
+public interface Mob extends SkilledCharacter<Mob> {
 
-    public List<Ability> getAbilities();
+
 }
