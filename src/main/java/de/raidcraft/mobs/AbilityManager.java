@@ -5,10 +5,12 @@ import de.raidcraft.api.Component;
 import de.raidcraft.mobs.api.Ability;
 import de.raidcraft.mobs.api.AbilityInformation;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.UnknownAbilityException;
 import de.raidcraft.skills.util.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +39,22 @@ public final class AbilityManager implements Component {
             abilities.put(abilityName, aClass.getConstructor(Mob.class, ConfigurationSection.class));
         } catch (NoSuchMethodException e) {
             plugin.getLogger().warning(e.getMessage());
+        }
+    }
+
+    public Ability getAbility(String name, Mob mob, ConfigurationSection config) throws UnknownAbilityException {
+
+        try {
+            name = StringUtils.formatName(name);
+            if (!abilities.containsKey(name)) {
+                throw new UnknownAbilityException(mob.getName() + " tried to load unregistered ability " + name);
+            }
+            Constructor<? extends Ability> constructor = abilities.get(name);
+            constructor.setAccessible(true);
+            return constructor.newInstance(mob, config);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            throw new UnknownAbilityException(e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.api;
 
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
 
 /**
@@ -7,5 +8,5 @@ import de.raidcraft.skills.api.exceptions.CombatException;
  */
 public interface Ability {
 
-    public void run(Mob creature) throws CombatException;
+    public void run(CharacterTemplate target) throws CombatException;
 }

@@ -1,7 +1,12 @@
 package de.raidcraft.mobs.creatures;
 
+import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.AbilityManager;
 import de.raidcraft.mobs.api.Ability;
+import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.UnknownAbilityException;
 import de.raidcraft.skills.api.character.AbstractCharacterTemplate;
+import de.raidcraft.skills.api.trigger.Triggered;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -12,7 +17,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
-public class ConfigurableCreature extends AbstractCharacterTemplate {
+public class ConfigurableCreature extends AbstractCharacterTemplate implements Mob, Triggered {
 
     private final List<Ability> abilities = new ArrayList<>();
     private final int minDamage;
@@ -34,8 +39,18 @@ public class ConfigurableCreature extends AbstractCharacterTemplate {
             return;
         }
         for (String key : config.getKeys(false)) {
-
+            try {
+                abilities.add(RaidCraft.getComponent(AbilityManager.class).getAbility(key, this, config.getConfigurationSection(key)));
+            } catch (UnknownAbilityException e) {
+                RaidCraft.LOGGER.warning(e.getMessage());
+            }
         }
+    }
+
+    @Override
+    public List<Ability> getAbilities() {
+
+        return abilities;
     }
 
     @Override

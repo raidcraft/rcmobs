@@ -12,5 +12,11 @@ public abstract class AbstractAbility implements Ability {
     public AbstractAbility(Mob mob, ConfigurationSection config) {
 
         this.mob = mob;
+
+        if (config.getConfigurationSection("custom") != null) {
+            load(config.getConfigurationSection("custom"));
+        }
     }
+
+    protected abstract void load(ConfigurationSection config);
 }
