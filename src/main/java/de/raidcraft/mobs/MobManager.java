@@ -42,7 +42,7 @@ public final class MobManager implements Component {
             if (!file.getName().endsWith(".yml")) {
                 continue;
             }
-            SimpleConfiguration<MobsPlugin> config = new SimpleConfiguration<>(plugin, file);
+            SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file));
             EntityType type = EntityType.fromName(config.getString("type"));
             if (type == null) {
                 plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + file.getName());
