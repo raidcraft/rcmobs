@@ -1,7 +1,11 @@
 package de.raidcraft.mobs;
 
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.mobs.commands.MobCommands;
+import org.bukkit.command.CommandSender;
 
 /**
  * @author Silthus
@@ -13,7 +17,7 @@ public class MobsPlugin extends BasePlugin {
     @Override
     public void enable() {
 
-        registerCommands(MobCommands.class);
+        registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
     }
 
@@ -31,5 +35,18 @@ public class MobsPlugin extends BasePlugin {
     public MobManager getMobManager() {
 
         return mobManager;
+    }
+
+    public class BaseCommands {
+
+        @Command(
+                aliases = {"rcm", "mobs", "mob"},
+                desc = "Base command for the mobs plugin."
+        )
+        @NestedCommand(MobCommands.class)
+        public void mobs(CommandContext args, CommandSender sender) {
+
+
+        }
     }
 }
