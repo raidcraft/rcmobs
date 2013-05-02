@@ -50,6 +50,7 @@ public final class MobManager implements Component {
             }
             SpawnableMob mob = new SpawnableMob(config.getString("name", file.getName()), type, config);
             mobs.put(StringUtils.formatName(mob.getMobName()), mob);
+            plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
         }
     }
 
