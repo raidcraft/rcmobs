@@ -32,7 +32,7 @@ public final class MobManager implements Component {
 
     private void load(File directory) {
 
-        if (directory == null) {
+        if (directory == null || directory.list() == null) {
             return;
         }
         for (File file : directory.listFiles()) {

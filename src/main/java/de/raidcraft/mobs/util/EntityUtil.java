@@ -1,6 +1,5 @@
 package de.raidcraft.mobs.util;
 
-import de.raidcraft.RaidCraft;
 import net.minecraft.server.v1_5_R3.EntityCreature;
 import net.minecraft.server.v1_5_R3.EntityLiving;
 import net.minecraft.server.v1_5_R3.PathfinderGoalPanic;
@@ -22,13 +21,13 @@ public class EntityUtil {
             try {
                 EntityCreature handle = ((CraftCreature) entity).getHandle();
                 PathfinderGoalPanic goal = new PathfinderGoalPanic(handle, 0.38F);
-                Field field = EntityLiving.class.getField("goalSelector");
+                Field field = EntityLiving.class.getDeclaredField("goalSelector");
                 field.setAccessible(true);
                 PathfinderGoalSelector selector = (PathfinderGoalSelector) field.get(handle);
                 selector.a(1, goal);
                 field.set(handle, selector);
             } catch (IllegalAccessException | NoSuchFieldException e) {
-                RaidCraft.LOGGER.warning(e.getMessage());
+                e.printStackTrace();
             }
         }
     }
