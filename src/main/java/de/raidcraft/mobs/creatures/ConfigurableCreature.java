@@ -4,6 +4,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.effects.AbilityUser;
+import de.raidcraft.mobs.util.EntityUtil;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.exceptions.CombatException;
@@ -20,15 +21,18 @@ public class ConfigurableCreature extends AbstractMob {
 
     private final int minDamage;
     private final int maxDamage;
+    private final int panicThreshhold;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
         super(entity);
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage");
+        this.panicThreshhold = config.getInt("panic-treshhold", 0);
+
         setMaxHealth(config.getInt("health"));
         getEntity().setCustomNameVisible(true);
-        getEntity().setCustomName(ChatColor.RED + config.getString("name"));
+        setName(ChatColor.RED + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
     }
 
@@ -49,6 +53,15 @@ public class ConfigurableCreature extends AbstractMob {
             } catch (CombatException e) {
                 RaidCraft.LOGGER.warning(e.getMessage());
             }
+        }
+    }
+
+    @Override
+    public void setHealth(int health) {
+
+        super.setHealth(health);
+        if (panicThreshhold > 0 && getHealth() < panicThreshhold) {
+            EntityUtil.addPanicMode(getEntity());
         }
     }
 
