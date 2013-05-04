@@ -22,6 +22,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final int minDamage;
     private final int maxDamage;
     private final int panicThreshhold;
+    private boolean paniced = false;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
@@ -60,8 +61,9 @@ public class ConfigurableCreature extends AbstractMob {
     public void setHealth(int health) {
 
         super.setHealth(health);
-        if (panicThreshhold > 0 && getHealth() < panicThreshhold) {
+        if (!paniced && panicThreshhold > 0 && getHealth() < panicThreshhold) {
             EntityUtil.addPanicMode(getEntity());
+            paniced = true;
         }
     }
 
