@@ -1,7 +1,8 @@
-package de.raidcraft.mobs.abilities;
+package de.raidcraft.mobs.api;
 
-import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.api.ability.AbstractAbility;
+import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.persistance.AbilityProperties;
 
 /**
@@ -12,5 +13,11 @@ public abstract class MobAbility extends AbstractAbility<Mob> {
     public MobAbility(Mob holder, AbilityProperties data) {
 
         super(holder, data);
+    }
+
+    @Override
+    protected CharacterTemplate getTarget() throws CombatException {
+
+        return getHolder().getHighestThreat();
     }
 }
