@@ -9,7 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,5 +69,21 @@ public final class MobManager implements Component {
             throw new UnknownMobException("No mob with the name " + name + " found!");
         }
         return mobs.get(name).spawn(location);
+    }
+
+    public List<SpawnableMob> getSpawnableMobs() {
+
+        return new ArrayList<>(mobs.values());
+    }
+
+    public List<SpawnableMob> getNaturallySpawningMobs() {
+
+        ArrayList<SpawnableMob> spawnableMobs = new ArrayList<>();
+        for (SpawnableMob mob : mobs.values()) {
+            if (mob.isSpawningNaturally()) {
+                spawnableMobs.add(mob);
+            }
+        }
+        return spawnableMobs;
     }
 }
