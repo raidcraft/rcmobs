@@ -16,7 +16,7 @@ public abstract class MobAbility extends AbstractAbility<Mob> {
     }
 
     @Override
-    protected CharacterTemplate getTarget() throws CombatException {
+    public CharacterTemplate getTarget() throws CombatException {
 
         return getHolder().getHighestThreat();
     }
