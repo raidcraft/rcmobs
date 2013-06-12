@@ -71,6 +71,9 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public void onSpawn(CreatureSpawnEvent event) {
 
         List<SpawnableMob> mobs = getMobManager().getNaturallySpawningMobs();
+        if (mobs.isEmpty()) {
+            return;
+        }
         SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
         if (mob.spawn(event)) {
             event.getLocation().getWorld().strikeLightningEffect(event.getLocation());
