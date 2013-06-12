@@ -25,8 +25,13 @@ public class SpawnCustomCreature extends AbstractIC {
     public SpawnCustomCreature(Server server, ChangedSign sign, ICFactory factory) {
 
         super(server, sign, factory);
+    }
+
+    @Override
+    public void load() {
+
         try {
-            this.spawnableMob = RaidCraft.getComponent(MobsPlugin.class).getMobManager().getSpwanableMob(sign.getLine(2));
+            this.spawnableMob = RaidCraft.getComponent(MobsPlugin.class).getMobManager().getSpwanableMob(getSign().getLine(2));
         } catch (UnknownMobException ignored) {
             // this should have already been checked by the verify ic
         }

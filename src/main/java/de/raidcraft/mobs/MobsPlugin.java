@@ -6,6 +6,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
+import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.Bukkit;
@@ -57,6 +58,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
             CircuitCore craftbook = CircuitCore.inst();
             // lets register all of our ics
             craftbook.registerIC("RCM1200", "cus ent spawner", new SpawnCustomCreature.SpawnCustomCreatureFactory(getServer()), CircuitCore.FAMILY_SISO);
+            craftbook.registerIC("RCM0001", "use ability", new TriggerMobAbility.TriggerMobAbilityFactory(getServer()), CircuitCore.FAMILY_SISO);
         }
     }
 
