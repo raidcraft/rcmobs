@@ -8,7 +8,6 @@ import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
-import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,15 +20,12 @@ public class ConfigurableCreature extends AbstractMob {
 
     private final int minDamage;
     private final int maxDamage;
-    private final int panicThreshhold;
-    private boolean paniced = false;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
         super(entity);
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage");
-        this.panicThreshhold = config.getInt("panic-treshhold", 0);
 
         setMaxHealth(config.getInt("health"));
         getEntity().setCustomNameVisible(true);
@@ -54,16 +50,6 @@ public class ConfigurableCreature extends AbstractMob {
             } catch (CombatException e) {
                 RaidCraft.LOGGER.warning(e.getMessage());
             }
-        }
-    }
-
-    @Override
-    public void setHealth(int health) {
-
-        super.setHealth(health);
-        if (!paniced && panicThreshhold > 0 && getHealth() < panicThreshhold) {
-            EntityUtil.addPanicMode(getEntity());
-            paniced = true;
         }
     }
 
