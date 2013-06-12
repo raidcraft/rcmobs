@@ -2,7 +2,9 @@ package de.raidcraft.mobs.api;
 
 import de.raidcraft.skills.api.character.AbstractSkilledCharacter;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.combat.ThreatTable;
 import de.raidcraft.skills.api.effect.common.Combat;
+import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.entity.LivingEntity;
@@ -21,9 +23,13 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     }
 
     @Override
-    public CharacterTemplate getHighestThreat() {
+    public CharacterTemplate getHighestThreat() throws CombatException {
 
-        return getThreatTable().getHighestThreat().getTarget();
+        ThreatTable.ThreatLevel highestThreat = getThreatTable().getHighestThreat();
+        if (highestThreat == null) {
+            throw new CombatException("Kein Ziel anvisiert!");
+        }
+        return highestThreat.getTarget();
     }
 
     @Override

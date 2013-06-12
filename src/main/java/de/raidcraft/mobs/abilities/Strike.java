@@ -2,6 +2,7 @@ package de.raidcraft.mobs.abilities;
 
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobAbility;
+import de.raidcraft.skills.api.ability.AbilityInformation;
 import de.raidcraft.skills.api.ability.Useable;
 import de.raidcraft.skills.api.combat.EffectType;
 import de.raidcraft.skills.api.combat.action.EntityAttack;
@@ -23,6 +24,11 @@ import org.bukkit.configuration.ConfigurationSection;
 /**
  * @author Silthus
  */
+@AbilityInformation(
+        name = "Strike",
+        description = "A default strike with many custom options.",
+        types = {EffectType.PHYSICAL, EffectType.DAMAGING}
+)
 public class Strike extends MobAbility implements Useable {
 
     private boolean knockBack = false;
