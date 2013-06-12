@@ -1,5 +1,6 @@
 package de.raidcraft.mobs;
 
+import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
@@ -62,13 +63,31 @@ public final class MobManager implements Component {
         load(baseDir);
     }
 
-    public Mob spawnMob(String name, Location location) throws UnknownMobException {
+    public SpawnableMob getSpwanableMob(String name) throws UnknownMobException {
 
         name = StringUtils.formatName(name);
-        if (!mobs.containsKey(name)) {
-            throw new UnknownMobException("No mob with the name " + name + " found!");
+        if (mobs.containsKey(name)) {
+            return mobs.get(name);
         }
-        return mobs.get(name).spawn(location);
+        List<SpawnableMob> spawnableMobs = new ArrayList<>();
+        for (String mobName : mobs.keySet()) {
+            if (mobName.contains(name)) {
+                spawnableMobs.add(mobs.get(mobName));
+            }
+        }
+        if (spawnableMobs.isEmpty()) {
+            throw new UnknownMobException("Keine Kreatur mit dem Namen " + name + " gefunden!");
+        }
+        if (spawnableMobs.size() > 1) {
+            throw new UnknownMobException("Mehrere Kreaturen mit dem Namen " + name + " gefunden: " +
+                    StringUtil.joinString(spawnableMobs, ", ", 0));
+        }
+        return spawnableMobs.get(0);
+    }
+
+    public Mob spawnMob(String name, Location location) throws UnknownMobException {
+
+        return getSpwanableMob(name).spawn(location);
     }
 
     public List<SpawnableMob> getSpawnableMobs() {
