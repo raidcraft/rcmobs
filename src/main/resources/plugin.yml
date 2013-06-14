@@ -4,5 +4,6 @@ version: ${project.version}#${build.number}
 description: API for creating custom mobs and boss fights.
 author: Silthus
 website: http://www.raid-craft.de
-depend: [RaidCraft-API,Skills]
+depend: [RaidCraft-API]
+softdepend: [RCSkills]
 database: true
