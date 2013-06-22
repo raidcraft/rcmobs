@@ -5,6 +5,7 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.combat.ThreatTable;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
+import de.raidcraft.skills.creature.CreatureAttachedLevel;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.entity.LivingEntity;
@@ -20,6 +21,7 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     public AbstractMob(LivingEntity entity) {
 
         super(entity);
+        attachLevel(new CreatureAttachedLevel<CharacterTemplate>(this, 60));
     }
 
     @Override

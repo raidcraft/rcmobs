@@ -28,6 +28,7 @@ public class ConfigurableCreature extends AbstractMob {
         this.maxDamage = config.getInt("max-damage");
 
         setMaxHealth(config.getInt("health"));
+        getAttachedLevel().setLevel(config.getInt("level"));
         getEntity().setCustomNameVisible(true);
         setName(ChatColor.RED + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
