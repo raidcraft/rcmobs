@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface Mob extends SkilledCharacter<Mob> {
 
+    public MobType getType();
+
     public CharacterTemplate getHighestThreat() throws CombatException;
 
     public List<CharacterTemplate> getInvolvedTargets();

@@ -94,7 +94,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         }
         SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
         if (mob.spawn(event)) {
-            event.getLocation().getWorld().strikeLightningEffect(event.getLocation());
             getLogger().info("Spawned custom mob naturally: " + mob.getMobName());
         }
     }
