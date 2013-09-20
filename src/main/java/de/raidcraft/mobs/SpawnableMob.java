@@ -2,18 +2,18 @@ package de.raidcraft.mobs;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 
 /**
  * @author Silthus
  */
-public class SpawnableMob {
+public class SpawnableMob implements Spawnable<Mob> {
 
     private final String mobName;
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
@@ -61,19 +61,9 @@ public class SpawnableMob {
         return spawnNaturally;
     }
 
-    public boolean spawn(CreatureSpawnEvent event) {
-
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL && Math.random() < getSpawnChance()) {
-            event.setCancelled(true);
-            spawn(event.getLocation());
-            return true;
-        }
-        return false;
-    }
-
-    public Mob spawn(Location location) {
+    public void spawn(Location location) {
 
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
-        return manager.spawnCharacter(type, location, mClass, config);
+        manager.spawnCharacter(type, location, mClass, config);
     }
 }

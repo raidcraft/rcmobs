@@ -4,7 +4,6 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
-import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -85,9 +84,9 @@ public final class MobManager implements Component {
         return spawnableMobs.get(0);
     }
 
-    public Mob spawnMob(String name, Location location) throws UnknownMobException {
+    public void spawnMob(String name, Location location) throws UnknownMobException {
 
-        return getSpwanableMob(name).spawn(location);
+        getSpwanableMob(name).spawn(location);
     }
 
     public List<SpawnableMob> getSpawnableMobs() {
