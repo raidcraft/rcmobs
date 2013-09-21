@@ -4,13 +4,15 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
+import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.skills.util.StringUtils;
+import de.raidcraft.util.CaseInsensitiveMap;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +21,13 @@ import java.util.Map;
  */
 public final class MobManager implements Component {
 
+    private static final String FILE_GROUP_SUFFIX = ".group.yml";
+
     private final MobsPlugin plugin;
     private final File baseDir;
-    private final Map<String, SpawnableMob> mobs = new HashMap<>();
+    private final Map<String, SpawnableMob> mobs = new CaseInsensitiveMap<>();
+    private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
+    private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
 
     protected MobManager(MobsPlugin plugin) {
 
@@ -29,6 +35,7 @@ public final class MobManager implements Component {
         baseDir = new File(plugin.getDataFolder(), "mobs");
         baseDir.mkdirs();
         load(baseDir);
+        loadGroups();
         RaidCraft.registerComponent(MobManager.class, this);
     }
 
@@ -45,6 +52,10 @@ public final class MobManager implements Component {
                 continue;
             }
             SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file));
+            if (file.getName().endsWith(FILE_GROUP_SUFFIX)) {
+                queuedGroups.put(file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
+                continue;
+            }
             EntityType type = EntityType.fromName(config.getString("type"));
             if (type == null) {
                 plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + file.getName());
@@ -53,6 +64,15 @@ public final class MobManager implements Component {
             SpawnableMob mob = new SpawnableMob(config.getString("name", file.getName()), type, config);
             mobs.put(StringUtils.formatName(mob.getMobName()), mob);
             plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
+        }
+    }
+
+    private void loadGroups() {
+
+        for (Map.Entry<String, ConfigurationSection> entry : queuedGroups.entrySet()) {
+            ConfigurableMobGroup group = new ConfigurableMobGroup(entry.getKey(), entry.getValue());
+            groups.put(group.getName(), group);
+            plugin.getLogger().info("Loaded mob group: " + group.getName());
         }
     }
 
@@ -84,11 +104,6 @@ public final class MobManager implements Component {
         return spawnableMobs.get(0);
     }
 
-    public void spawnMob(String name, Location location) throws UnknownMobException {
-
-        getSpwanableMob(name).spawn(location);
-    }
-
     public List<SpawnableMob> getSpawnableMobs() {
 
         return new ArrayList<>(mobs.values());
@@ -103,5 +118,19 @@ public final class MobManager implements Component {
             }
         }
         return spawnableMobs;
+    }
+
+    public MobGroup getMobGroup(String name) throws UnknownMobException {
+
+        MobGroup group = groups.get(name);
+        if (group == null) {
+            throw new UnknownMobException("The group " + name + " does not exist!");
+        }
+        return group;
+    }
+
+    public void spawnMob(String name, Location location) throws UnknownMobException {
+
+        getSpwanableMob(name).spawn(location);
     }
 }

@@ -13,14 +13,14 @@ import org.bukkit.entity.EntityType;
 /**
  * @author Silthus
  */
-public class SpawnableMob implements Spawnable<Mob> {
+public class SpawnableMob implements Spawnable {
 
     private final String mobName;
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
     private final EntityType type;
-    private final double spawnChance;
     private final boolean spawnNaturally;
     private final ConfigurationSection config;
+    private double spawnChance;
 
     public SpawnableMob(String mobName, EntityType type, ConfigurationSection config) {
 
@@ -56,6 +56,11 @@ public class SpawnableMob implements Spawnable<Mob> {
         return spawnChance;
     }
 
+    public void setSpawnChance(double spawnChance) {
+
+        this.spawnChance = spawnChance;
+    }
+
     public boolean isSpawningNaturally() {
 
         return spawnNaturally;
@@ -63,7 +68,19 @@ public class SpawnableMob implements Spawnable<Mob> {
 
     public void spawn(Location location) {
 
+        spawn(location, true);
+    }
+
+    public boolean spawn(Location location, boolean force) {
+
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
+        // spawn is not forced so we calculate the spawn chance
+        if (!force && getSpawnChance() < 1.0) {
+            if (Math.random() > getSpawnChance()) {
+                return false;
+            }
+        }
         manager.spawnCharacter(type, location, mClass, config);
+        return true;
     }
 }

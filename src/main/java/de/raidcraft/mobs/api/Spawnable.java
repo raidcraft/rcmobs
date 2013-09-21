@@ -5,7 +5,7 @@ import org.bukkit.Location;
 /**
  * @author Silthus
  */
-public interface Spawnable<T> {
+public interface Spawnable {
 
     public void spawn(Location location);
 }
