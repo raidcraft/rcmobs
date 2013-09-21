@@ -1,6 +1,7 @@
 package de.raidcraft.mobs.creatures;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobType;
@@ -13,6 +14,7 @@ import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EntityEquipment;
 
 /**
  * @author Silthus
@@ -35,6 +37,7 @@ public class ConfigurableCreature extends AbstractMob {
         getEntity().setCustomNameVisible(true);
         setName(getType().getNameColor() + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
+        equipItems(config.getConfigurationSection("equipment"));
     }
 
     private void loadAbilities(ConfigurationSection config) {
@@ -54,6 +57,27 @@ public class ConfigurableCreature extends AbstractMob {
             } catch (CombatException e) {
                 RaidCraft.LOGGER.warning(e.getMessage());
             }
+        }
+    }
+
+    private void equipItems(ConfigurationSection config) {
+
+        try {
+            if (config == null) return;
+            EntityEquipment equipment = getEntity().getEquipment();
+            equipment.setItemInHand(RaidCraft.getItem(config.getString("hand")));
+            equipment.setHelmet(RaidCraft.getItem(config.getString("head")));
+            equipment.setChestplate(RaidCraft.getItem(config.getString("chest")));
+            equipment.setLeggings(RaidCraft.getItem(config.getString("legs")));
+            equipment.setBoots(RaidCraft.getItem(config.getString("boots")));
+
+            equipment.setItemInHandDropChance(config.getInt("hand-drop-chance", 0));
+            equipment.setHelmetDropChance(config.getInt("head-drop-chance", 0));
+            equipment.setChestplateDropChance(config.getInt("chest-drop-chance", 0));
+            equipment.setLeggingsDropChance(config.getInt("legs-drop-chance", 0));
+            equipment.setBootsDropChance(config.getInt("boots-drop-chance", 0));
+        } catch (CustomItemException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
         }
     }
 
