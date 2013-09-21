@@ -28,11 +28,12 @@ public class ConfigurableCreature extends AbstractMob {
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
         super(entity);
-        this.type = MobType.fromString(config.getString("type"));
+        this.type = MobType.fromString(config.getString("strength"));
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage", minDamage);
 
         setMaxHealth(config.getInt("health"));
+        setHealth(getMaxHealth());
         getAttachedLevel().setLevel(config.getInt("level"));
         getEntity().setCustomNameVisible(true);
         setName(getType().getNameColor() + config.getString("name"));

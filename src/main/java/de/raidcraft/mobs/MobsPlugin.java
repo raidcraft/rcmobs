@@ -14,16 +14,10 @@ import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
-import de.raidcraft.util.MathUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
-
-import java.util.List;
 
 /**
  * @author Silthus
@@ -83,17 +77,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public MobManager getMobManager() {
 
         return mobManager;
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onSpawn(CreatureSpawnEvent event) {
-
-        List<SpawnableMob> mobs = getMobManager().getNaturallySpawningMobs();
-        if (mobs.isEmpty()) {
-            return;
-        }
-        SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
-        mob.spawn(event.getLocation());
     }
 
     public class BaseCommands {
