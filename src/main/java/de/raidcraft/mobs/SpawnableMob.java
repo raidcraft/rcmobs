@@ -26,8 +26,8 @@ public class SpawnableMob implements Spawnable {
 
         this.mobName = mobName;
         this.type = type;
-        this.spawnChance = config.getDouble("spawn-chance");
-        this.spawnNaturally = config.getBoolean("spawn-naturally", true);
+        this.spawnChance = config.getDouble("spawn-chance", 1.0);
+        this.spawnNaturally = config.getBoolean("spawn-naturally", false);
         this.config = config;
     }
 
