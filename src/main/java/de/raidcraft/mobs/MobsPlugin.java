@@ -93,9 +93,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
             return;
         }
         SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
-        if (mob.spawn(event)) {
-            getLogger().info("Spawned custom mob naturally: " + mob.getMobName());
-        }
+        mob.spawn(event.getLocation());
     }
 
     public class BaseCommands {
