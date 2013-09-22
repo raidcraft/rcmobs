@@ -37,9 +37,9 @@ public class ConfigurableCreature extends AbstractMob {
         int health = config.getInt("health", 0);
         setMaxHealth(health > 0 ? health : MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
-        getAttachedLevel().setLevel(config.getInt("level"));
+        getAttachedLevel().setLevel(config.getInt("level", 1));
         getEntity().setCustomNameVisible(true);
-        setName(getType().getNameColor() + config.getString("name"));
+        setName(getType().getNameColor() + "[L" + getAttachedLevel().getLevel() + "] " + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
     }
@@ -122,7 +122,7 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public int getDamage() {
+    public double getDamage() {
 
         return MathUtil.RANDOM.nextInt(maxDamage - minDamage) + minDamage;
     }
