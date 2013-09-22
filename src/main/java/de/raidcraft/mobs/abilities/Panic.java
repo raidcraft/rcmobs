@@ -40,7 +40,7 @@ public class Panic extends MobAbility implements Triggered {
         if (paniced) {
             return;
         }
-        int newHealth = trigger.getAttack().getTarget().getHealth() - trigger.getAttack().getDamage();
+        double newHealth = trigger.getAttack().getTarget().getHealth() - trigger.getAttack().getDamage();
         if (newHealth / getHolder().getMaxHealth() < panicThreshhold) {
             EntityUtil.addPanicMode(getHolder().getEntity());
             paniced = true;
