@@ -118,7 +118,7 @@ public class ConfigurableCreature extends AbstractMob {
     @Override
     public MobType getType() {
 
-        return type;
+        return type == null ? MobType.COMMON : type;
     }
 
     @Override
