@@ -39,7 +39,7 @@ public class ConfigurableCreature extends AbstractMob {
         setHealth(getMaxHealth());
         getAttachedLevel().setLevel(config.getInt("level", 1));
         getEntity().setCustomNameVisible(true);
-        setName(getType().getNameColor() + "[L" + getAttachedLevel().getLevel() + "] " + config.getString("name"));
+        setName(getType().getNameColor() + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
     }
@@ -109,7 +109,7 @@ public class ConfigurableCreature extends AbstractMob {
     private void updateHealthBar() {
 
         if (isInCombat()) {
-            getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth()));
+            getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), getType().getNameColor()));
         } else {
             getEntity().setCustomName(getType().getNameColor() + getName());
         }
