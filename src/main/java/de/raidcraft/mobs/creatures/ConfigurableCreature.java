@@ -13,6 +13,7 @@ import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 
@@ -35,6 +36,9 @@ public class ConfigurableCreature extends AbstractMob {
         int minHealth = config.getInt("min-health", 20);
         int maxHealth = config.getInt("max-health", minHealth);
         int health = config.getInt("health", 0);
+        if (config.getBoolean("baby") && getEntity() instanceof Ageable) {
+            ((Ageable) getEntity()).setBaby();
+        }
         setMaxHealth(health > 0 ? health : MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         getAttachedLevel().setLevel(config.getInt("level", 1));
