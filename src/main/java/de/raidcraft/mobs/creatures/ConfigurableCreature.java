@@ -38,6 +38,7 @@ public class ConfigurableCreature extends AbstractMob {
         int health = config.getInt("health", 0);
         if (config.getBoolean("baby") && getEntity() instanceof Ageable) {
             ((Ageable) getEntity()).setBaby();
+            ((Ageable) getEntity()).setAgeLock(true);
         }
         setMaxHealth(health > 0 ? health : MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
