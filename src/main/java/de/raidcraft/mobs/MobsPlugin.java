@@ -11,6 +11,8 @@ import de.raidcraft.mobs.abilities.Strike;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
 import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
+import de.raidcraft.mobs.tables.TMobSpawn;
+import de.raidcraft.mobs.tables.TSpawnGroup;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
@@ -18,6 +20,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Silthus
@@ -51,6 +56,15 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public void reload() {
 
         this.mobManager.reload();
+    }
+
+    @Override
+    public List<Class<?>> getDatabaseClasses() {
+
+        ArrayList<Class<?>> tables = new ArrayList<>();
+        tables.add(TSpawnGroup.class);
+        tables.add(TMobSpawn.class);
+        return tables;
     }
 
     private void registerAbilities() {
