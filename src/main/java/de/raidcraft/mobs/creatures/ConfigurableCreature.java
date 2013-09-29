@@ -15,6 +15,7 @@ import de.raidcraft.util.MathUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 
 /**
@@ -32,13 +33,17 @@ public class ConfigurableCreature extends AbstractMob {
         this.type = MobType.fromString(config.getString("strength"));
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage", minDamage);
-
         int minHealth = config.getInt("min-health", 20);
         int maxHealth = config.getInt("max-health", minHealth);
         int health = config.getInt("health", 0);
-        if (config.getBoolean("baby") && getEntity() instanceof Ageable) {
-            ((Ageable) getEntity()).setBaby();
-            ((Ageable) getEntity()).setAgeLock(true);
+
+        if (config.getBoolean("baby")) {
+            if (getEntity() instanceof Ageable) {
+                ((Ageable) getEntity()).setBaby();
+                ((Ageable) getEntity()).setAgeLock(true);
+            } else if (getEntity() instanceof Zombie) {
+                ((Zombie) getEntity()).setBaby(true);
+            }
         }
         setMaxHealth(health > 0 ? health : MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
