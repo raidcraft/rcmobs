@@ -11,10 +11,13 @@ import de.raidcraft.mobs.api.MobType;
 import de.raidcraft.mobs.effects.AbilityUser;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
+import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.MathUtil;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
@@ -30,16 +33,20 @@ public class ConfigurableCreature extends AbstractMob {
     private final MobType type;
     private final int minDamage;
     private final int maxDamage;
+    private final boolean resetHealth;
     private final LootTable lootTable;
+    private final Location spawnLocation;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
         super(entity);
         this.type = MobType.fromString(config.getString("strength"));
+        this.spawnLocation = entity.getLocation();
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage", minDamage);
         int minHealth = config.getInt("min-health", 20);
         int maxHealth = config.getInt("max-health", minHealth);
+        this.resetHealth = config.getBoolean("reset-health", true);
         this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(config.getString("loot-table"));
 
         if (config.getBoolean("baby")) {
@@ -121,8 +128,20 @@ public class ConfigurableCreature extends AbstractMob {
     @Override
     public void setInCombat(boolean inCombat) {
 
+        if (LocationUtil.getBlockDistance(getEntity().getLocation(), spawnLocation) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
+            try {
+                getEntity().teleport(spawnLocation);
+                removeEffect(Combat.class);
+                return;
+            } catch (CombatException ignored) {
+            }
+        }
         super.setInCombat(inCombat);
         updateHealthBar();
+        // reset the health to max
+        if (!inCombat && resetHealth) {
+            setHealth(getMaxHealth());
+        }
     }
 
     private void updateHealthBar() {
