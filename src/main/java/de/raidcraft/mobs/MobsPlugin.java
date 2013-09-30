@@ -14,11 +14,14 @@ import de.raidcraft.mobs.abilities.Strike;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
 import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
+import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
 import de.raidcraft.skills.AbilityManager;
+import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -55,6 +58,24 @@ public class MobsPlugin extends BasePlugin implements Listener {
                 registerCustomICs();
             }
         }, 1L);
+
+        final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+
+                for (World world : Bukkit.getWorlds()) {
+                    for (LivingEntity entity : world.getLivingEntities()) {
+                        if (entity.hasMetadata("RC_CUSTOM_MOB")) {
+                            CharacterTemplate character = characterManager.getCharacter(entity);
+                            if (character instanceof ConfigurableCreature) {
+                                ((ConfigurableCreature) character).checkSpawnPoint();
+                            }
+                        }
+                    }
+                }
+            }
+        }, 100L, 100L);
     }
 
     @Override

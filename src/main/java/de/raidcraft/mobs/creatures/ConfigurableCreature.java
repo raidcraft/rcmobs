@@ -128,19 +128,22 @@ public class ConfigurableCreature extends AbstractMob {
     @Override
     public void setInCombat(boolean inCombat) {
 
-        if (LocationUtil.getBlockDistance(getEntity().getLocation(), spawnLocation) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
-            try {
-                getEntity().teleport(spawnLocation);
-                removeEffect(Combat.class);
-                return;
-            } catch (CombatException ignored) {
-            }
-        }
         super.setInCombat(inCombat);
         updateHealthBar();
         // reset the health to max
         if (!inCombat && resetHealth) {
             setHealth(getMaxHealth());
+        }
+    }
+
+    public void checkSpawnPoint() {
+
+        if (LocationUtil.getBlockDistance(getEntity().getLocation(), spawnLocation) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
+            try {
+                getEntity().teleport(spawnLocation);
+                removeEffect(Combat.class);
+            } catch (CombatException ignored) {
+            }
         }
     }
 
