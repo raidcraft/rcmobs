@@ -7,10 +7,7 @@ import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.CharacterType;
-import de.raidcraft.util.LocationUtil;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -34,15 +31,8 @@ public class MobListener implements Listener {
 
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
             // check if there are custom mobs around and stop the spawning of the entity
-            Entity[] entities = LocationUtil.getNearbyEntities(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius);
-            for (Entity entity : entities) {
-                if (entity instanceof LivingEntity) {
-                    CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter((LivingEntity) entity);
-                    if (character.getCharacterType() == CharacterType.CUSTOM_MOB) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
+            if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
+                event.setCancelled(true);
             }
         }
     }
