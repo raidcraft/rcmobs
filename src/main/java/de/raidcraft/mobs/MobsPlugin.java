@@ -8,9 +8,6 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
-import de.raidcraft.mobs.abilities.Enrage;
-import de.raidcraft.mobs.abilities.Panic;
-import de.raidcraft.mobs.abilities.Strike;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
 import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
@@ -18,11 +15,8 @@ import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
-import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.CharacterManager;
-import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -54,7 +48,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
             @Override
             public void run() {
 
-                registerAbilities();
                 registerCustomICs();
             }
         }, 1L);
@@ -103,18 +96,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         tables.add(MobGroupSpawnLocation.class);
         tables.add(MobSpawnLocation.class);
         return tables;
-    }
-
-    private void registerAbilities() {
-
-        try {
-            AbilityManager abilityManager = RaidCraft.getComponent(SkillsPlugin.class).getAbilityManager();
-            abilityManager.registerClass(Panic.class);
-            abilityManager.registerClass(Strike.class);
-            abilityManager.registerClass(Enrage.class);
-        } catch (UnknownSkillException e) {
-            getLogger().warning(e.getMessage());
-        }
     }
 
     private void registerCustomICs() {

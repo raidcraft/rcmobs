@@ -72,9 +72,10 @@ public class TriggerMobAbility extends AbstractIC {
                 if (mobAbility == null) {
                     RaidCraft.LOGGER.warning("Unknown mob ability used on IC at: " + getSign().getX() + "," + getSign().getY() + "," + getSign().getZ());
                 }
-                if (mobAbility instanceof Useable) {
+                if (mobAbility instanceof Useable && !mobAbility.isOnCooldown()) {
                     try {
                         ((Useable) mobAbility).use();
+                        mobAbility.setLastCast(System.currentTimeMillis());
                     } catch (CombatException ignored) {
                         // ignore mob errors
                     }
