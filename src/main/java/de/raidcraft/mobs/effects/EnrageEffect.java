@@ -12,6 +12,7 @@ import de.raidcraft.skills.api.trigger.TriggerPriority;
 import de.raidcraft.skills.api.trigger.Triggered;
 import de.raidcraft.skills.trigger.AttackTrigger;
 import de.raidcraft.skills.trigger.DamageTrigger;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * @author Silthus
@@ -29,6 +30,13 @@ public class EnrageEffect extends ExpirableEffect<Enrage> implements Triggered {
     public EnrageEffect(Enrage source, CharacterTemplate target, EffectData data) {
 
         super(source, target, data);
+    }
+
+    @Override
+    public void load(ConfigurationSection data) {
+
+        damageIncrease = getSource().getDamageIncrease();
+        attackIncrease = getSource().getAttackIncrease();
     }
 
     @TriggerHandler(ignoreCancelled = true, priority = TriggerPriority.HIGHEST)
@@ -50,8 +58,6 @@ public class EnrageEffect extends ExpirableEffect<Enrage> implements Triggered {
     @Override
     protected void apply(CharacterTemplate target) throws CombatException {
 
-        damageIncrease = getSource().getDamageIncrease();
-        attackIncrease = getSource().getAttackIncrease();
     }
 
     @Override
