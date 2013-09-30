@@ -6,6 +6,8 @@ import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.util.MathUtil;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -90,7 +92,16 @@ public class ConfigurableMobGroup implements MobGroup {
         int spawnedAmount = 0;
         while (spawnedAmount < amount) {
             SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
-            if (mob.spawn(location, false)) {
+            // spawn with a slightly random offset
+            Location newLocation = location.clone().add(
+                    MathUtil.RANDOM.nextInt(6) - 3,
+                    0,
+                    MathUtil.RANDOM.nextInt(6) - 3);
+            while (newLocation.getBlock().getType() != Material.AIR
+                    && newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
+                newLocation.add(0, 1, 0);
+            }
+            if (mob.spawn(newLocation, false)) {
                 spawnedAmount++;
             }
         }

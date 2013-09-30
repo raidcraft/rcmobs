@@ -52,5 +52,10 @@
             <artifactId>craftbook</artifactId>
             <version>${rc.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.raidcraft</groupId>
+            <artifactId>loot</artifactId>
+            <version>${rc.version}</version>
+        </dependency>
     </dependencies>
 </project>

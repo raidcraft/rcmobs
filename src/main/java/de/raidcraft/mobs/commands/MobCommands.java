@@ -7,6 +7,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
+import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
@@ -74,7 +75,7 @@ public class MobCommands {
             aliases = {"setmobspawn", "sm", "setmob", "set"},
             desc = "Sets the spawnpoint of a mob",
             min = 2,
-            usage = "<mob> <cooldown>"
+            usage = "<mob> <cooldown> [radius]"
     )
     @CommandPermissions("rcmobs.setmobspawn")
     public void setMobSpawn(CommandContext args, CommandSender sender) throws CommandException {
@@ -92,6 +93,7 @@ public class MobCommands {
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
             mob.spawn(location);
+            plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown(), mob.getConfig().getInt("spawn-radius", 1));
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
@@ -119,8 +121,45 @@ public class MobCommands {
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
             mobGroup.spawn(location);
+            plugin.getMobManager().addSpawnLocation(mobGroup, location, spawn.getCooldown(), mobGroup.getSpawnRadius());
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
+    }
+
+    @Command(
+            aliases = {"deletespawn", "ds", "removespawn", "rs", "delete", "remove"},
+            desc = "Removes the nearest spawnpoint",
+            flags = "r:"
+    )
+    @CommandPermissions("rcmobs.deletespawn")
+    public void deleteSpawnPoint(CommandContext args, CommandSender sender) throws CommandException {
+
+        int radius = args.getFlagInteger('r', 30);
+        FixedSpawnLocation spawn = plugin.getMobManager().getClosestSpawnLocation(((Player) sender).getLocation(), radius);
+        if (spawn == null) {
+            throw new CommandException("Keinen Spawnpunkt im Radius von " + radius + " Metern gefunden.");
+        }
+        MobSpawnLocation mobSpawn = plugin.getDatabase().find(MobSpawnLocation.class).where()
+                .eq("x", spawn.getLocation().getBlockX())
+                .eq("y", spawn.getLocation().getBlockY())
+                .eq("z", spawn.getLocation().getBlockZ()).findUnique();
+        if (mobSpawn != null) {
+            plugin.getDatabase().delete(mobSpawn);
+            plugin.getMobManager().removeSpawnLocation(spawn);
+            sender.sendMessage(ChatColor.GREEN + "Spawnpunkt wurde gelöscht!");
+            return;
+        }
+        MobGroupSpawnLocation mobGroup = plugin.getDatabase().find(MobGroupSpawnLocation.class).where()
+                .eq("x", spawn.getLocation().getBlockX())
+                .eq("y", spawn.getLocation().getBlockY())
+                .eq("z", spawn.getLocation().getBlockZ()).findUnique();
+        if (mobGroup != null) {
+            plugin.getDatabase().delete(mobGroup);
+            plugin.getMobManager().removeSpawnLocation(spawn);
+            sender.sendMessage(ChatColor.GREEN + "Spawnpunkt wurde gelöscht!");
+            return;
+        }
+        throw new CommandException("Keine Einträge in der Datenbank gefunden!");
     }
 }

@@ -4,11 +4,12 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
-import de.raidcraft.mobs.api.FixedSpawnLocation;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
 import de.raidcraft.util.CaseInsensitiveMap;
+import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -114,12 +115,12 @@ public final class MobManager implements Component {
         // lets load single spawn locations first
         for (MobSpawnLocation location : plugin.getDatabase().find(MobSpawnLocation.class).findList()) {
             try {
-                FixedSpawnableMob mob = new FixedSpawnableMob(
-                        getSpwanableMob(location.getMob()),
+                SpawnableMob spwanableMob = getSpwanableMob(location.getMob());
+                addSpawnLocation(
+                        spwanableMob,
                         new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
-                        location.getCooldown()
-                );
-                spawnableMobs.add(mob);
+                        location.getCooldown(),
+                        spwanableMob.getConfig().getInt("spawn-radius", 1));
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
@@ -127,16 +128,24 @@ public final class MobManager implements Component {
         // and now load the group spawn locations
         for (MobGroupSpawnLocation location : plugin.getDatabase().find(MobGroupSpawnLocation.class).findList()) {
             try {
-                FixedSpawnableMobGroup mob = new FixedSpawnableMobGroup(
-                        getMobGroup(location.getSpawnGroup()),
+                MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
+                addSpawnLocation(
+                        mobGroup,
                         new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
-                        location.getCooldown()
+                        location.getCooldown(),
+                        mobGroup.getSpawnRadius()
                 );
-                spawnableMobs.add(mob);
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
         }
+    }
+
+    public FixedSpawnLocation addSpawnLocation(Spawnable spawnable, Location location, double cooldown, int radius) {
+
+        FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, cooldown, radius);
+        spawnableMobs.add(mob);
+        return mob;
     }
 
     public SpawnableMob getSpwanableMob(String name) throws UnknownMobException {
@@ -193,5 +202,28 @@ public final class MobManager implements Component {
     public List<FixedSpawnLocation> getSpawnLocations() {
 
         return spawnableMobs;
+    }
+
+    public void addSpawnLocation(FixedSpawnLocation location) {
+
+        spawnableMobs.add(location);
+    }
+
+    public boolean removeSpawnLocation(FixedSpawnLocation location) {
+
+        return spawnableMobs.remove(location);
+    }
+
+    public FixedSpawnLocation getClosestSpawnLocation(Location location, int distance) {
+
+        FixedSpawnLocation closest = null;
+        for (FixedSpawnLocation spawnLocation : getSpawnLocations()) {
+            int blockDistance = LocationUtil.getBlockDistance(location, spawnLocation.getLocation());
+            if (blockDistance < distance) {
+                closest = spawnLocation;
+                distance = blockDistance;
+            }
+        }
+        return closest;
     }
 }

@@ -2,6 +2,8 @@ package de.raidcraft.mobs.creatures;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
+import de.raidcraft.loot.table.LootTable;
+import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobType;
@@ -17,6 +19,7 @@ import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * @author Silthus
@@ -26,6 +29,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final MobType type;
     private final int minDamage;
     private final int maxDamage;
+    private LootTable lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
@@ -52,6 +56,8 @@ public class ConfigurableCreature extends AbstractMob {
         setName(getType().getNameColor() + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
+        // set custom meta data to identify our mob
+        getEntity().setMetadata("RC_CUSTOM_MOB", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), true));
     }
 
     private void loadAbilities(ConfigurationSection config) {
@@ -123,6 +129,12 @@ public class ConfigurableCreature extends AbstractMob {
         } else {
             getEntity().setCustomName(getType().getNameColor() + getName());
         }
+    }
+
+    @Override
+    public LootTable getLootTable() {
+
+        return lootTable;
     }
 
     @Override

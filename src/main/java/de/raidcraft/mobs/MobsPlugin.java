@@ -19,7 +19,9 @@ import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
@@ -54,7 +56,14 @@ public class MobsPlugin extends BasePlugin implements Listener {
     @Override
     public void disable() {
 
-
+        // on shutdown butcher all of our custom mobs
+        for (World world : Bukkit.getWorlds()) {
+            for (LivingEntity entity : world.getLivingEntities()) {
+                if (entity.hasMetadata("RC_CUSTOM_MOB")) {
+                    entity.remove();
+                }
+            }
+        }
     }
 
     public void reload() {

@@ -1,6 +1,7 @@
-package de.raidcraft.mobs.api;
+package de.raidcraft.mobs;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.CharacterType;
@@ -13,19 +14,46 @@ import org.bukkit.entity.LivingEntity;
 /**
  * @author Silthus
  */
-public abstract class FixedSpawnLocation implements Spawnable {
+public class FixedSpawnLocation implements Spawnable {
 
+    private final Spawnable spawnable;
     private final Location location;
     private final long cooldown;
+    private final int spawnRadius;
     private long lastSpawn;
 
-    protected FixedSpawnLocation(Location location, double cooldown) {
+    protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown, int spawnRadius) {
 
+        this.spawnable = spawnable;
         this.location = location;
         this.cooldown = TimeUtil.secondsToMillis(cooldown);
+        this.spawnRadius = spawnRadius;
     }
 
-    protected abstract int getSpawnRadius();
+    public Spawnable getSpawnable() {
+
+        return spawnable;
+    }
+
+    protected int getSpawnRadius() {
+
+        return spawnRadius;
+    }
+
+    public Location getLocation() {
+
+        return location;
+    }
+
+    public long getCooldown() {
+
+        return cooldown;
+    }
+
+    public long getLastSpawn() {
+
+        return lastSpawn;
+    }
 
     public void spawn() {
 
@@ -46,5 +74,11 @@ public abstract class FixedSpawnLocation implements Spawnable {
         // spawn the mob
         spawn(location);
         lastSpawn = System.currentTimeMillis();
+    }
+
+    @Override
+    public void spawn(Location location) {
+
+        getSpawnable().spawn(location);
     }
 }
