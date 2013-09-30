@@ -66,6 +66,9 @@ public class ConfigurableCreature extends AbstractMob {
         setName(getType().getNameColor() + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
+        if (config.getBoolean("ranged", false)) {
+            // EntityUtil.setRangedMode(getEntity());
+        }
         // set custom meta data to identify our mob
         getEntity().setMetadata("RC_CUSTOM_MOB", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), true));
     }
