@@ -8,6 +8,7 @@ import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -90,6 +91,7 @@ public class MobCommands {
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
+            mob.spawn(location);
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
@@ -107,15 +109,16 @@ public class MobCommands {
         try {
             MobGroup mobGroup = plugin.getMobManager().getMobGroup(args.getString(0));
             Location location = ((Player) sender).getLocation();
-            MobSpawnLocation spawn = new MobSpawnLocation();
-            spawn.setMob(mobGroup.getName());
+            MobGroupSpawnLocation spawn = new MobGroupSpawnLocation();
+            spawn.setSpawnGroup(mobGroup.getName());
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
             spawn.setZ(location.getBlockZ());
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
-            sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mobGroup.getName() + " wurde gesetzt.");
+            sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
+            mobGroup.spawn(location);
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }

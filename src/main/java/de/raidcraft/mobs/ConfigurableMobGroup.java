@@ -36,6 +36,7 @@ public class ConfigurableMobGroup implements MobGroup {
                     SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(key);
                     ConfigurationSection section = config.getConfigurationSection("mobs").getConfigurationSection(key);
                     mob.setSpawnChance(section.getDouble("chance", 1.0));
+                    mobs.add(mob);
                 } catch (UnknownMobException e) {
                     RaidCraft.LOGGER.warning(e.getMessage());
                 }
@@ -82,6 +83,9 @@ public class ConfigurableMobGroup implements MobGroup {
     @Override
     public void spawn(Location location) {
 
+        if (mobs.isEmpty()) {
+            return;
+        }
         int amount = MathUtil.RANDOM.nextInt(getMaxSpawnAmount()) + getMinSpawnAmount();
         int spawnedAmount = 0;
         while (spawnedAmount < amount) {

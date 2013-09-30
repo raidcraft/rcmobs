@@ -83,4 +83,10 @@ public class SpawnableMob implements Spawnable {
         manager.spawnCharacter(type, location, mClass, config);
         return true;
     }
+
+    @Override
+    public String toString() {
+
+        return mobName;
+    }
 }

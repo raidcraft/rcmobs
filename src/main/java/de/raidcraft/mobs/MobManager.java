@@ -8,7 +8,6 @@ import de.raidcraft.mobs.api.FixedSpawnLocation;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
-import de.raidcraft.skills.util.StringUtils;
 import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Bukkit;
@@ -38,14 +37,14 @@ public final class MobManager implements Component {
     protected MobManager(MobsPlugin plugin) {
 
         this.plugin = plugin;
+        RaidCraft.registerComponent(MobManager.class, this);
+
         baseDir = new File(plugin.getDataFolder(), "mobs");
         baseDir.mkdirs();
-        load(baseDir);
-        loadGroups();
-        loadSpawnLocations();
-        RaidCraft.registerComponent(MobManager.class, this);
+        load();
+
         // start the spawn task for the fixed spawn locations
-        long time = TimeUtil.secondsToMillis(plugin.getConfiguration().spawnTaskInterval);
+        long time = TimeUtil.secondsToTicks(plugin.getConfiguration().spawnTaskInterval);
         Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
             public void run() {
@@ -80,17 +79,25 @@ public final class MobManager implements Component {
                 continue;
             }
             SpawnableMob mob = new SpawnableMob(config.getString("name", file.getName()), type, config);
-            mobs.put(StringUtils.formatName(mob.getMobName()), mob);
+            mobs.put(file.getName().replace(".yml", ""), mob);
             plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
         }
+    }
+
+    private void load() {
+
+        load(baseDir);
+        loadGroups();
+        loadSpawnLocations();
     }
 
     protected void reload() {
 
         mobs.clear();
+        groups.clear();
         spawnableMobs.clear();
-        load(baseDir);
-        loadSpawnLocations();
+        queuedGroups.clear();
+        load();
     }
 
     private void loadGroups() {
@@ -134,7 +141,6 @@ public final class MobManager implements Component {
 
     public SpawnableMob getSpwanableMob(String name) throws UnknownMobException {
 
-        name = StringUtils.formatName(name);
         if (mobs.containsKey(name)) {
             return mobs.get(name);
         }

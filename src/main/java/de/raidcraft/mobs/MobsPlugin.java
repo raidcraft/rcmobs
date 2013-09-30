@@ -37,7 +37,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
     @Override
     public void enable() {
 
-        configure(new LocalConfiguration(this));
+        configuration = configure(new LocalConfiguration(this));
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
         registerEvents(this);
