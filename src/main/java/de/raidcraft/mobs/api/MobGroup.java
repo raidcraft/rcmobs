@@ -15,5 +15,7 @@ public interface MobGroup extends Spawnable {
 
     public int getMaxSpawnAmount();
 
+    public int getSpawnRadius();
+
     public List<Spawnable> getSpawns();
 }

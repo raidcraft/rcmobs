@@ -2,6 +2,7 @@ package de.raidcraft.mobs.api;
 
 import de.raidcraft.skills.api.character.AbstractSkilledCharacter;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.character.CharacterType;
 import de.raidcraft.skills.api.combat.ThreatTable;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
@@ -22,6 +23,12 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
 
         super(entity);
         attachLevel(new CreatureAttachedLevel<CharacterTemplate>(this, 60));
+    }
+
+    @Override
+    public CharacterType getCharacterType() {
+
+        return CharacterType.CUSTOM_MOB;
     }
 
     @Override

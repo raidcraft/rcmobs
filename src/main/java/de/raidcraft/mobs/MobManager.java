@@ -4,9 +4,14 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
+import de.raidcraft.mobs.api.FixedSpawnLocation;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
+import de.raidcraft.mobs.tables.MobSpawnLocation;
 import de.raidcraft.skills.util.StringUtils;
 import de.raidcraft.util.CaseInsensitiveMap;
+import de.raidcraft.util.TimeUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -28,6 +33,7 @@ public final class MobManager implements Component {
     private final Map<String, SpawnableMob> mobs = new CaseInsensitiveMap<>();
     private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
+    private final List<FixedSpawnLocation> spawnableMobs = new ArrayList<>();
 
     protected MobManager(MobsPlugin plugin) {
 
@@ -36,7 +42,19 @@ public final class MobManager implements Component {
         baseDir.mkdirs();
         load(baseDir);
         loadGroups();
+        loadSpawnLocations();
         RaidCraft.registerComponent(MobManager.class, this);
+        // start the spawn task for the fixed spawn locations
+        long time = TimeUtil.secondsToMillis(plugin.getConfiguration().spawnTaskInterval);
+        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+            @Override
+            public void run() {
+
+                for (FixedSpawnLocation location : spawnableMobs) {
+                    location.spawn();
+                }
+            }
+        }, 100L, time);
     }
 
     private void load(File directory) {
@@ -67,6 +85,14 @@ public final class MobManager implements Component {
         }
     }
 
+    protected void reload() {
+
+        mobs.clear();
+        spawnableMobs.clear();
+        load(baseDir);
+        loadSpawnLocations();
+    }
+
     private void loadGroups() {
 
         for (Map.Entry<String, ConfigurationSection> entry : queuedGroups.entrySet()) {
@@ -76,10 +102,34 @@ public final class MobManager implements Component {
         }
     }
 
-    protected void reload() {
+    private void loadSpawnLocations() {
 
-        mobs.clear();
-        load(baseDir);
+        // lets load single spawn locations first
+        for (MobSpawnLocation location : plugin.getDatabase().find(MobSpawnLocation.class).findList()) {
+            try {
+                FixedSpawnableMob mob = new FixedSpawnableMob(
+                        getSpwanableMob(location.getMob()),
+                        new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
+                        location.getCooldown()
+                );
+                spawnableMobs.add(mob);
+            } catch (UnknownMobException e) {
+                plugin.getLogger().warning(e.getMessage());
+            }
+        }
+        // and now load the group spawn locations
+        for (MobGroupSpawnLocation location : plugin.getDatabase().find(MobGroupSpawnLocation.class).findList()) {
+            try {
+                FixedSpawnableMobGroup mob = new FixedSpawnableMobGroup(
+                        getMobGroup(location.getSpawnGroup()),
+                        new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
+                        location.getCooldown()
+                );
+                spawnableMobs.add(mob);
+            } catch (UnknownMobException e) {
+                plugin.getLogger().warning(e.getMessage());
+            }
+        }
     }
 
     public SpawnableMob getSpwanableMob(String name) throws UnknownMobException {
@@ -132,5 +182,10 @@ public final class MobManager implements Component {
     public void spawnMob(String name, Location location) throws UnknownMobException {
 
         getSpwanableMob(name).spawn(location);
+    }
+
+    public List<FixedSpawnLocation> getSpawnLocations() {
+
+        return spawnableMobs;
     }
 }

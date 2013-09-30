@@ -20,6 +20,7 @@ public class ConfigurableMobGroup implements MobGroup {
     private final long spawnInterval;
     private final int minSpawnAmount;
     private final int maxSpawnAmount;
+    private final int spawnRadius;
     private final List<SpawnableMob> mobs = new ArrayList<>();
 
     protected ConfigurableMobGroup(String name, ConfigurationSection config) {
@@ -28,6 +29,7 @@ public class ConfigurableMobGroup implements MobGroup {
         spawnInterval = TimeUtil.secondsToTicks(config.getDouble("interval", 300.0));
         minSpawnAmount = config.getInt("min-amount", 1);
         maxSpawnAmount = config.getInt("max-amount", minSpawnAmount);
+        spawnRadius = config.getInt("spawn-radius", 30);
         if (config.getConfigurationSection("mobs") != null) {
             for (String key : config.getConfigurationSection("mobs").getKeys(false)) {
                 try {
@@ -63,6 +65,12 @@ public class ConfigurableMobGroup implements MobGroup {
     public int getMaxSpawnAmount() {
 
         return maxSpawnAmount;
+    }
+
+    @Override
+    public int getSpawnRadius() {
+
+        return spawnRadius;
     }
 
     @Override

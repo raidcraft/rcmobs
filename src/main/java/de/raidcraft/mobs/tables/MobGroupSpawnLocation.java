@@ -10,13 +10,13 @@ import javax.persistence.Table;
  * @author Silthus
  */
 @Entity
-@Table(name = "rcmobs_mob_spawn")
-public class TMobSpawn {
+@Table(name = "rcmobs_mobgroup_spawn_location")
+public class MobGroupSpawnLocation {
 
     @Id
     private int id;
     @NotNull
-    private String mob;
+    private String spawnGroup;
     private int x;
     private int y;
     private int z;
@@ -33,14 +33,14 @@ public class TMobSpawn {
         this.id = id;
     }
 
-    public String getMob() {
+    public String getSpawnGroup() {
 
-        return mob;
+        return spawnGroup;
     }
 
-    public void setMob(String mob) {
+    public void setSpawnGroup(String spawnGroup) {
 
-        this.mob = mob;
+        this.spawnGroup = spawnGroup;
     }
 
     public int getX() {

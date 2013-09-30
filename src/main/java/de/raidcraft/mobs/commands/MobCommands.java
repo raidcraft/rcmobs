@@ -8,7 +8,7 @@ import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
-import de.raidcraft.mobs.tables.TMobSpawn;
+import de.raidcraft.mobs.tables.MobSpawnLocation;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -81,7 +81,7 @@ public class MobCommands {
         try {
             SpawnableMob mob = plugin.getMobManager().getSpwanableMob(args.getString(0));
             Location location = ((Player) sender).getLocation();
-            TMobSpawn spawn = new TMobSpawn();
+            MobSpawnLocation spawn = new MobSpawnLocation();
             spawn.setMob(mob.getMobName());
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
@@ -107,7 +107,7 @@ public class MobCommands {
         try {
             MobGroup mobGroup = plugin.getMobManager().getMobGroup(args.getString(0));
             Location location = ((Player) sender).getLocation();
-            TMobSpawn spawn = new TMobSpawn();
+            MobSpawnLocation spawn = new MobSpawnLocation();
             spawn.setMob(mobGroup.getName());
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
