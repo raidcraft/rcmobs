@@ -116,7 +116,7 @@ public final class MobManager implements Component {
         for (MobSpawnLocation location : plugin.getDatabase().find(MobSpawnLocation.class).findList()) {
             try {
                 SpawnableMob spwanableMob = getSpwanableMob(location.getMob());
-                FixedSpawnLocation spawnLocation = addSpawnLocation(
+                addSpawnLocation(
                         spwanableMob,
                         new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
                         location.getCooldown(),
@@ -136,15 +136,16 @@ public final class MobManager implements Component {
                         mobGroup.getSpawnRadius()
                 );
                 spawnLocation.setSpawnTreshhold(mobGroup.getRespawnTreshhold());
+                spawnLocation.setCooldown(TimeUtil.secondsToMillis(mobGroup.getSpawnInterval()));
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
         }
     }
 
-    public FixedSpawnLocation addSpawnLocation(Spawnable spawnable, Location location, double cooldown, int radius) {
+    public FixedSpawnLocation addSpawnLocation(Spawnable spawnable, Location location, double minCooldown, int radius) {
 
-        FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, cooldown, radius);
+        FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, minCooldown, radius);
         spawnableMobs.add(mob);
         plugin.registerEvents(mob);
         return mob;

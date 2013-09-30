@@ -9,7 +9,7 @@ public interface MobGroup extends Spawnable {
 
     public String getName();
 
-    public long getSpawnInterval();
+    public double getSpawnInterval();
 
     public int getMinSpawnAmount();
 

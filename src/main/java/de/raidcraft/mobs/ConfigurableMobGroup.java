@@ -5,7 +5,6 @@ import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.MathUtil;
-import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -20,7 +19,8 @@ import java.util.List;
 public class ConfigurableMobGroup implements MobGroup {
 
     private final String name;
-    private final long spawnInterval;
+    private final int minInterval;
+    private final int maxInterval;
     private final int minSpawnAmount;
     private final int maxSpawnAmount;
     private final int spawnRadius;
@@ -30,7 +30,8 @@ public class ConfigurableMobGroup implements MobGroup {
     protected ConfigurableMobGroup(String name, ConfigurationSection config) {
 
         this.name = name;
-        spawnInterval = TimeUtil.secondsToTicks(config.getDouble("interval", 300.0));
+        minInterval = config.getInt("min-interval", 300);
+        maxInterval = config.getInt("max-interval", minInterval);
         minSpawnAmount = config.getInt("min-amount", 1);
         maxSpawnAmount = config.getInt("max-amount", minSpawnAmount);
         respawnTreshhold = config.getInt("respawn-treshhold", minSpawnAmount - 1);
@@ -56,9 +57,9 @@ public class ConfigurableMobGroup implements MobGroup {
     }
 
     @Override
-    public long getSpawnInterval() {
+    public double getSpawnInterval() {
 
-        return spawnInterval;
+        return MathUtil.RANDOM.nextInt(maxInterval) + minInterval;
     }
 
     @Override

@@ -19,8 +19,8 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
     private final Spawnable spawnable;
     private final Location location;
-    private final long cooldown;
     private final int spawnRadius;
+    private long cooldown;
     private long lastSpawn;
     private int spawnTreshhold = 1;
     private List<CharacterTemplate> spawnedMobs = new ArrayList<>();
@@ -46,6 +46,11 @@ public class FixedSpawnLocation implements Spawnable, Listener {
     public Location getLocation() {
 
         return location;
+    }
+
+    public void setCooldown(long cooldown) {
+
+        this.cooldown = cooldown;
     }
 
     public long getCooldown() {
