@@ -2,6 +2,8 @@ package de.raidcraft.mobs.effects;
 
 import de.raidcraft.mobs.abilities.Enrage;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.combat.EffectType;
+import de.raidcraft.skills.api.effect.EffectInformation;
 import de.raidcraft.skills.api.effect.types.ExpirableEffect;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.persistance.EffectData;
@@ -14,6 +16,11 @@ import de.raidcraft.skills.trigger.DamageTrigger;
 /**
  * @author Silthus
  */
+@EffectInformation(
+        name = "Enrage",
+        description = "Deals and takes more damage",
+        types = {EffectType.HARMFUL, EffectType.HELPFUL}
+)
 public class EnrageEffect extends ExpirableEffect<Enrage> implements Triggered {
 
     private double damageIncrease;

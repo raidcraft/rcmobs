@@ -39,7 +39,6 @@ public class ConfigurableCreature extends AbstractMob {
         this.maxDamage = config.getInt("max-damage", minDamage);
         int minHealth = config.getInt("min-health", 20);
         int maxHealth = config.getInt("max-health", minHealth);
-        int health = config.getInt("health", 0);
 
         if (config.getBoolean("baby")) {
             if (getEntity() instanceof Ageable) {
@@ -49,7 +48,7 @@ public class ConfigurableCreature extends AbstractMob {
                 ((Zombie) getEntity()).setBaby(true);
             }
         }
-        setMaxHealth(health > 0 ? health : MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
+        setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         getAttachedLevel().setLevel(config.getInt("level", 1));
         getEntity().setCustomNameVisible(true);
@@ -65,7 +64,7 @@ public class ConfigurableCreature extends AbstractMob {
         if (config == null) return;
         for (String key : config.getKeys(false)) {
             try {
-                Ability<Mob> ability = RaidCraft.getComponent(AbilityManager.class).getAbility((Mob) this, key);
+                Ability<Mob> ability = RaidCraft.getComponent(AbilityManager.class).getAbility((Mob) this, key, config.getConfigurationSection(key));
                 addAbility(ability);
             } catch (UnknownSkillException e) {
                 RaidCraft.LOGGER.warning(e.getMessage());
@@ -85,11 +84,11 @@ public class ConfigurableCreature extends AbstractMob {
         try {
             if (config == null) return;
             EntityEquipment equipment = getEntity().getEquipment();
-            equipment.setItemInHand(RaidCraft.getItem(config.getString("hand")));
-            equipment.setHelmet(RaidCraft.getItem(config.getString("head")));
-            equipment.setChestplate(RaidCraft.getItem(config.getString("chest")));
-            equipment.setLeggings(RaidCraft.getItem(config.getString("legs")));
-            equipment.setBoots(RaidCraft.getItem(config.getString("boots")));
+            equipment.setItemInHand(RaidCraft.getItem(config.getString("hand", "AIR")));
+            equipment.setHelmet(RaidCraft.getItem(config.getString("head", "AIR")));
+            equipment.setChestplate(RaidCraft.getItem(config.getString("chest", "AIR")));
+            equipment.setLeggings(RaidCraft.getItem(config.getString("legs", "AIR")));
+            equipment.setBoots(RaidCraft.getItem(config.getString("boots", "AIR")));
 
             equipment.setItemInHandDropChance(config.getInt("hand-drop-chance", 0));
             equipment.setHelmetDropChance(config.getInt("head-drop-chance", 0));

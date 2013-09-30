@@ -8,11 +8,13 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
+import de.raidcraft.mobs.abilities.Enrage;
 import de.raidcraft.mobs.abilities.Panic;
 import de.raidcraft.mobs.abilities.Strike;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
 import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
+import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.MobSpawnLocation;
 import de.raidcraft.skills.AbilityManager;
@@ -43,6 +45,8 @@ public class MobsPlugin extends BasePlugin implements Listener {
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
         registerEvents(this);
+        new MobListener(this);
+
         Bukkit.getScheduler().runTaskLater(this, new Runnable() {
             @Override
             public void run() {
@@ -86,6 +90,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
             AbilityManager abilityManager = RaidCraft.getComponent(SkillsPlugin.class).getAbilityManager();
             abilityManager.registerClass(Panic.class);
             abilityManager.registerClass(Strike.class);
+            abilityManager.registerClass(Enrage.class);
         } catch (UnknownSkillException e) {
             getLogger().warning(e.getMessage());
         }

@@ -69,7 +69,7 @@ public final class MobManager implements Component {
             if (!file.getName().endsWith(".yml")) {
                 continue;
             }
-            SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file));
+            SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file), false);
             if (file.getName().endsWith(FILE_GROUP_SUFFIX)) {
                 queuedGroups.put(file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
                 continue;
@@ -172,17 +172,6 @@ public final class MobManager implements Component {
     public List<SpawnableMob> getSpawnableMobs() {
 
         return new ArrayList<>(mobs.values());
-    }
-
-    public List<SpawnableMob> getNaturallySpawningMobs() {
-
-        ArrayList<SpawnableMob> spawnableMobs = new ArrayList<>();
-        for (SpawnableMob mob : mobs.values()) {
-            if (mob.isSpawningNaturally()) {
-                spawnableMobs.add(mob);
-            }
-        }
-        return spawnableMobs;
     }
 
     public MobGroup getMobGroup(String name) throws UnknownMobException {

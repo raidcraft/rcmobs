@@ -2,6 +2,9 @@ package de.raidcraft.mobs.abilities;
 
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobAbility;
+import de.raidcraft.mobs.effects.EnrageEffect;
+import de.raidcraft.skills.api.ability.AbilityInformation;
+import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.persistance.AbilityProperties;
 import de.raidcraft.skills.api.trigger.TriggerHandler;
 import de.raidcraft.skills.api.trigger.Triggered;
@@ -12,6 +15,10 @@ import org.bukkit.configuration.ConfigurationSection;
 /**
  * @author Silthus
  */
+@AbilityInformation(
+        name = "Enrage",
+        description = "Deals more damage when under a certain treshhold."
+)
 public class Enrage extends MobAbility implements Triggered {
 
     private double healthTreshhold;
@@ -41,13 +48,13 @@ public class Enrage extends MobAbility implements Triggered {
         return ConfigUtil.getTotalValue(this, attackIncrease);
     }
 
-    @TriggerHandler(ignoreCancelled = true)
-    public void onDamage(DamageTrigger trigger) {
+    @TriggerHandler(ignoreCancelled = false, filterTargets = false)
+    public void onDamage(DamageTrigger trigger) throws CombatException {
 
         int currentHealth = getHolder().getHealth();
         if (currentHealth - trigger.getAttack().getDamage() < healthTreshhold * getHolder().getMaxHealth()) {
             // trigger the enrage effect
-
+            addEffect(getHolder(), EnrageEffect.class);
         }
     }
 }
