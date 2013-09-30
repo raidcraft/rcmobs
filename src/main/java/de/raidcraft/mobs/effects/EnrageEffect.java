@@ -4,7 +4,7 @@ import de.raidcraft.mobs.abilities.Enrage;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.combat.EffectType;
 import de.raidcraft.skills.api.effect.EffectInformation;
-import de.raidcraft.skills.api.effect.types.ExpirableEffect;
+import de.raidcraft.skills.api.effect.types.PeriodicExpirableEffect;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.persistance.EffectData;
 import de.raidcraft.skills.api.trigger.TriggerHandler;
@@ -22,7 +22,7 @@ import org.bukkit.configuration.ConfigurationSection;
         description = "Deals and takes more damage",
         types = {EffectType.HARMFUL, EffectType.HELPFUL}
 )
-public class EnrageEffect extends ExpirableEffect<Enrage> implements Triggered {
+public class EnrageEffect extends PeriodicExpirableEffect<Enrage> implements Triggered {
 
     private double damageIncrease;
     private double attackIncrease;
@@ -68,6 +68,12 @@ public class EnrageEffect extends ExpirableEffect<Enrage> implements Triggered {
 
     @Override
     protected void renew(CharacterTemplate target) throws CombatException {
+
+
+    }
+
+    @Override
+    protected void tick(CharacterTemplate target) throws CombatException {
 
 
     }
