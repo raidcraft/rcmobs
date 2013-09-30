@@ -93,7 +93,7 @@ public class MobCommands {
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
             mob.spawn(location);
-            plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown(), mob.getConfig().getInt("spawn-radius", 1));
+            plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown(), mob.getConfig().getInt("spawn-radius", args.getInteger(2, 1)));
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
