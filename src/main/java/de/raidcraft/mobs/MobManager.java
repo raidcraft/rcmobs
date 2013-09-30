@@ -146,6 +146,7 @@ public final class MobManager implements Component {
 
         FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, cooldown, radius);
         spawnableMobs.add(mob);
+        plugin.registerEvents(mob);
         return mob;
     }
 

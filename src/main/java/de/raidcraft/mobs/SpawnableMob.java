@@ -11,6 +11,9 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Silthus
  */
@@ -59,9 +62,11 @@ public class SpawnableMob implements Spawnable {
         this.spawnChance = spawnChance;
     }
 
-    public void spawn(Location location) {
+    public List<CharacterTemplate> spawn(Location location) {
 
-        spawn(location, true);
+        ArrayList<CharacterTemplate> characterTemplates = new ArrayList<>();
+        characterTemplates.add(spawn(location, true));
+        return characterTemplates;
     }
 
     public CharacterTemplate spawn(Location location, boolean force) {

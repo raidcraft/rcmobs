@@ -1,20 +1,21 @@
 package de.raidcraft.mobs;
 
-import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.Spawnable;
-import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.skills.api.character.CharacterType;
-import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Silthus
  */
-public class FixedSpawnLocation implements Spawnable {
+public class FixedSpawnLocation implements Spawnable, Listener {
 
     private final Spawnable spawnable;
     private final Location location;
@@ -22,6 +23,7 @@ public class FixedSpawnLocation implements Spawnable {
     private final int spawnRadius;
     private long lastSpawn;
     private int spawnTreshhold = 1;
+    private List<CharacterTemplate> spawnedMobs;
 
     protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown, int spawnRadius) {
 
@@ -66,36 +68,34 @@ public class FixedSpawnLocation implements Spawnable {
         this.spawnTreshhold = spawnTreshhold;
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onDeath(EntityDeathEvent event) {
+
+        ArrayList<CharacterTemplate> list = new ArrayList<>(spawnedMobs);
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(0).getEntity().equals(event.getEntity())) {
+                spawnedMobs.remove(i);
+            }
+        }
+    }
+
     public void spawn() {
 
         // dont spawn stuff if it is still on cooldown
         if (System.currentTimeMillis() < lastSpawn + cooldown) {
             return;
         }
-        if (getSpawnTreshhold() > 0) {
-            int nearby = 0;
-            // dont spawn entities if there are other entities around in the radius
-            Entity[] nearbyEntities = LocationUtil.getNearbyEntities(location, getSpawnRadius());
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof LivingEntity) {
-                    CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter((LivingEntity) entity);
-                    if (character.getCharacterType() == CharacterType.CUSTOM_MOB) {
-                        nearby++;
-                    }
-                }
-                if (getSpawnTreshhold() < nearby) {
-                    return;
-                }
-            }
+        if (getSpawnTreshhold() > 0 && spawnedMobs.size() > getSpawnTreshhold()) {
+            return;
         }
         // spawn the mob
-        spawn(location);
+        spawnedMobs.addAll(spawn(location));
         lastSpawn = System.currentTimeMillis();
     }
 
     @Override
-    public void spawn(Location location) {
+    public List<CharacterTemplate> spawn(Location location) {
 
-        getSpawnable().spawn(location);
+        return getSpawnable().spawn(location);
     }
 }

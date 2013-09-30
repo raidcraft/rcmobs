@@ -92,12 +92,12 @@ public class ConfigurableMobGroup implements MobGroup {
     }
 
     @Override
-    public void spawn(Location location) {
+    public List<CharacterTemplate> spawn(Location location) {
 
-        if (mobs.isEmpty()) {
-            return;
-        }
         List<CharacterTemplate> spawnedMobs = new ArrayList<>();
+        if (mobs.isEmpty()) {
+            return spawnedMobs;
+        }
         int amount = MathUtil.RANDOM.nextInt(getMaxSpawnAmount()) + getMinSpawnAmount();
         while (spawnedMobs.size() < amount) {
             SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
@@ -119,5 +119,6 @@ public class ConfigurableMobGroup implements MobGroup {
         for (CharacterTemplate mob : spawnedMobs) {
             mob.joinParty(characterTemplate.getParty());
         }
+        return spawnedMobs;
     }
 }
