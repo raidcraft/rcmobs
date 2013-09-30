@@ -144,6 +144,8 @@ public class ConfigurableCreature extends AbstractMob {
                 removeEffect(Combat.class);
             } catch (CombatException ignored) {
             }
+        } else if (!isInCombat()) {
+            EntityUtil.walkToLocation(getEntity(), spawnLocation, 1.15F);
         }
     }
 

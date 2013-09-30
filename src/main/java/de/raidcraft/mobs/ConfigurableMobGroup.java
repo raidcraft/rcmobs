@@ -106,7 +106,7 @@ public class ConfigurableMobGroup implements MobGroup {
                     0,
                     MathUtil.RANDOM.nextInt(6) - 3);
             while (newLocation.getBlock().getType() != Material.AIR
-                    && newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
+                    || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
                 newLocation.add(0, 1, 0);
             }
             if (mob.spawn(newLocation, false)) {
