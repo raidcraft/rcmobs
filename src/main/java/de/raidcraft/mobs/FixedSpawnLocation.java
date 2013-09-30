@@ -23,7 +23,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
     private final int spawnRadius;
     private long lastSpawn;
     private int spawnTreshhold = 1;
-    private List<CharacterTemplate> spawnedMobs;
+    private List<CharacterTemplate> spawnedMobs = new ArrayList<>();
 
     protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown, int spawnRadius) {
 
@@ -72,9 +72,9 @@ public class FixedSpawnLocation implements Spawnable, Listener {
     public void onDeath(EntityDeathEvent event) {
 
         ArrayList<CharacterTemplate> list = new ArrayList<>(spawnedMobs);
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(0).getEntity().equals(event.getEntity())) {
-                spawnedMobs.remove(i);
+        for (CharacterTemplate characterTemplate : list) {
+            if (characterTemplate.equals(event.getEntity())) {
+                spawnedMobs.remove(characterTemplate);
             }
         }
     }
@@ -85,7 +85,13 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         if (System.currentTimeMillis() < lastSpawn + cooldown) {
             return;
         }
-        if (getSpawnTreshhold() > 0 && spawnedMobs.size() > getSpawnTreshhold()) {
+        ArrayList<CharacterTemplate> list = new ArrayList<>(spawnedMobs);
+        for (CharacterTemplate characterTemplate : list) {
+            if (characterTemplate == null || characterTemplate.getEntity().isDead()) {
+                spawnedMobs.remove(characterTemplate);
+            }
+        }
+        if (getSpawnTreshhold() > 0 && !spawnedMobs.isEmpty() && spawnedMobs.size() > getSpawnTreshhold()) {
             return;
         }
         // spawn the mob
