@@ -6,6 +6,7 @@ import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -63,17 +64,16 @@ public class SpawnableMob implements Spawnable {
         spawn(location, true);
     }
 
-    public boolean spawn(Location location, boolean force) {
+    public CharacterTemplate spawn(Location location, boolean force) {
 
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         // spawn is not forced so we calculate the spawn chance
         if (!force && getSpawnChance() < 1.0) {
             if (Math.random() > getSpawnChance()) {
-                return false;
+                return null;
             }
         }
-        manager.spawnCharacter(type, location, mClass, config);
-        return true;
+        return manager.spawnCharacter(type, location, mClass, config);
     }
 
     @Override

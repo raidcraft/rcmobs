@@ -3,6 +3,7 @@ package de.raidcraft.mobs;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.MathUtil;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
@@ -96,9 +97,9 @@ public class ConfigurableMobGroup implements MobGroup {
         if (mobs.isEmpty()) {
             return;
         }
+        List<CharacterTemplate> spawnedMobs = new ArrayList<>();
         int amount = MathUtil.RANDOM.nextInt(getMaxSpawnAmount()) + getMinSpawnAmount();
-        int spawnedAmount = 0;
-        while (spawnedAmount < amount) {
+        while (spawnedMobs.size() < amount) {
             SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
             // spawn with a slightly random offset
             Location newLocation = location.clone().add(
@@ -109,9 +110,14 @@ public class ConfigurableMobGroup implements MobGroup {
                     || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
                 newLocation.add(0, 1, 0);
             }
-            if (mob.spawn(newLocation, false)) {
-                spawnedAmount++;
+            CharacterTemplate character = mob.spawn(newLocation, false);
+            if (character != null) {
+                spawnedMobs.add(character);
             }
+        }
+        CharacterTemplate characterTemplate = spawnedMobs.get(0);
+        for (CharacterTemplate mob : spawnedMobs) {
+            mob.joinParty(characterTemplate.getParty());
         }
     }
 }
