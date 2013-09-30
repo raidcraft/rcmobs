@@ -21,6 +21,7 @@ public class FixedSpawnLocation implements Spawnable {
     private final long cooldown;
     private final int spawnRadius;
     private long lastSpawn;
+    private int spawnTreshhold = 1;
 
     protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown, int spawnRadius) {
 
@@ -55,18 +56,34 @@ public class FixedSpawnLocation implements Spawnable {
         return lastSpawn;
     }
 
+    public int getSpawnTreshhold() {
+
+        return spawnTreshhold;
+    }
+
+    public void setSpawnTreshhold(int spawnTreshhold) {
+
+        this.spawnTreshhold = spawnTreshhold;
+    }
+
     public void spawn() {
 
         // dont spawn stuff if it is still on cooldown
         if (System.currentTimeMillis() < lastSpawn + cooldown) {
             return;
         }
-        // dont spawn entities if there are other entities around in the radius
-        Entity[] nearbyEntities = LocationUtil.getNearbyEntities(location, getSpawnRadius());
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof LivingEntity) {
-                CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter((LivingEntity) entity);
-                if (character.getCharacterType() == CharacterType.CUSTOM_MOB) {
+        if (getSpawnTreshhold() > 0) {
+            int nearby = 0;
+            // dont spawn entities if there are other entities around in the radius
+            Entity[] nearbyEntities = LocationUtil.getNearbyEntities(location, getSpawnRadius());
+            for (Entity entity : nearbyEntities) {
+                if (entity instanceof LivingEntity) {
+                    CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter((LivingEntity) entity);
+                    if (character.getCharacterType() == CharacterType.CUSTOM_MOB) {
+                        nearby++;
+                    }
+                }
+                if (getSpawnTreshhold() < nearby) {
                     return;
                 }
             }

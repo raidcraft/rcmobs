@@ -2,6 +2,7 @@ package de.raidcraft.mobs.creatures;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
+import de.raidcraft.loot.LootPlugin;
 import de.raidcraft.loot.table.LootTable;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
@@ -29,7 +30,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final MobType type;
     private final int minDamage;
     private final int maxDamage;
-    private LootTable lootTable;
+    private final LootTable lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
@@ -39,6 +40,7 @@ public class ConfigurableCreature extends AbstractMob {
         this.maxDamage = config.getInt("max-damage", minDamage);
         int minHealth = config.getInt("min-health", 20);
         int maxHealth = config.getInt("max-health", minHealth);
+        this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(config.getString("loot-table"));
 
         if (config.getBoolean("baby")) {
             if (getEntity() instanceof Ageable) {
@@ -50,7 +52,9 @@ public class ConfigurableCreature extends AbstractMob {
         }
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
-        getAttachedLevel().setLevel(config.getInt("level", 1));
+        int minLevel = config.getInt("min-level", 1);
+        int maxLevel = config.getInt("max-level", minLevel);
+        getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
         getEntity().setCustomNameVisible(true);
         setName(getType().getNameColor() + config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
