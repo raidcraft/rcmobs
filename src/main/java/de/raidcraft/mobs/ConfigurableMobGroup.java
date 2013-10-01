@@ -104,9 +104,9 @@ public class ConfigurableMobGroup implements MobGroup {
             SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
             // spawn with a slightly random offset
             Location newLocation = location.clone().add(
-                    MathUtil.RANDOM.nextInt(6) - 3,
+                    MathUtil.RANDOM.nextInt(amount * 2) - amount,
                     0,
-                    MathUtil.RANDOM.nextInt(6) - 3);
+                    MathUtil.RANDOM.nextInt(amount * 2) - amount);
             while (newLocation.getBlock().getType() != Material.AIR
                     || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
                 newLocation.add(0, 1, 0);
