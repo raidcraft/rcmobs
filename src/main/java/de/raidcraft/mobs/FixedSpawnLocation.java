@@ -86,8 +86,13 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
     public void spawn() {
 
+        spawn(true);
+    }
+
+    public void spawn(boolean checkCooldown) {
+
         // dont spawn stuff if it is still on cooldown
-        if (System.currentTimeMillis() < lastSpawn + cooldown) {
+        if (checkCooldown && System.currentTimeMillis() < lastSpawn + cooldown) {
             return;
         }
         ArrayList<CharacterTemplate> list = new ArrayList<>(spawnedMobs);

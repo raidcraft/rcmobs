@@ -20,12 +20,8 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -84,16 +80,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
                 if (entity.hasMetadata("RC_CUSTOM_MOB")) {
                     entity.remove();
                 }
-            }
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onChunkLoad(ChunkLoadEvent event) {
-
-        for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof Monster) {
-                entity.remove();
             }
         }
     }

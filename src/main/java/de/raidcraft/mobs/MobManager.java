@@ -14,7 +14,12 @@ import de.raidcraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +29,7 @@ import java.util.Map;
 /**
  * @author Silthus
  */
-public final class MobManager implements Component {
+public final class MobManager implements Component, Listener {
 
     private static final String FILE_GROUP_SUFFIX = ".group.yml";
 
@@ -217,5 +222,21 @@ public final class MobManager implements Component {
             }
         }
         return closest;
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChunkLoad(ChunkLoadEvent event) {
+
+        for (Entity entity : event.getChunk().getEntities()) {
+            if (entity instanceof Monster && !entity.hasMetadata("RC_CUSTOM_MOB")) {
+                entity.remove();
+            }
+        }
+        // also spawn our camps or at least check them
+        for (FixedSpawnLocation spawnPoint : spawnableMobs) {
+            if (spawnPoint.getLocation().getChunk().equals(event.getChunk())) {
+                spawnPoint.spawn(false);
+            }
+        }
     }
 }
