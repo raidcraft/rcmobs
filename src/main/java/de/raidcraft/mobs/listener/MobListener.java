@@ -56,8 +56,8 @@ public class MobListener implements Listener {
                         }
                         CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
                         ChatColor mobColor = EntityUtil.getConColor(
-                                character.getAttachedLevel().getLevel(),
-                                characterManager.getHero(event.getPlayer()).getPlayerLevel());
+                                characterManager.getHero(event.getPlayer()).getPlayerLevel(),
+                                character.getAttachedLevel().getLevel());
                         String name;
                         if (character.isInCombat()) {
                             name = EntityUtil.drawHealthBar(
