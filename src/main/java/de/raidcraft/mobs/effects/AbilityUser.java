@@ -45,6 +45,11 @@ public class AbilityUser extends PeriodicEffect<Mob> {
     @Override
     protected void tick(CharacterTemplate target) throws CombatException {
 
+        if (target.getHealth() < 1 || !target.getEntity().isValid() || target.getEntity().isDead()) {
+            remove();
+            return;
+        }
+
         List<Ability<Mob>> abilities = getSource().getUseableAbilities();
         if (trackCastedAbilities) {
             abilities.removeAll(usedAbilities);
