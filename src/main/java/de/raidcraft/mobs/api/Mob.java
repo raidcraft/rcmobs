@@ -14,6 +14,10 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     public MobType getType();
 
+    public boolean isRare();
+
+    public boolean isElite();
+
     public LootTable getLootTable();
 
     public CharacterTemplate getHighestThreat() throws CombatException;

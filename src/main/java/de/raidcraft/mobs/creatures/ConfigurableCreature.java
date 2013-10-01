@@ -17,6 +17,7 @@ import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.MathUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
@@ -34,6 +35,8 @@ public class ConfigurableCreature extends AbstractMob {
     private final int minDamage;
     private final int maxDamage;
     private final boolean resetHealth;
+    private final boolean elite;
+    private final boolean rare;
     private final LootTable lootTable;
     private final Location spawnLocation;
 
@@ -47,6 +50,8 @@ public class ConfigurableCreature extends AbstractMob {
         int minHealth = config.getInt("min-health", 20);
         int maxHealth = config.getInt("max-health", minHealth);
         this.resetHealth = config.getBoolean("reset-health", true);
+        this.elite = config.getBoolean("elite", false);
+        this.rare = config.getBoolean("rare", false);
         this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(config.getString("loot-table"));
 
         if (config.getBoolean("baby")) {
@@ -63,14 +68,17 @@ public class ConfigurableCreature extends AbstractMob {
         int maxLevel = config.getInt("max-level", minLevel);
         getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
         getEntity().setCustomNameVisible(true);
-        setName(getType().getNameColor() + config.getString("name"));
+        setName(config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
         if (config.getBoolean("ranged", false)) {
             // EntityUtil.setRangedMode(getEntity());
         }
         // set custom meta data to identify our mob
-        getEntity().setMetadata("RC_CUSTOM_MOB", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), true));
+        MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+        getEntity().setMetadata("RC_CUSTOM_MOB", new FixedMetadataValue(plugin, true));
+        if (elite) getEntity().setMetadata("ELITE", new FixedMetadataValue(plugin, true));
+        if (rare) getEntity().setMetadata("RARE", new FixedMetadataValue(plugin, true));
     }
 
     private void loadAbilities(ConfigurationSection config) {
@@ -139,6 +147,27 @@ public class ConfigurableCreature extends AbstractMob {
         }
     }
 
+    private void updateHealthBar() {
+
+        if (isInCombat()) {
+            getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));
+        } else {
+            getEntity().setCustomName(getName());
+        }
+    }
+
+    @Override
+    public boolean isRare() {
+
+        return rare;
+    }
+
+    @Override
+    public boolean isElite() {
+
+        return elite;
+    }
+
     public void checkSpawnPoint() {
 
         if (LocationUtil.getBlockDistance(getEntity().getLocation(), spawnLocation) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
@@ -149,15 +178,6 @@ public class ConfigurableCreature extends AbstractMob {
             }
         } else if (!isInCombat()) {
             EntityUtil.walkToLocation(getEntity(), spawnLocation, 1.15F);
-        }
-    }
-
-    private void updateHealthBar() {
-
-        if (isInCombat()) {
-            getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), getType().getNameColor()));
-        } else {
-            getEntity().setCustomName(getType().getNameColor() + getName());
         }
     }
 
