@@ -12,8 +12,6 @@ import java.util.List;
  */
 public interface Mob extends SkilledCharacter<Mob> {
 
-    public MobType getType();
-
     public boolean isRare();
 
     public boolean isElite();

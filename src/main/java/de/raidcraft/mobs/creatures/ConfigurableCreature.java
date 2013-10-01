@@ -7,7 +7,6 @@ import de.raidcraft.loot.table.LootTable;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
-import de.raidcraft.mobs.api.MobType;
 import de.raidcraft.mobs.effects.AbilityUser;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
@@ -31,7 +30,6 @@ import org.bukkit.metadata.FixedMetadataValue;
  */
 public class ConfigurableCreature extends AbstractMob {
 
-    private final MobType type;
     private final int minDamage;
     private final int maxDamage;
     private final boolean resetHealth;
@@ -43,7 +41,6 @@ public class ConfigurableCreature extends AbstractMob {
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
         super(entity);
-        this.type = MobType.fromString(config.getString("strength"));
         this.spawnLocation = entity.getLocation();
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage", minDamage);
@@ -185,12 +182,6 @@ public class ConfigurableCreature extends AbstractMob {
     public LootTable getLootTable() {
 
         return lootTable;
-    }
-
-    @Override
-    public MobType getType() {
-
-        return type == null ? MobType.COMMON : type;
     }
 
     @Override
