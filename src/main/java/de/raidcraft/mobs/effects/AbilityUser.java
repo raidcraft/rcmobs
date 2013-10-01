@@ -2,8 +2,8 @@ package de.raidcraft.mobs.effects;
 
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.api.ability.Ability;
-import de.raidcraft.skills.api.ability.Useable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.combat.action.AbilityAction;
 import de.raidcraft.skills.api.effect.EffectInformation;
 import de.raidcraft.skills.api.effect.types.PeriodicEffect;
 import de.raidcraft.skills.api.exceptions.CombatException;
@@ -62,7 +62,7 @@ public class AbilityUser extends PeriodicEffect<Mob> {
         if (trackCastedAbilities) {
             usedAbilities.add(abilitiy);
         }
-        ((Useable) abilitiy).use();
+        new AbilityAction<>(abilitiy).run();
     }
 
     private Ability<Mob> getAbilitiy(List<Ability<Mob>> abilities, int initialIndex) {

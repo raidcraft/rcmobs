@@ -16,6 +16,7 @@ import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.ability.Useable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.combat.action.AbilityAction;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -74,8 +75,7 @@ public class TriggerMobAbility extends AbstractIC {
                 }
                 if (mobAbility instanceof Useable && !mobAbility.isOnCooldown()) {
                     try {
-                        ((Useable) mobAbility).use();
-                        mobAbility.setLastCast(System.currentTimeMillis());
+                        new AbilityAction<>(mobAbility).run();
                     } catch (CombatException ignored) {
                         // ignore mob errors
                     }
