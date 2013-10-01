@@ -59,6 +59,9 @@ public class AbilityUser extends PeriodicEffect<Mob> {
         }
 
         Ability<Mob> abilitiy = getAbilitiy(abilities, 0);
+        if (abilitiy == null) {
+            return;
+        }
         if (trackCastedAbilities) {
             usedAbilities.add(abilitiy);
         }
@@ -67,6 +70,9 @@ public class AbilityUser extends PeriodicEffect<Mob> {
 
     private Ability<Mob> getAbilitiy(List<Ability<Mob>> abilities, int initialIndex) {
 
+        if (abilities.size() <= initialIndex) {
+            return null;
+        }
         Ability<Mob> ability = abilities.get(initialIndex);
         if (!trackCastedAbilities || random) {
             ability = abilities.get(MathUtil.RANDOM.nextInt(abilities.size()));
