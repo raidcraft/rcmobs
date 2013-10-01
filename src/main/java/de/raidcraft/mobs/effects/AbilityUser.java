@@ -25,8 +25,9 @@ import java.util.Set;
 public class AbilityUser extends PeriodicEffect<Mob> {
 
     private final Set<Ability<Mob>> usedAbilities = new HashSet<>();
-    private boolean random = false;
+    private boolean random = true;
     private boolean resetAfterAllUsed = true;
+    private boolean trackCastedAbilities = false;
 
     public AbilityUser(Mob source, CharacterTemplate target, EffectData data) {
 
@@ -36,29 +37,44 @@ public class AbilityUser extends PeriodicEffect<Mob> {
     @Override
     public void load(ConfigurationSection data) {
 
-        random = data.getBoolean("random");
-        resetAfterAllUsed = data.getBoolean("reset-all");
+        random = data.getBoolean("random", true);
+        resetAfterAllUsed = data.getBoolean("reset-all", true);
+        trackCastedAbilities = data.getBoolean("track-casted", false);
     }
 
     @Override
     protected void tick(CharacterTemplate target) throws CombatException {
 
-        List<Ability<Mob>> abilties = getSource().getUseableAbilities();
-        abilties.removeAll(usedAbilities);
-        if (abilties.isEmpty()) {
-            if (!usedAbilities.isEmpty() && resetAfterAllUsed) {
-                abilties.addAll(usedAbilities);
-                usedAbilities.clear();
-            } else {
-                return;
+        List<Ability<Mob>> abilities = getSource().getUseableAbilities();
+        if (trackCastedAbilities) {
+            abilities.removeAll(usedAbilities);
+            if (abilities.isEmpty()) {
+                if (!usedAbilities.isEmpty() && resetAfterAllUsed) {
+                    abilities.addAll(usedAbilities);
+                    usedAbilities.clear();
+                } else {
+                    return;
+                }
             }
         }
-        Ability<Mob> ability = abilties.get(0);
-        if (random) {
-             ability = abilties.get(MathUtil.RANDOM.nextInt(abilties.size()));
+
+        Ability<Mob> abilitiy = getAbilitiy(abilities, 0);
+        if (trackCastedAbilities) {
+            usedAbilities.add(abilitiy);
         }
-        usedAbilities.add(ability);
-        ((Useable) ability).use();
+        ((Useable) abilitiy).use();
+    }
+
+    private Ability<Mob> getAbilitiy(List<Ability<Mob>> abilities, int initialIndex) {
+
+        Ability<Mob> ability = abilities.get(initialIndex);
+        if (!trackCastedAbilities || random) {
+            ability = abilities.get(MathUtil.RANDOM.nextInt(abilities.size()));
+        }
+        if (ability.isOnCooldown() && initialIndex + 1 < abilities.size()) {
+            return getAbilitiy(abilities, initialIndex + 1);
+        }
+        return ability;
     }
 
     @Override
