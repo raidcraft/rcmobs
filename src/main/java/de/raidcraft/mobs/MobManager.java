@@ -115,6 +115,9 @@ public final class MobManager implements Component {
         // lets load single spawn locations first
         for (MobSpawnLocation location : plugin.getDatabase().find(MobSpawnLocation.class).findList()) {
             try {
+                if (plugin.getServer().getWorld(location.getWorld()) == null) {
+                    continue;
+                }
                 SpawnableMob spwanableMob = getSpwanableMob(location.getMob());
                 addSpawnLocation(
                         spwanableMob,
@@ -128,6 +131,9 @@ public final class MobManager implements Component {
         // and now load the group spawn locations
         for (MobGroupSpawnLocation location : plugin.getDatabase().find(MobGroupSpawnLocation.class).findList()) {
             try {
+                if (plugin.getServer().getWorld(location.getWorld()) == null) {
+                    continue;
+                }
                 MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
                 FixedSpawnLocation spawnLocation = addSpawnLocation(
                         mobGroup,
