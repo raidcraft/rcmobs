@@ -102,6 +102,9 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
     public void spawn(boolean checkCooldown) {
 
+        if (!getLocation().getChunk().isLoaded()) {
+            return;
+        }
         // dont spawn stuff if it is still on cooldown
         if (checkCooldown && System.currentTimeMillis() < lastSpawn + cooldown) {
             return;

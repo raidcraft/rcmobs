@@ -20,12 +20,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
  * @author Silthus
@@ -129,14 +130,19 @@ public class MobListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onChunkLoad(ChunkLoadEvent event) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onChunkUnload(ChunkUnloadEvent event) {
 
         for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof Monster) {
+            if (entity instanceof LivingEntity && entity.hasMetadata("RC_CUSTOM_MOB")) {
                 entity.remove();
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onChunkLoad(ChunkLoadEvent event) {
+
         for (FixedSpawnLocation location : plugin.getMobManager().getSpawnLocations()) {
             if (location.getLocation().getChunk().equals(event.getChunk())) {
                 location.validateSpawnedMobs();
