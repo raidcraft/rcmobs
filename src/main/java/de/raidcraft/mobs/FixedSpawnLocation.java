@@ -4,6 +4,7 @@ import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -84,6 +85,16 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         }
     }
 
+    public void validateSpawnedMobs() {
+
+        for (CharacterTemplate characterTemplate : new ArrayList<>(spawnedMobs)) {
+            LivingEntity entity = characterTemplate.getEntity();
+            if (entity == null || entity.isDead() || !entity.isValid()) {
+                spawnedMobs.remove(characterTemplate);
+            }
+        }
+    }
+
     public void spawn() {
 
         spawn(true);
@@ -94,15 +105,6 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         // dont spawn stuff if it is still on cooldown
         if (checkCooldown && System.currentTimeMillis() < lastSpawn + cooldown) {
             return;
-        }
-        ArrayList<CharacterTemplate> list = new ArrayList<>(spawnedMobs);
-        for (CharacterTemplate characterTemplate : list) {
-            if (characterTemplate.getEntity() == null
-                    || characterTemplate.getEntity().isDead()
-                    || !characterTemplate.getEntity().isValid()) {
-                if (characterTemplate.getEntity() != null) characterTemplate.getEntity().remove();
-                spawnedMobs.remove(characterTemplate);
-            }
         }
         if (getSpawnTreshhold() > 0 && !spawnedMobs.isEmpty() && spawnedMobs.size() > getSpawnTreshhold()) {
             return;

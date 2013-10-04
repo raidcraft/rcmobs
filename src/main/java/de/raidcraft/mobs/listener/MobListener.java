@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.table.LootTableEntry;
+import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
@@ -132,8 +133,14 @@ public class MobListener implements Listener {
     public void onChunkLoad(ChunkLoadEvent event) {
 
         for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof Monster && !entity.hasMetadata("RC_CUSTOM_MOB")) {
+            if (entity instanceof Monster) {
                 entity.remove();
+            }
+        }
+        for (FixedSpawnLocation location : plugin.getMobManager().getSpawnLocations()) {
+            if (location.getLocation().getChunk().equals(event.getChunk())) {
+                location.validateSpawnedMobs();
+                location.spawn(false);
             }
         }
     }
