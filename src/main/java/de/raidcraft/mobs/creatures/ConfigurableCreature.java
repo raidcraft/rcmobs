@@ -64,7 +64,6 @@ public class ConfigurableCreature extends AbstractMob {
         int minLevel = config.getInt("min-level", 1);
         int maxLevel = config.getInt("max-level", minLevel);
         getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
-        getEntity().setCustomNameVisible(true);
         setName(config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
