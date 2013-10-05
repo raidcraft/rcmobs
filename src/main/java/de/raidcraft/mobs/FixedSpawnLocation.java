@@ -82,7 +82,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
         for (CharacterTemplate characterTemplate : new ArrayList<>(spawnedMobs)) {
             LivingEntity entity = characterTemplate.getEntity();
-            if (entity == null || entity.isDead() || !entity.isValid()) {
+            if (entity == null || !entity.isValid()) {
                 spawnedMobs.remove(characterTemplate);
             }
         }
