@@ -49,6 +49,9 @@ public class AbilityUser extends PeriodicEffect<Mob> {
             remove();
             return;
         }
+        if (!target.isInCombat()) {
+            return;
+        }
 
         List<Ability<Mob>> abilities = getSource().getUseableAbilities();
         if (trackCastedAbilities) {
