@@ -22,7 +22,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
     private final Location location;
     private long cooldown;
     private long lastSpawn;
-    private int spawnTreshhold = 1;
+    private int spawnTreshhold = 0;
     private List<CharacterTemplate> spawnedMobs = new ArrayList<>();
 
     protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown) {
@@ -102,6 +102,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         if (checkCooldown && System.currentTimeMillis() < lastSpawn + cooldown) {
             return;
         }
+        validateSpawnedMobs();
         if (getSpawnTreshhold() > 0 && !spawnedMobs.isEmpty() && spawnedMobs.size() > getSpawnTreshhold()) {
             return;
         }
