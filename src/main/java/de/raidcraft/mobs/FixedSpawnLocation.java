@@ -63,6 +63,11 @@ public class FixedSpawnLocation implements Spawnable {
         this.spawnTreshhold = spawnTreshhold;
     }
 
+    public void addSpawnedMob(CharacterTemplate mob) {
+
+        spawnedMobs.add(mob);
+    }
+
     public void validateSpawnedMobs() {
 
         for (CharacterTemplate characterTemplate : new ArrayList<>(spawnedMobs)) {

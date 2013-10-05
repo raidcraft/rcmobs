@@ -8,6 +8,7 @@ import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.TimeUtil;
@@ -79,8 +80,9 @@ public final class MobManager implements Component {
                 plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + file.getName());
                 continue;
             }
-            SpawnableMob mob = new SpawnableMob(config.getString("name", file.getName()), type, config);
-            mobs.put(file.getName().replace(".yml", ""), mob);
+            String mobId = file.getName().replace(".yml", "");
+            SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
+            mobs.put(mobId, mob);
             plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
         }
     }
@@ -189,9 +191,9 @@ public final class MobManager implements Component {
         return group;
     }
 
-    public void spawnMob(String name, Location location) throws UnknownMobException {
+    public CharacterTemplate spawnMob(String name, Location location) throws UnknownMobException {
 
-        getSpwanableMob(name).spawn(location);
+        return getSpwanableMob(name).spawn(location).get(0);
     }
 
     public List<FixedSpawnLocation> getSpawnLocations() {

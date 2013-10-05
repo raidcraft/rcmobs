@@ -10,7 +10,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.table.LootTableEntry;
+import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
+import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
@@ -173,7 +175,19 @@ public class MobListener implements Listener {
     public void onChunkLoad(ChunkLoadEvent event) {
 
         for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof LivingEntity && !entity.hasMetadata("RC_CUSTOM_MOB")) {
+            if (entity instanceof LivingEntity) {
+                if (entity.hasMetadata("RC_CUSTOM_MOB")) {
+                    try {
+                        // lets respawn the mob based on its id
+                        CharacterTemplate mob = plugin.getMobManager().spawnMob(String.valueOf(entity.getMetadata("RC_MOB_ID")), entity.getLocation());
+                        FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(mob.getEntity().getLocation(), 10);
+                        if (spawnLocation != null) {
+                            spawnLocation.addSpawnedMob(mob);
+                        }
+                    } catch (UnknownMobException e) {
+                        plugin.getLogger().warning(e.getMessage());
+                    }
+                }
                 entity.remove();
             }
         }

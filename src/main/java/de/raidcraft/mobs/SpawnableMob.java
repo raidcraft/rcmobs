@@ -10,6 +10,7 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +20,24 @@ import java.util.List;
  */
 public class SpawnableMob implements Spawnable {
 
+    private final String id;
     private final String mobName;
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
     private final EntityType type;
     private final ConfigurationSection config;
     private double spawnChance;
 
-    public SpawnableMob(String mobName, EntityType type, ConfigurationSection config) {
+    public SpawnableMob(String id, String mobName, EntityType type, ConfigurationSection config) {
 
+        this.id = id;
         this.mobName = mobName;
         this.type = type;
         this.config = config;
+    }
+
+    public String getId() {
+
+        return id;
     }
 
     public String getMobName() {
@@ -78,7 +86,9 @@ public class SpawnableMob implements Spawnable {
                 return null;
             }
         }
-        return manager.spawnCharacter(type, location, mClass, config);
+        Mob mob = manager.spawnCharacter(type, location, mClass, config);
+        mob.getEntity().setMetadata("RC_MOB_ID", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), getId()));
+        return mob;
     }
 
     @Override
