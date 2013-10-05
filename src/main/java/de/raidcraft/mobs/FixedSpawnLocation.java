@@ -5,10 +5,6 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +12,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
-public class FixedSpawnLocation implements Spawnable, Listener {
+public class FixedSpawnLocation implements Spawnable {
 
     private final Spawnable spawnable;
     private final Location location;
@@ -67,17 +63,6 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         this.spawnTreshhold = spawnTreshhold;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onDeath(EntityDeathEvent event) {
-
-        ArrayList<CharacterTemplate> list = new ArrayList<>(spawnedMobs);
-        for (CharacterTemplate characterTemplate : list) {
-            if (characterTemplate.equals(event.getEntity())) {
-                spawnedMobs.remove(characterTemplate);
-            }
-        }
-    }
-
     public void validateSpawnedMobs() {
 
         for (CharacterTemplate characterTemplate : new ArrayList<>(spawnedMobs)) {
@@ -103,7 +88,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
             return;
         }
         validateSpawnedMobs();
-        if (getSpawnTreshhold() > 0 && !spawnedMobs.isEmpty() && spawnedMobs.size() > getSpawnTreshhold()) {
+        if (!spawnedMobs.isEmpty() && spawnedMobs.size() > getSpawnTreshhold()) {
             return;
         }
         // spawn the mob
