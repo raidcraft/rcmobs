@@ -25,7 +25,7 @@ public class SpawnableMob implements Spawnable {
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
     private final EntityType type;
     private final ConfigurationSection config;
-    private double spawnChance;
+    private double spawnChance = 1.0;
 
     public SpawnableMob(String id, String mobName, EntityType type, ConfigurationSection config) {
 
