@@ -32,11 +32,17 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     }
 
     @Override
+    public CharacterTemplate getTarget() throws CombatException {
+
+        return getHighestThreat();
+    }
+
+    @Override
     public CharacterTemplate getHighestThreat() throws CombatException {
 
         ThreatTable.ThreatLevel highestThreat = getThreatTable().getHighestThreat();
         if (highestThreat == null) {
-            throw new CombatException("Kein Ziel anvisiert!");
+            return null;
         }
         return highestThreat.getTarget();
     }

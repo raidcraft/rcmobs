@@ -13,8 +13,10 @@ import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
+import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.CharacterType;
+import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.EntityUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -25,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
@@ -36,11 +39,13 @@ public class MobListener implements Listener {
     private static final int CUSTOM_NAME_INDEX = 10;
 
     private final MobsPlugin plugin;
+    private final CharacterManager characterManager;
 
     public MobListener(MobsPlugin plugin) {
 
         this.plugin = plugin;
         plugin.registerEvents(this);
+        this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
 
         final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
         ProtocolLibrary.getProtocolManager().addPacketListener(
@@ -97,6 +102,31 @@ public class MobListener implements Listener {
         // If it's being updated, change it!
         if (watcher.getObject(CUSTOM_NAME_INDEX) != null) {
             watcher.setObject(CUSTOM_NAME_INDEX, name);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onEntityTarget(EntityTargetLivingEntityEvent event) {
+
+        if (!(event.getEntity() instanceof LivingEntity)) {
+            return;
+        }
+        CharacterTemplate character = characterManager.getCharacter((LivingEntity) event.getEntity());
+        if (!(character instanceof Mob)) {
+            return;
+        }
+        try {
+            Mob attacker = (Mob) character;
+            CharacterTemplate target = attacker.getTarget();
+            if (target == null) {
+                // just let the mob do a normal search
+                return;
+            }
+            event.setTarget(target.getEntity());
+        } catch (CombatException e) {
+            // this should be never thrown due to performance issues
+            // mobs check for targets every tick and throwing exceptions is very costly
+            event.setCancelled(true);
         }
     }
 
