@@ -181,7 +181,8 @@ public class MobListener implements Listener {
                 if (entity.hasMetadata("RC_CUSTOM_MOB")) {
                     try {
                         // lets respawn the mob based on its id
-                        CharacterTemplate mob = plugin.getMobManager().spawnMob(String.valueOf(entity.getMetadata("RC_MOB_ID")), entity.getLocation());
+                        CharacterTemplate mob = plugin.getMobManager().spawnMob(
+                                String.valueOf(entity.getMetadata("RC_MOB_ID").get(0).asString()), entity.getLocation());
                         FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(mob.getEntity().getLocation(), 10);
                         if (spawnLocation != null) {
                             spawnLocation.addSpawnedMob(mob);
