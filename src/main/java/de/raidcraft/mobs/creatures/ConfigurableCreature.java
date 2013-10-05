@@ -1,5 +1,7 @@
 package de.raidcraft.mobs.creatures;
 
+import com.comphenix.packetwrapper.Packet3ENamedSoundEffect;
+import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.loot.LootPlugin;
@@ -37,6 +39,10 @@ public class ConfigurableCreature extends AbstractMob {
     private final boolean rare;
     private final LootTable lootTable;
     private final Location spawnLocation;
+    private final String hurtSound;
+    private final float hurtSoundPitch;
+    private final String deathSound;
+    private final float deathSoundPitch;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
@@ -49,6 +55,10 @@ public class ConfigurableCreature extends AbstractMob {
         this.resetHealth = config.getBoolean("reset-health", true);
         this.elite = config.getBoolean("elite", false);
         this.rare = config.getBoolean("rare", false);
+        this.hurtSound = config.getString("sound.hurt", "random.classic_hurt");
+        this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
+        this.deathSound = config.getString("sound.death", "random.classic_hurt");
+        this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 1.0);
         this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(config.getString("loot-table"));
 
         if (config.getBoolean("baby")) {
@@ -121,6 +131,10 @@ public class ConfigurableCreature extends AbstractMob {
     @Override
     public void setHealth(int health) {
 
+        // lets play the hurt sound if the new health is below our current
+        if (health < getHealth()) {
+            playSound(hurtSound, hurtSoundPitch, 1.0F);
+        }
         super.setHealth(health);
         updateHealthBar();
     }
@@ -187,5 +201,25 @@ public class ConfigurableCreature extends AbstractMob {
     public double getDamage() {
 
         return MathUtil.RANDOM.nextInt(maxDamage - minDamage) + minDamage;
+    }
+
+    @Override
+    public void kill() {
+
+        playSound(deathSound, deathSoundPitch, 1.0F);
+        super.kill();
+    }
+
+    private void playSound(String name, float pitch, float volume) {
+
+        Location location = getEntity().getLocation();
+        Packet3ENamedSoundEffect effect = new Packet3ENamedSoundEffect();
+        effect.setSoundName(deathSound);
+        effect.setPitch(deathSoundPitch);
+        effect.setEffectPositionX(location.getX());
+        effect.setEffectPositionY(location.getY());
+        effect.setEffectPositionZ(location.getZ());
+        effect.setVolume(1.0F);
+        ProtocolLibrary.getProtocolManager().broadcastServerPacket(effect.getHandle());
     }
 }

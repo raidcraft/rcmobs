@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.listener;
 
+import com.comphenix.packetwrapper.Packet3ENamedSoundEffect;
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ConnectionSide;
@@ -50,10 +51,20 @@ public class MobListener implements Listener {
         final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
         ProtocolLibrary.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin, ConnectionSide.SERVER_SIDE,
-                        Packets.Server.MOB_SPAWN, Packets.Server.ENTITY_METADATA) {
+                        Packets.Server.MOB_SPAWN, Packets.Server.ENTITY_METADATA, Packets.Server.NAMED_SOUND_EFFECT) {
                     @Override
                     public void onPacketSending(PacketEvent event) {
                         PacketContainer packet = event.getPacket();
+
+                        if (event.getPacketID() == Packets.Server.NAMED_SOUND_EFFECT) {
+                            // handle the mob hurt effect
+                            Packet3ENamedSoundEffect soundEffect = new Packet3ENamedSoundEffect(packet);
+                            if (soundEffect.getSoundName().startsWith("mob.skeleton")) {
+                                // supress skeleton sounds since they are our custom mobs
+                                // TODO: make this much more flexible
+                                event.setCancelled(true);
+                            }
+                        }
 
                         // You may also want to check event.getPacketID()
                         final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
