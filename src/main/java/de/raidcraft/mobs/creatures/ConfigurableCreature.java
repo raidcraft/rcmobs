@@ -58,7 +58,7 @@ public class ConfigurableCreature extends AbstractMob {
         this.hurtSound = config.getString("sound.hurt", "random.classic_hurt");
         this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
         this.deathSound = config.getString("sound.death", "random.classic_hurt");
-        this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 1.0);
+        this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.25);
         this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(config.getString("loot-table"));
 
         if (config.getBoolean("baby")) {
