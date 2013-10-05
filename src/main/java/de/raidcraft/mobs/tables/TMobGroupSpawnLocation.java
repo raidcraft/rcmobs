@@ -11,7 +11,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rcmobs_mobgroup_spawn_location")
-public class MobGroupSpawnLocation {
+public class TMobGroupSpawnLocation {
 
     @Id
     private int id;

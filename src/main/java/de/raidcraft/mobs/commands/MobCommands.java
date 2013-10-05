@@ -9,8 +9,8 @@ import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.api.MobGroup;
-import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
-import de.raidcraft.mobs.tables.MobSpawnLocation;
+import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
+import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -75,7 +75,8 @@ public class MobCommands {
             aliases = {"setmobspawn", "sm", "setmob", "set"},
             desc = "Sets the spawnpoint of a mob",
             min = 2,
-            usage = "<mob> <cooldown> [radius]"
+            max = 2,
+            usage = "<mob> <cooldown>"
     )
     @CommandPermissions("rcmobs.setmobspawn")
     public void setMobSpawn(CommandContext args, CommandSender sender) throws CommandException {
@@ -83,7 +84,7 @@ public class MobCommands {
         try {
             SpawnableMob mob = plugin.getMobManager().getSpwanableMob(args.getString(0));
             Location location = ((Player) sender).getLocation();
-            MobSpawnLocation spawn = new MobSpawnLocation();
+            TMobSpawnLocation spawn = new TMobSpawnLocation();
             spawn.setMob(mob.getMobName());
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
@@ -92,7 +93,7 @@ public class MobCommands {
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
-            plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown(), mob.getConfig().getInt("spawn-radius", args.getInteger(2, 1)));
+            plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown());
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
@@ -102,6 +103,7 @@ public class MobCommands {
             aliases = {"setmobgroup", "smg", "setgroup", "setg"},
             desc = "Sets the spawnpoint of a mob group",
             min = 2,
+            max = 2,
             usage = "<mobgroup> <cooldown>"
     )
     @CommandPermissions("rcmobs.setgroupspawn")
@@ -110,7 +112,7 @@ public class MobCommands {
         try {
             MobGroup mobGroup = plugin.getMobManager().getMobGroup(args.getString(0));
             Location location = ((Player) sender).getLocation();
-            MobGroupSpawnLocation spawn = new MobGroupSpawnLocation();
+            TMobGroupSpawnLocation spawn = new TMobGroupSpawnLocation();
             spawn.setSpawnGroup(mobGroup.getName());
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
@@ -119,7 +121,7 @@ public class MobCommands {
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
-            plugin.getMobManager().addSpawnLocation(mobGroup, location, spawn.getCooldown(), mobGroup.getSpawnRadius());
+            plugin.getMobManager().addSpawnLocation(mobGroup, location, spawn.getCooldown());
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
@@ -138,7 +140,7 @@ public class MobCommands {
         if (spawn == null) {
             throw new CommandException("Keinen Spawnpunkt im Radius von " + radius + " Metern gefunden.");
         }
-        MobSpawnLocation mobSpawn = plugin.getDatabase().find(MobSpawnLocation.class).where()
+        TMobSpawnLocation mobSpawn = plugin.getDatabase().find(TMobSpawnLocation.class).where()
                 .eq("x", spawn.getLocation().getBlockX())
                 .eq("y", spawn.getLocation().getBlockY())
                 .eq("z", spawn.getLocation().getBlockZ()).findUnique();
@@ -148,7 +150,7 @@ public class MobCommands {
             sender.sendMessage(ChatColor.GREEN + "Spawnpunkt wurde gelöscht!");
             return;
         }
-        MobGroupSpawnLocation mobGroup = plugin.getDatabase().find(MobGroupSpawnLocation.class).where()
+        TMobGroupSpawnLocation mobGroup = plugin.getDatabase().find(TMobGroupSpawnLocation.class).where()
                 .eq("x", spawn.getLocation().getBlockX())
                 .eq("y", spawn.getLocation().getBlockY())
                 .eq("z", spawn.getLocation().getBlockZ()).findUnique();

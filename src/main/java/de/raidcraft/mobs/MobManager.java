@@ -6,8 +6,8 @@ import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
-import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
-import de.raidcraft.mobs.tables.MobSpawnLocation;
+import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
+import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.TimeUtil;
@@ -113,7 +113,7 @@ public final class MobManager implements Component {
     private void loadSpawnLocations() {
 
         // lets load single spawn locations first
-        for (MobSpawnLocation location : plugin.getDatabase().find(MobSpawnLocation.class).findList()) {
+        for (TMobSpawnLocation location : plugin.getDatabase().find(TMobSpawnLocation.class).findList()) {
             try {
                 if (plugin.getServer().getWorld(location.getWorld()) == null) {
                     continue;
@@ -122,14 +122,13 @@ public final class MobManager implements Component {
                 addSpawnLocation(
                         spwanableMob,
                         new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
-                        location.getCooldown(),
-                        spwanableMob.getConfig().getInt("spawn-radius", 1));
+                        location.getCooldown());
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
         }
         // and now load the group spawn locations
-        for (MobGroupSpawnLocation location : plugin.getDatabase().find(MobGroupSpawnLocation.class).findList()) {
+        for (TMobGroupSpawnLocation location : plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList()) {
             try {
                 if (plugin.getServer().getWorld(location.getWorld()) == null) {
                     continue;
@@ -138,8 +137,7 @@ public final class MobManager implements Component {
                 FixedSpawnLocation spawnLocation = addSpawnLocation(
                         mobGroup,
                         new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
-                        location.getCooldown(),
-                        mobGroup.getSpawnRadius()
+                        location.getCooldown()
                 );
                 spawnLocation.setSpawnTreshhold(mobGroup.getRespawnTreshhold());
                 spawnLocation.setCooldown(TimeUtil.secondsToMillis(mobGroup.getSpawnInterval()));
@@ -149,9 +147,9 @@ public final class MobManager implements Component {
         }
     }
 
-    public FixedSpawnLocation addSpawnLocation(Spawnable spawnable, Location location, double minCooldown, int radius) {
+    public FixedSpawnLocation addSpawnLocation(Spawnable spawnable, Location location, double minCooldown) {
 
-        FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, minCooldown, radius);
+        FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, minCooldown);
         spawnableMobs.add(mob);
         plugin.registerEvents(mob);
         return mob;

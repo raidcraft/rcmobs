@@ -20,28 +20,21 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
     private final Spawnable spawnable;
     private final Location location;
-    private final int spawnRadius;
     private long cooldown;
     private long lastSpawn;
     private int spawnTreshhold = 1;
     private List<CharacterTemplate> spawnedMobs = new ArrayList<>();
 
-    protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown, int spawnRadius) {
+    protected FixedSpawnLocation(Spawnable spawnable, Location location, double cooldown) {
 
         this.spawnable = spawnable;
         this.location = location;
         this.cooldown = TimeUtil.secondsToMillis(cooldown);
-        this.spawnRadius = spawnRadius;
     }
 
     public Spawnable getSpawnable() {
 
         return spawnable;
-    }
-
-    protected int getSpawnRadius() {
-
-        return spawnRadius;
     }
 
     public Location getLocation() {

@@ -23,7 +23,6 @@ public class ConfigurableMobGroup implements MobGroup {
     private final int maxInterval;
     private final int minSpawnAmount;
     private final int maxSpawnAmount;
-    private final int spawnRadius;
     private final int respawnTreshhold;
     private final List<SpawnableMob> mobs = new ArrayList<>();
 
@@ -35,7 +34,6 @@ public class ConfigurableMobGroup implements MobGroup {
         minSpawnAmount = config.getInt("min-amount", 1);
         maxSpawnAmount = config.getInt("max-amount", minSpawnAmount);
         respawnTreshhold = config.getInt("respawn-treshhold", minSpawnAmount - 1);
-        spawnRadius = config.getInt("spawn-radius", 30);
         if (config.getConfigurationSection("mobs") != null) {
             for (String key : config.getConfigurationSection("mobs").getKeys(false)) {
                 try {
@@ -75,12 +73,6 @@ public class ConfigurableMobGroup implements MobGroup {
     }
 
     @Override
-    public int getSpawnRadius() {
-
-        return spawnRadius;
-    }
-
-    @Override
     public int getRespawnTreshhold() {
 
         return respawnTreshhold;
@@ -100,20 +92,22 @@ public class ConfigurableMobGroup implements MobGroup {
             return spawnedMobs;
         }
         int amount = MathUtil.RANDOM.nextInt(getMaxSpawnAmount()) + getMinSpawnAmount();
+        int i = 0;
         while (spawnedMobs.size() < amount) {
-            SpawnableMob mob = mobs.get(MathUtil.RANDOM.nextInt(mobs.size()));
+            SpawnableMob mob = mobs.get(i);
             // spawn with a slightly random offset
-            Location newLocation = location.clone().add(
-                    MathUtil.RANDOM.nextInt(amount * 2) - amount,
-                    0,
-                    MathUtil.RANDOM.nextInt(amount * 2) - amount);
+            Location newLocation = getRandomLocation(location, amount);
             while (newLocation.getBlock().getType() != Material.AIR
                     || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
-                newLocation.add(0, 1, 0);
+                newLocation = getRandomLocation(location, amount);
             }
             CharacterTemplate character = mob.spawn(newLocation, false);
             if (character != null) {
                 spawnedMobs.add(character);
+            }
+            i++;
+            if (i >= mobs.size()) {
+                i = 0;
             }
         }
         CharacterTemplate characterTemplate = spawnedMobs.get(0);
@@ -121,5 +115,13 @@ public class ConfigurableMobGroup implements MobGroup {
             mob.joinParty(characterTemplate.getParty());
         }
         return spawnedMobs;
+    }
+
+    private Location getRandomLocation(Location location, int amount) {
+
+        return location.clone().add(
+                MathUtil.RANDOM.nextInt(amount * 2) - amount,
+                0,
+                MathUtil.RANDOM.nextInt(amount * 2) - amount);
     }
 }

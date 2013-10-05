@@ -13,8 +13,8 @@ import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
-import de.raidcraft.mobs.tables.MobGroupSpawnLocation;
-import de.raidcraft.mobs.tables.MobSpawnLocation;
+import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
+import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
@@ -93,8 +93,8 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public List<Class<?>> getDatabaseClasses() {
 
         ArrayList<Class<?>> tables = new ArrayList<>();
-        tables.add(MobGroupSpawnLocation.class);
-        tables.add(MobSpawnLocation.class);
+        tables.add(TMobGroupSpawnLocation.class);
+        tables.add(TMobSpawnLocation.class);
         return tables;
     }
 
