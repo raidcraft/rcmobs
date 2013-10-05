@@ -10,7 +10,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.table.LootTableEntry;
-import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
@@ -29,7 +28,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
@@ -175,19 +173,8 @@ public class MobListener implements Listener {
     public void onChunkUnload(ChunkUnloadEvent event) {
 
         for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof LivingEntity && entity.hasMetadata("RC_CUSTOM_MOB")) {
+            if (entity instanceof LivingEntity && !entity.hasMetadata("RC_CUSTOM_MOB")) {
                 entity.remove();
-            }
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onChunkLoad(ChunkLoadEvent event) {
-
-        for (FixedSpawnLocation location : plugin.getMobManager().getSpawnLocations()) {
-            if (location.getLocation().getChunk().equals(event.getChunk())) {
-                location.validateSpawnedMobs();
-                location.spawn(false);
             }
         }
     }
