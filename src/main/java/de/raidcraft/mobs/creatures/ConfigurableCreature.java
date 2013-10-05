@@ -214,12 +214,12 @@ public class ConfigurableCreature extends AbstractMob {
 
         Location location = getEntity().getLocation();
         Packet3ENamedSoundEffect effect = new Packet3ENamedSoundEffect();
-        effect.setSoundName(deathSound);
-        effect.setPitch(deathSoundPitch);
+        effect.setSoundName(name);
+        effect.setPitch(pitch);
         effect.setEffectPositionX(location.getX());
         effect.setEffectPositionY(location.getY());
         effect.setEffectPositionZ(location.getZ());
-        effect.setVolume(1.0F);
+        effect.setVolume(volume);
         ProtocolLibrary.getProtocolManager().broadcastServerPacket(effect.getHandle());
     }
 }
