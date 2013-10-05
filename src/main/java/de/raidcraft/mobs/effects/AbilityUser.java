@@ -49,7 +49,7 @@ public class AbilityUser extends PeriodicEffect<Mob> {
             remove();
             return;
         }
-        if (!target.isInCombat()) {
+        if (!target.isInCombat() || getTarget().getTarget() == null) {
             return;
         }
 
