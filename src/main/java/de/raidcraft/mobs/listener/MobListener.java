@@ -28,7 +28,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 /**
  * @author Silthus
@@ -170,7 +170,7 @@ public class MobListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onChunkUnload(ChunkUnloadEvent event) {
+    public void onChunkLoad(ChunkLoadEvent event) {
 
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && !entity.hasMetadata("RC_CUSTOM_MOB")) {
