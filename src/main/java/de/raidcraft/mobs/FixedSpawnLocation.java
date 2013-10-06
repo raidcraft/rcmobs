@@ -1,10 +1,16 @@
 package de.raidcraft.mobs;
 
+import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.Spawnable;
+import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +18,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
-public class FixedSpawnLocation implements Spawnable {
+public class FixedSpawnLocation implements Spawnable, Listener {
 
     private final Spawnable spawnable;
     private final Location location;
@@ -75,8 +81,16 @@ public class FixedSpawnLocation implements Spawnable {
 
     public int getSpawnedMobCount() {
 
-        validateSpawnedMobs();
         return spawnedMobs.size();
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onEntityDeath(EntityDeathEvent event) {
+
+        if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
+            CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
+            spawnedMobs.remove(character);
+        }
     }
 
     public void validateSpawnedMobs() {
