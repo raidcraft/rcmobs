@@ -177,6 +177,12 @@ public class MobListener implements Listener {
     public void onChunkLoad(ChunkLoadEvent event) {
 
         for (Entity entity : event.getChunk().getEntities()) {
+
+            // ignore citizen npcs
+            if(entity.hasMetadata("NPC")) {
+                return;
+            }
+
             if (entity instanceof LivingEntity) {
                 if (entity.hasMetadata("RC_CUSTOM_MOB")) {
                     try {
