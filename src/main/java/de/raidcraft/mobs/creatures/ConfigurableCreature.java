@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.loot.LootPlugin;
-import de.raidcraft.loot.table.LootTable;
+import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;

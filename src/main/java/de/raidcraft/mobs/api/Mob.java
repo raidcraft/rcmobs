@@ -1,6 +1,6 @@
 package de.raidcraft.mobs.api;
 
-import de.raidcraft.loot.table.LootTable;
+import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.SkilledCharacter;
 import de.raidcraft.skills.api.exceptions.CombatException;
