@@ -179,6 +179,11 @@ public class MobListener implements Listener {
 
         // kill all out custom mobs in the chunks and reset their spawn timer
         for (Entity entity : event.getChunk().getEntities()) {
+            // ignore citizen npcs
+            if(entity.hasMetadata("NPC")) {
+                return;
+            }
+
             if (entity instanceof LivingEntity && entity.hasMetadata("RC_CUSTOM_MOB")) {
                 FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(entity.getLocation(), 10);
                 if (spawnLocation.getSpawnedMobCount() > 0) {
