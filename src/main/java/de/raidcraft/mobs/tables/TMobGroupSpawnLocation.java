@@ -5,6 +5,7 @@ import com.avaje.ebean.validation.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 
 /**
  * @author Silthus
@@ -22,6 +23,7 @@ public class TMobGroupSpawnLocation {
     private int z;
     private String world;
     private double cooldown;
+    private Timestamp lastSpawn;
 
     public int getId() {
 
@@ -91,5 +93,15 @@ public class TMobGroupSpawnLocation {
     public void setCooldown(double cooldown) {
 
         this.cooldown = cooldown;
+    }
+
+    public Timestamp getLastSpawn() {
+
+        return lastSpawn;
+    }
+
+    public void setLastSpawn(Timestamp lastSpawn) {
+
+        this.lastSpawn = lastSpawn;
     }
 }

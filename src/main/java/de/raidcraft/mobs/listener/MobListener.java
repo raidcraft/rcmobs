@@ -31,6 +31,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
  * @author Silthus
@@ -169,6 +170,21 @@ public class MobListener implements Listener {
                 for (LootTableEntry loot : ((Mob) character).getLootTable().loot()) {
                     event.getDrops().add(loot.getItem());
                 }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onChunkUnload(ChunkUnloadEvent event) {
+
+        // kill all out custom mobs in the chunks and reset their spawn timer
+        for (Entity entity : event.getChunk().getEntities()) {
+            if (entity instanceof LivingEntity && entity.hasMetadata("RC_CUSTOM_MOB")) {
+                FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(entity.getLocation(), 10);
+                if (spawnLocation.getSpawnedMobCount() > 0) {
+                    spawnLocation.setLastSpawn(0);
+                }
+                entity.remove();
             }
         }
     }

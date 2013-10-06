@@ -53,6 +53,11 @@ public class FixedSpawnLocation implements Spawnable {
         return lastSpawn;
     }
 
+    public void setLastSpawn(long lastSpawn) {
+
+        this.lastSpawn = lastSpawn;
+    }
+
     public int getSpawnTreshhold() {
 
         return spawnTreshhold;
@@ -66,6 +71,12 @@ public class FixedSpawnLocation implements Spawnable {
     public void addSpawnedMob(CharacterTemplate mob) {
 
         spawnedMobs.add(mob);
+    }
+
+    public int getSpawnedMobCount() {
+
+        validateSpawnedMobs();
+        return spawnedMobs.size();
     }
 
     public void validateSpawnedMobs() {
