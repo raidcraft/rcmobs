@@ -85,7 +85,7 @@ public class MobCommands {
             SpawnableMob mob = plugin.getMobManager().getSpwanableMob(args.getString(0));
             Location location = ((Player) sender).getLocation();
             TMobSpawnLocation spawn = new TMobSpawnLocation();
-            spawn.setMob(mob.getMobName());
+            spawn.setMob(mob.getId());
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
             spawn.setZ(location.getBlockZ());
