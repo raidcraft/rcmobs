@@ -17,7 +17,6 @@ import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.skills.api.character.CharacterType;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.EntityUtil;
 import org.bukkit.ChatColor;
@@ -158,14 +157,14 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
 
-        if (event.getEntityType() == EntityType.PLAYER) {
+        if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
             return;
         }
-        CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
-        if (character.getCharacterType() == CharacterType.CUSTOM_MOB) {
+        if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
             event.getDrops().clear();
             event.setDroppedExp(0);
             // add our custom drops
+            CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
             if (character instanceof Mob && ((Mob) character).getLootTable() != null) {
                 for (LootTableEntry loot : ((Mob) character).getLootTable().loot()) {
                     event.getDrops().add(loot.getItem());
