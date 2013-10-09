@@ -5,6 +5,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.api.mobs.MobProvider;
+import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -41,6 +42,7 @@ public final class MobManager implements Component, MobProvider {
 
         this.plugin = plugin;
         RaidCraft.registerComponent(MobManager.class, this);
+        Mobs.enable(this);
 
         baseDir = new File(plugin.getDataFolder(), "mobs");
         baseDir.mkdirs();
