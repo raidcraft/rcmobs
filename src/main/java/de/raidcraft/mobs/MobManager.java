@@ -4,6 +4,7 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
+import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * @author Silthus
  */
-public final class MobManager implements Component {
+public final class MobManager implements Component, MobProvider {
 
     private static final String FILE_GROUP_SUFFIX = ".group.yml";
 
@@ -75,15 +76,8 @@ public final class MobManager implements Component {
                 queuedGroups.put(file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
                 continue;
             }
-            EntityType type = EntityType.fromName(config.getString("type"));
-            if (type == null) {
-                plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + file.getName());
-                continue;
-            }
             String mobId = file.getName().replace(".yml", "");
-            SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
-            mobs.put(mobId, mob);
-            plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
+            registerMob(mobId, config);
         }
     }
 
@@ -103,12 +97,31 @@ public final class MobManager implements Component {
         load();
     }
 
+    @Override
+    public void registerMob(String mobId, ConfigurationSection config) {
+
+        EntityType type = EntityType.fromName(config.getString("type"));
+        if (type == null) {
+            plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + config.getName());
+            return;
+        }
+        SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
+        mobs.put(mobId, mob);
+        plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
+    }
+
+    @Override
+    public void registerMobGroup(String id, ConfigurationSection config) {
+
+        ConfigurableMobGroup group = new ConfigurableMobGroup(id, config);
+        groups.put(group.getName(), group);
+        plugin.getLogger().info("Loaded mob group: " + group.getName());
+    }
+
     private void loadGroups() {
 
         for (Map.Entry<String, ConfigurationSection> entry : queuedGroups.entrySet()) {
-            ConfigurableMobGroup group = new ConfigurableMobGroup(entry.getKey(), entry.getValue());
-            groups.put(group.getName(), group);
-            plugin.getLogger().info("Loaded mob group: " + group.getName());
+            registerMobGroup(entry.getKey(), entry.getValue());
         }
     }
 
@@ -223,5 +236,14 @@ public final class MobManager implements Component {
             }
         }
         return closest;
+    }
+
+    @Override
+    public String getFriendlyName(String id) {
+
+        if (mobs.containsKey(id)) {
+            return mobs.get(id).getMobName();
+        }
+        return "";
     }
 }
