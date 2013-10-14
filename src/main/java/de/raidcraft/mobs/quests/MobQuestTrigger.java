@@ -1,6 +1,7 @@
 package de.raidcraft.mobs.quests;
 
 import de.raidcraft.api.quests.QuestTrigger;
+import de.raidcraft.api.quests.quest.QuestTemplate;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.skills.api.combat.action.Attack;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +17,11 @@ public class MobQuestTrigger extends QuestTrigger implements Listener {
 
     private String mobId;
 
+    protected MobQuestTrigger(QuestTemplate questTemplate, String name) {
+
+        super(questTemplate, name);
+    }
+
     @Override
     protected void load(ConfigurationSection data) {
 
@@ -29,7 +35,7 @@ public class MobQuestTrigger extends QuestTrigger implements Listener {
         // TODO: improve this to allow party killing
         Attack lastDamageCause = event.getMob().getLastDamageCause();
         if (event.getMob().getName().equals(mobId) && lastDamageCause != null && lastDamageCause.getAttacker().getEntity() instanceof Player) {
-            inform("kill", (Player) lastDamageCause.getAttacker().getEntity());
+            inform((Player) lastDamageCause.getAttacker().getEntity());
         }
     }
 }
