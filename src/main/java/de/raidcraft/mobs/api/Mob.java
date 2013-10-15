@@ -12,6 +12,10 @@ import java.util.List;
  */
 public interface Mob extends SkilledCharacter<Mob> {
 
+    public String getId();
+
+    public void setId(String id);
+
     public boolean isRare();
 
     public boolean isElite();

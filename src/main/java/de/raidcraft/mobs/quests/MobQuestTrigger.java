@@ -34,7 +34,7 @@ public class MobQuestTrigger extends QuestTrigger implements Listener {
 
         // TODO: improve this to allow party killing
         Attack lastDamageCause = event.getMob().getLastDamageCause();
-        if (event.getMob().getName().equals(mobId) && lastDamageCause != null && lastDamageCause.getAttacker().getEntity() instanceof Player) {
+        if (event.getMob().getId().equalsIgnoreCase(mobId) && lastDamageCause != null && lastDamageCause.getAttacker().getEntity() instanceof Player) {
             inform("kill", (Player) lastDamageCause.getAttacker().getEntity());
         }
     }

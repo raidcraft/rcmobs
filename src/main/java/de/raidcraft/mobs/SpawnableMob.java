@@ -87,6 +87,7 @@ public class SpawnableMob implements Spawnable {
             }
         }
         Mob mob = manager.spawnCharacter(type, location, mClass, config);
+        mob.setId(getId());
         mob.getEntity().setMetadata("RC_MOB_ID", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), getId()));
         return mob;
     }

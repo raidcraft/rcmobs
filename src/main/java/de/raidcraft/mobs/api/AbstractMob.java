@@ -19,10 +19,24 @@ import java.util.List;
  */
 public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implements Mob {
 
+    private String id;
+
     public AbstractMob(LivingEntity entity) {
 
         super(entity);
         attachLevel(new CreatureAttachedLevel<CharacterTemplate>(this, 60));
+    }
+
+    @Override
+    public String getId() {
+
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+
+        this.id = id;
     }
 
     @Override

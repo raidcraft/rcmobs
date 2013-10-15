@@ -8,11 +8,14 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
+import de.raidcraft.api.quests.InvalidTypeException;
+import de.raidcraft.api.quests.Quests;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
 import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
+import de.raidcraft.mobs.quests.MobQuestTrigger;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.skills.CharacterManager;
@@ -43,6 +46,12 @@ public class MobsPlugin extends BasePlugin implements Listener {
         this.mobManager = new MobManager(this);
         registerEvents(this);
         new MobListener(this);
+
+        try {
+            Quests.registerTrigger(this, MobQuestTrigger.class);
+        } catch (InvalidTypeException e) {
+            getLogger().warning(e.getMessage());
+        }
 
         Bukkit.getScheduler().runTaskLater(this, new Runnable() {
             @Override

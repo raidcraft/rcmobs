@@ -190,7 +190,7 @@ public class MobListener implements Listener {
 
             if (entity instanceof LivingEntity && entity.hasMetadata("RC_CUSTOM_MOB")) {
                 FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(entity.getLocation(), 10);
-                if (spawnLocation.getSpawnedMobCount() > 0) {
+                if (spawnLocation != null && spawnLocation.getSpawnedMobCount() > 0) {
                     spawnLocation.setLastSpawn(0);
                 }
                 entity.remove();
