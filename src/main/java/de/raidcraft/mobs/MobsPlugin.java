@@ -129,6 +129,8 @@ public class MobsPlugin extends BasePlugin implements Listener {
 
     public static class LocalConfiguration extends ConfigurationBase<MobsPlugin> {
 
+        @Setting("default.deny-horse-spawning")
+        public boolean denyHorseSpawning = false;
         @Setting("default.spawn-deny-radius")
         public int defaultSpawnDenyRadius = 50;
         @Setting("default.task-interval")
