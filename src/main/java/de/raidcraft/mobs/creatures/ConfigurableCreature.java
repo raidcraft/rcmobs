@@ -129,7 +129,7 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public void setHealth(int health) {
+    public void setHealth(double health) {
 
         // lets play the hurt sound if the new health is below our current
         if (health < getHealth()) {
@@ -140,7 +140,7 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public void setMaxHealth(int maxHealth) {
+    public void setMaxHealth(double maxHealth) {
 
         super.setMaxHealth(maxHealth);
         updateHealthBar();

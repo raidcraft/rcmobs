@@ -110,7 +110,7 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     }
 
     @Override
-    public int getDefaultHealth() {
+    public double getDefaultHealth() {
 
         return getMaxHealth();
     }
