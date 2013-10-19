@@ -59,7 +59,16 @@ public class ConfigurableCreature extends AbstractMob {
         this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
         this.deathSound = config.getString("sound.death", "random.classic_hurt");
         this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.5);
-        this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(config.getString("loot-table"));
+        int minLevel = config.getInt("min-level", 1);
+        int maxLevel = config.getInt("max-level", minLevel);
+        getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
+
+        String tableName = config.getString("loot-table");
+        if (tableName == null || tableName.equals("")) {
+            this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getLevelDependantLootTable(getAttachedLevel().getLevel());
+        } else {
+            this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(tableName);
+        }
 
         if (config.getBoolean("baby")) {
             if (getEntity() instanceof Ageable) {
@@ -71,9 +80,6 @@ public class ConfigurableCreature extends AbstractMob {
         }
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
-        int minLevel = config.getInt("min-level", 1);
-        int maxLevel = config.getInt("max-level", minLevel);
-        getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
         setName(config.getString("name"));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
