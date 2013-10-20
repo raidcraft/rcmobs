@@ -61,31 +61,31 @@ public final class MobManager implements Component, MobProvider {
         }, 100L, time);
     }
 
-    private void load(File directory) {
+    private void load(File directory, String path) {
 
         if (directory == null || directory.list() == null) {
             return;
         }
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                load(file);
+                load(file, path + file.getName() + ".");
             }
             if (!file.getName().endsWith(".yml")) {
                 continue;
             }
             SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file), false);
             if (file.getName().endsWith(FILE_GROUP_SUFFIX)) {
-                queuedGroups.put(file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
+                queuedGroups.put(path + file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
                 continue;
             }
-            String mobId = file.getName().replace(".yml", "");
+            String mobId = path + file.getName().replace(".yml", "");
             registerMob(mobId, config);
         }
     }
 
     private void load() {
 
-        load(baseDir);
+        load(baseDir, "");
         loadGroups();
         loadSpawnLocations();
     }
