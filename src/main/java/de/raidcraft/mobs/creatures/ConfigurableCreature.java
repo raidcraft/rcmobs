@@ -5,7 +5,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.loot.LootPlugin;
+import de.raidcraft.loot.LootTableManager;
 import de.raidcraft.loot.api.table.LootTable;
+import de.raidcraft.loot.exceptions.LootTableNotExistsException;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
@@ -27,6 +29,9 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Silthus
  */
@@ -37,7 +42,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final boolean resetHealth;
     private final boolean elite;
     private final boolean rare;
-    private final LootTable lootTable;
+    private final List<LootTable> lootTables = new ArrayList<>();
     private final Location spawnLocation;
     private final String hurtSound;
     private final float hurtSoundPitch;
@@ -63,11 +68,17 @@ public class ConfigurableCreature extends AbstractMob {
         int maxLevel = config.getInt("max-level", minLevel);
         getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
 
-        String tableName = config.getString("loot-table");
-        if (tableName == null || tableName.equals("")) {
-            this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getLevelDependantLootTable(getAttachedLevel().getLevel());
-        } else {
-            this.lootTable = RaidCraft.getComponent(LootPlugin.class).getLootTableManager().getTable(tableName);
+        LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
+        for (String table : config.getStringList("loot-tables")) {
+            try {
+                LootTable lootTable = tableManager.getTable(table);
+                if (lootTable == null) {
+                    lootTable = tableManager.getLevelDependantLootTable(table, getAttachedLevel().getLevel());
+                }
+                lootTables.add(lootTable);
+            } catch (LootTableNotExistsException e) {
+                RaidCraft.LOGGER.warning("Loading " + getName() + ": " + e.getMessage());
+            }
         }
 
         if (config.getBoolean("baby")) {
@@ -198,9 +209,9 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public LootTable getLootTable() {
+    public List<LootTable> getLootTables() {
 
-        return lootTable;
+        return new ArrayList<>(lootTables);
     }
 
     @Override

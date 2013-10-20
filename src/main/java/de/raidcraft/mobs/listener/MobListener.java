@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
 import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
@@ -172,8 +173,8 @@ public class MobListener implements Listener {
             if (character instanceof Mob) {
                 // lets call our custom death event
                 RaidCraft.callEvent(new RCMobDeathEvent((Mob) character));
-                if (((Mob) character).getLootTable() != null) {
-                    for (LootTableEntry loot : ((Mob) character).getLootTable().loot()) {
+                for (LootTable lootTable : ((Mob) character).getLootTables()) {
+                    for (LootTableEntry loot : lootTable.loot()) {
                         event.getDrops().add(loot.getItem());
                     }
                 }
