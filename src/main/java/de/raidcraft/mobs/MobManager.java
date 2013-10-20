@@ -68,7 +68,7 @@ public final class MobManager implements Component, MobProvider {
         }
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                load(file, path + file.getName() + ".");
+                load(file, path + file.getName() + "-");
             }
             if (!file.getName().endsWith(".yml")) {
                 continue;
