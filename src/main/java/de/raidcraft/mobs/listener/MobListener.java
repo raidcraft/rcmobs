@@ -20,8 +20,6 @@ import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.EntityUtil;
-import de.raidcraft.util.pathfinding.AStar;
-import de.raidcraft.util.pathfinding.PathingResult;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -156,7 +154,9 @@ public class MobListener implements Listener {
         }
         CharacterTemplate mob = characterManager.getCharacter((LivingEntity) event.getEntity());
         CharacterTemplate attacker = characterManager.getCharacter((LivingEntity) event.getDamager());
-        // lets check if our entity can reach the attacker
+        EntityUtil.walkToLocation(mob.getEntity(), attacker.getEntity().getLocation(), 1.25F);
+        // TODO: debug this shit
+/*        // lets check if our entity can reach the attacker
         try {
             AStar aStar = new AStar(mob.getEntity().getLocation(), attacker.getEntity().getLocation(), 50);
             aStar.iterate();
@@ -164,11 +164,10 @@ public class MobListener implements Listener {
                 mob.reset();
             } else {
                 // lets make him walk there
-                EntityUtil.walkToLocation(mob.getEntity(), aStar.getEndLocation(), 1.25F);
             }
         } catch (AStar.InvalidPathException e) {
             mob.reset();
-        }
+        }*/
     }
 
     @EventHandler(ignoreCancelled = true)
