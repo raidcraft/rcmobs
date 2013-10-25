@@ -79,6 +79,11 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         spawnedMobs.add(mob);
     }
 
+    public void removeSpawnedMob(CharacterTemplate mob) {
+
+        spawnedMobs.remove(mob);
+    }
+
     public int getSpawnedMobCount() {
 
         return spawnedMobs.size();
@@ -114,7 +119,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
             return;
         }
         // dont spawn stuff if it is still on cooldown
-        if (checkCooldown && System.currentTimeMillis() < lastSpawn + cooldown) {
+        if (checkCooldown && System.currentTimeMillis() < getLastSpawn() + getCooldown()) {
             return;
         }
         validateSpawnedMobs();

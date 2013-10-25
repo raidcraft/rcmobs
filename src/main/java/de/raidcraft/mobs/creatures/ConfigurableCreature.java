@@ -198,13 +198,19 @@ public class ConfigurableCreature extends AbstractMob {
     public void checkSpawnPoint() {
 
         if (LocationUtil.getBlockDistance(getEntity().getLocation(), spawnLocation) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
-            try {
-                getEntity().teleport(spawnLocation);
-                removeEffect(Combat.class);
-            } catch (CombatException ignored) {
-            }
+            reset();
         } else if (!isInCombat()) {
             EntityUtil.walkToLocation(getEntity(), spawnLocation, 1.15F);
+        }
+    }
+
+    @Override
+    public void reset() {
+
+        try {
+            getEntity().teleport(spawnLocation);
+            removeEffect(Combat.class);
+        } catch (CombatException ignored) {
         }
     }
 

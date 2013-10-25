@@ -13,7 +13,6 @@ import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
 import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
-import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.skills.CharacterManager;
@@ -21,6 +20,8 @@ import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.pathfinding.AStar;
+import de.raidcraft.util.pathfinding.PathingResult;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -29,9 +30,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
@@ -145,6 +146,31 @@ public class MobListener implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void checkPathfinding(EntityDamageByEntityEvent event) {
+
+        if (!event.getEntity().hasMetadata("RC_CUSTOM_MOB")
+                || !(event.getEntity() instanceof LivingEntity)
+                || !(event.getDamager() instanceof LivingEntity)) {
+            return;
+        }
+        CharacterTemplate mob = characterManager.getCharacter((LivingEntity) event.getEntity());
+        CharacterTemplate attacker = characterManager.getCharacter((LivingEntity) event.getDamager());
+        // lets check if our entity can reach the attacker
+        try {
+            AStar aStar = new AStar(mob.getEntity().getLocation(), attacker.getEntity().getLocation(), 50);
+            aStar.iterate();
+            if (aStar.getPathingResult() == PathingResult.NO_PATH) {
+                mob.reset();
+            } else {
+                // lets make him walk there
+                EntityUtil.walkToLocation(mob.getEntity(), aStar.getEndLocation(), 1.25F);
+            }
+        } catch (AStar.InvalidPathException e) {
+            mob.reset();
+        }
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onEntitySpawn(CreatureSpawnEvent event) {
 
@@ -182,7 +208,7 @@ public class MobListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true)
     public void onChunkUnload(ChunkUnloadEvent event) {
 
         // kill all out custom mobs in the chunks and reset their spawn timer
@@ -196,35 +222,6 @@ public class MobListener implements Listener {
                 FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(entity.getLocation(), 10);
                 if (spawnLocation != null && spawnLocation.getSpawnedMobCount() > 0) {
                     spawnLocation.setLastSpawn(0);
-                }
-                entity.remove();
-            }
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onChunkLoad(ChunkLoadEvent event) {
-
-        for (Entity entity : event.getChunk().getEntities()) {
-
-            // ignore citizen npcs
-            if(entity.hasMetadata("NPC")) {
-                return;
-            }
-
-            if (entity instanceof LivingEntity) {
-                if (entity.hasMetadata("RC_CUSTOM_MOB")) {
-                    try {
-                        // lets respawn the mob based on its id
-                        CharacterTemplate mob = plugin.getMobManager().spawnMob(
-                                String.valueOf(entity.getMetadata("RC_MOB_ID").get(0).asString()), entity.getLocation());
-                        FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(mob.getEntity().getLocation(), 10);
-                        if (spawnLocation != null) {
-                            spawnLocation.addSpawnedMob(mob);
-                        }
-                    } catch (UnknownMobException e) {
-                        plugin.getLogger().warning(e.getMessage());
-                    }
                 }
                 entity.remove();
             }
