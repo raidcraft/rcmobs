@@ -154,7 +154,6 @@ public class MobListener implements Listener {
         }
         CharacterTemplate mob = characterManager.getCharacter((LivingEntity) event.getEntity());
         CharacterTemplate attacker = characterManager.getCharacter((LivingEntity) event.getDamager());
-        EntityUtil.walkToLocation(mob.getEntity(), attacker.getEntity().getLocation(), 1.25F);
         // TODO: debug this shit
 /*        // lets check if our entity can reach the attacker
         try {
