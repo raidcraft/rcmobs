@@ -9,6 +9,8 @@ import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
 import de.raidcraft.api.quests.InvalidTypeException;
+import de.raidcraft.api.quests.QuestConfigLoader;
+import de.raidcraft.api.quests.QuestException;
 import de.raidcraft.api.quests.Quests;
 import de.raidcraft.mobs.circuits.SpawnCustomCreature;
 import de.raidcraft.mobs.circuits.TriggerMobAbility;
@@ -23,6 +25,7 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -49,7 +52,22 @@ public class MobsPlugin extends BasePlugin implements Listener {
 
         try {
             Quests.registerTrigger(this, MobQuestTrigger.class);
-        } catch (InvalidTypeException e) {
+            // register our quest loader
+            Quests.registerQuestLoader(new QuestConfigLoader("mob") {
+                @Override
+                public void loadConfig(String id, ConfigurationSection config) {
+
+                    getMobManager().registerMob(id, config);
+                }
+            });
+            Quests.registerQuestLoader(new QuestConfigLoader("mobgroup") {
+                @Override
+                public void loadConfig(String id, ConfigurationSection config) {
+
+                    getMobManager().registerMobGroup(id, config);
+                }
+            });
+        } catch (InvalidTypeException | QuestException e) {
             getLogger().warning(e.getMessage());
         }
 
