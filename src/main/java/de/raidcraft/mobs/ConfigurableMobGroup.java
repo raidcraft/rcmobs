@@ -57,7 +57,12 @@ public class ConfigurableMobGroup implements MobGroup {
     @Override
     public double getSpawnInterval() {
 
-        return MathUtil.RANDOM.nextInt(maxInterval) + minInterval;
+        //get the range, casting to long to avoid overflow problems
+        long range = (long)maxInterval - (long)minInterval + 1;
+        // compute a fraction of the range, 0 <= frac < range
+        long fraction = (long)(range * MathUtil.RANDOM.nextDouble());
+        int randomNumber =  (int)(fraction + minInterval);
+        return randomNumber;
     }
 
     @Override

@@ -157,7 +157,8 @@ public final class MobManager implements Component, MobProvider {
                         location.getCooldown()
                 );
                 spawnLocation.setSpawnTreshhold(mobGroup.getRespawnTreshhold());
-                spawnLocation.setCooldown(TimeUtil.secondsToMillis(mobGroup.getSpawnInterval()));
+                // uncomment to overwrite the database cooldown settings
+//                spawnLocation.setCooldown(TimeUtil.secondsToMillis(mobGroup.getSpawnInterval()));
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
