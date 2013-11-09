@@ -70,18 +70,12 @@ public class SpawnableMob implements Spawnable {
         this.spawnChance = spawnChance;
     }
 
+    @Override
     public List<CharacterTemplate> spawn(Location location) {
-
-        ArrayList<CharacterTemplate> characterTemplates = new ArrayList<>();
-        characterTemplates.add(spawn(location, true));
-        return characterTemplates;
-    }
-
-    public CharacterTemplate spawn(Location location, boolean force) {
 
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         // spawn is not forced so we calculate the spawn chance
-        if (!force && getSpawnChance() < 1.0) {
+        if (getSpawnChance() < 1.0) {
             if (Math.random() > getSpawnChance()) {
                 return null;
             }
@@ -89,12 +83,31 @@ public class SpawnableMob implements Spawnable {
         Mob mob = manager.spawnCharacter(type, location, mClass, config);
         mob.setId(getId());
         mob.getEntity().setMetadata("RC_MOB_ID", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), getId()));
-        return mob;
+        ArrayList<CharacterTemplate> mobs = new ArrayList<>();
+        mobs.add(mob);
+        return mobs;
     }
 
     @Override
     public String toString() {
 
         return mobName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (!(o instanceof SpawnableMob)) return false;
+
+        SpawnableMob mob = (SpawnableMob) o;
+
+        return id.equals(mob.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return id.hashCode();
     }
 }

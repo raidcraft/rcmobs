@@ -12,6 +12,7 @@ import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.effects.AbilityUser;
+import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
@@ -42,6 +43,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final boolean resetHealth;
     private final boolean elite;
     private final boolean rare;
+    private final boolean spawnNaturally;
     private final List<LootTable> lootTables = new ArrayList<>();
     private final Location spawnLocation;
     private final String hurtSound;
@@ -55,11 +57,10 @@ public class ConfigurableCreature extends AbstractMob {
         this.spawnLocation = entity.getLocation();
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage", minDamage);
-        int minHealth = config.getInt("min-health", 20);
-        int maxHealth = config.getInt("max-health", minHealth);
         this.resetHealth = config.getBoolean("reset-health", true);
         this.elite = config.getBoolean("elite", false);
         this.rare = config.getBoolean("rare", false);
+        this.spawnNaturally = config.getBoolean("spawn-naturally", false);
         this.hurtSound = config.getString("sound.hurt", "random.classic_hurt");
         this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
         this.deathSound = config.getString("sound.death", "random.classic_hurt");
@@ -67,6 +68,8 @@ public class ConfigurableCreature extends AbstractMob {
         int minLevel = config.getInt("min-level", 1);
         int maxLevel = config.getInt("max-level", minLevel);
         getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
+        int minHealth = config.getInt("min-health", (int) CustomMobUtil.getMaxHealth(getAttachedLevel().getLevel()));
+        int maxHealth = config.getInt("max-health", minHealth);
 
         LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
         for (String table : config.getStringList("loot-tables")) {
@@ -193,6 +196,12 @@ public class ConfigurableCreature extends AbstractMob {
     public boolean isElite() {
 
         return elite;
+    }
+
+    @Override
+    public boolean isSpawningNaturally() {
+
+        return spawnNaturally;
     }
 
     public void checkSpawnPoint() {

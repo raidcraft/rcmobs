@@ -136,4 +136,23 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
         return getSpawnable().spawn(location);
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (!(o instanceof FixedSpawnLocation)) return false;
+
+        FixedSpawnLocation location1 = (FixedSpawnLocation) o;
+
+        return location.equals(location1.location) && spawnable.equals(location1.spawnable);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = spawnable.hashCode();
+        result = 31 * result + location.hashCode();
+        return result;
+    }
 }

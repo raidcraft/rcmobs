@@ -17,5 +17,7 @@ public interface MobGroup extends Spawnable {
 
     public int getRespawnTreshhold();
 
-    public List<Spawnable> getSpawns();
+    public boolean isInGroup(Spawnable spawnable);
+
+    public List<Spawnable> getSpawnables();
 }

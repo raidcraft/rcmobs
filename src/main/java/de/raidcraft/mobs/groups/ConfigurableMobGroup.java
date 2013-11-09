@@ -1,6 +1,9 @@
-package de.raidcraft.mobs;
+package de.raidcraft.mobs.groups;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.MobManager;
+import de.raidcraft.mobs.SpawnableMob;
+import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -24,9 +27,9 @@ public class ConfigurableMobGroup implements MobGroup {
     private final int minSpawnAmount;
     private final int maxSpawnAmount;
     private final int respawnTreshhold;
-    private final List<SpawnableMob> mobs = new ArrayList<>();
+    private final List<Spawnable> mobs = new ArrayList<>();
 
-    protected ConfigurableMobGroup(String name, ConfigurationSection config) {
+    public ConfigurableMobGroup(String name, ConfigurationSection config) {
 
         this.name = name;
         minInterval = config.getInt("min-interval", 300);
@@ -84,9 +87,15 @@ public class ConfigurableMobGroup implements MobGroup {
     }
 
     @Override
-    public List<Spawnable> getSpawns() {
+    public boolean isInGroup(Spawnable spawnable) {
 
-        return new ArrayList<Spawnable>(mobs);
+        return mobs.contains(spawnable);
+    }
+
+    @Override
+    public List<Spawnable> getSpawnables() {
+
+        return new ArrayList<>(mobs);
     }
 
     @Override
@@ -99,18 +108,17 @@ public class ConfigurableMobGroup implements MobGroup {
         int amount = MathUtil.RANDOM.nextInt(getMaxSpawnAmount()) + getMinSpawnAmount();
         int i = 0;
         while (spawnedMobs.size() < amount) {
-            SpawnableMob mob = mobs.get(i);
+            Spawnable mob = mobs.get(i);
             // spawn with a slightly random offset
             Location newLocation = getRandomLocation(location, amount);
             while (newLocation.getBlock().getType() != Material.AIR
                     || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
                 newLocation = getRandomLocation(location, amount);
             }
-            CharacterTemplate character = mob.spawn(newLocation, false);
-            if (character != null) {
-                spawnedMobs.add(character);
-            }
+
+            spawnedMobs.addAll(mob.spawn(newLocation));
             i++;
+
             if (i >= mobs.size()) {
                 i = 0;
             }
@@ -128,5 +136,22 @@ public class ConfigurableMobGroup implements MobGroup {
                 MathUtil.RANDOM.nextInt(amount * 2) - amount,
                 0,
                 MathUtil.RANDOM.nextInt(amount * 2) - amount);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (!(o instanceof ConfigurableMobGroup)) return false;
+
+        ConfigurableMobGroup that = (ConfigurableMobGroup) o;
+
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return name.hashCode();
     }
 }

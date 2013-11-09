@@ -8,6 +8,8 @@ import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
+import de.raidcraft.mobs.groups.ConfigurableMobGroup;
+import de.raidcraft.mobs.groups.VirtualMobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -18,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public final class MobManager implements Component, MobProvider {
     private final File baseDir;
     private final Map<String, SpawnableMob> mobs = new CaseInsensitiveMap<>();
     private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
+    private final Map<String, MobGroup> virtualGroups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
     private final List<FixedSpawnLocation> spawnableMobs = new ArrayList<>();
 
@@ -66,6 +70,7 @@ public final class MobManager implements Component, MobProvider {
         if (directory == null || directory.list() == null) {
             return;
         }
+        ArrayList<Spawnable> createdMobs = new ArrayList<>();
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 load(file, path + file.getName() + "-");
@@ -79,8 +84,11 @@ public final class MobManager implements Component, MobProvider {
                 continue;
             }
             String mobId = path + file.getName().replace(".yml", "");
-            registerMob(mobId, config);
+            Spawnable spawnable = registerAndReturnMob(mobId, config);
+            if (spawnable != null) createdMobs.add(spawnable);
         }
+        // lets create a virtual group from the current path and all created mobs
+        virtualGroups.put(path, new VirtualMobGroup(path, createdMobs));
     }
 
     private void load() {
@@ -99,17 +107,23 @@ public final class MobManager implements Component, MobProvider {
         load();
     }
 
-    @Override
-    public void registerMob(String mobId, ConfigurationSection config) {
+    private Spawnable registerAndReturnMob(String mobId, ConfigurationSection config) {
 
         EntityType type = EntityType.fromName(config.getString("type"));
         if (type == null) {
             plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + config.getName());
-            return;
+            return null;
         }
         SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
         mobs.put(mobId, mob);
         plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
+        return mob;
+    }
+
+    @Override
+    public void registerMob(String mobId, ConfigurationSection config) {
+
+        registerAndReturnMob(mobId, config);
     }
 
     @Override
@@ -173,6 +187,14 @@ public final class MobManager implements Component, MobProvider {
         return mob;
     }
 
+    public SpawnableMob getSpwanableMob(LivingEntity entity) throws UnknownMobException {
+
+        if (entity.hasMetadata("RC_MOB_ID")) {
+            return getSpwanableMob(entity.getMetadata("RC_MOB_ID").get(0).asString());
+        }
+        throw new UnknownMobException("The entity has no mob id meta data.");
+    }
+
     public SpawnableMob getSpwanableMob(String name) throws UnknownMobException {
 
         if (mobs.containsKey(name)) {
@@ -197,6 +219,11 @@ public final class MobManager implements Component, MobProvider {
     public List<SpawnableMob> getSpawnableMobs() {
 
         return new ArrayList<>(mobs.values());
+    }
+
+    public List<MobGroup> getVirtualGroups() {
+
+        return new ArrayList<>(virtualGroups.values());
     }
 
     public MobGroup getMobGroup(String name) throws UnknownMobException {
