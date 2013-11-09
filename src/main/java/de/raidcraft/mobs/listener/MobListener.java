@@ -175,7 +175,8 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntitySpawn(CreatureSpawnEvent event) {
 
-        if (event.getEntity().getType() == EntityType.HORSE && plugin.getConfiguration().denyHorseSpawning) {
+        if (event.getEntity().getType() == EntityType.HORSE && event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM
+                && plugin.getConfiguration().denyHorseSpawning) {
             event.setCancelled(true);
         }
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
