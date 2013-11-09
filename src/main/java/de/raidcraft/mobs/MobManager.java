@@ -109,11 +109,12 @@ public final class MobManager implements Component, MobProvider {
 
     private SpawnableMob registerAndReturnMob(String mobId, ConfigurationSection config) {
 
-        EntityType type = null;
+        EntityType type;
         try {
             type = EntityType.valueOf(config.getString("type").toUpperCase());
         } catch (Exception e) {
             plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + config.getName());
+            return null;
         }
         SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
         mobs.put(mobId, mob);
