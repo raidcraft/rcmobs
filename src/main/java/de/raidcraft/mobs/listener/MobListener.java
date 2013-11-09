@@ -26,11 +26,7 @@ import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -259,16 +255,16 @@ public class MobListener implements Listener {
     }
 
     // disable fire damage
+    //TODO maybe detect damage cause...
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onEntityDamage(EntityDamageEvent event) {
+    public void onEntityCombustion(EntityCombustEvent event) {
 
-        if(event.getEntity().getFireTicks() <= 0) return;
 
         if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
             return;
         }
         if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
-            event.getEntity().setFireTicks(0);
+            event.setCancelled(true);
         }
     }
 
