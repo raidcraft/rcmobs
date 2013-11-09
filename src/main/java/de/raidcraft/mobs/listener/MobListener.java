@@ -27,10 +27,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
@@ -203,6 +200,20 @@ public class MobListener implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    // disable fire damage
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onEntityDamage(EntityDamageEvent event) {
+
+        if(event.getEntity().getFireTicks() <= 0) return;
+
+        if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
+            return;
+        }
+        if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
+            event.getEntity().setFireTicks(0);
         }
     }
 
