@@ -13,22 +13,32 @@ import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
 import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
+import de.raidcraft.mobs.SpawnableMob;
+import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
+import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.world.ChunkUnloadEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Silthus
@@ -176,6 +186,51 @@ public class MobListener implements Listener {
             // check if there are custom mobs around and stop the spawning of the entity
             if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
                 event.setCancelled(true);
+            } else {
+                // lets replace all natural mobs with our own
+                if ((plugin.getConfiguration().replaceHostileMobs && !(event.getEntity() instanceof Monster))
+                        && (plugin.getConfiguration().replaceAnimals && !(event.getEntity() instanceof Animals))) {
+                    return;
+                }
+                List<MobGroup> virtualGroups = plugin.getMobManager().getVirtualGroups();
+                if (virtualGroups.isEmpty()) {
+                    return;
+                }
+                List<SpawnableMob> nearbyMobs = new ArrayList<>();
+                // first we want to check all nearby entities for custom mobs so we can spawn more of the same type
+                for (LivingEntity entity : BukkitUtil.getNearbyEntities(event.getEntity(), plugin.getConfiguration().naturalAdaptRadius)) {
+                    if (entity.hasMetadata("RC_CUSTOM_MOB")) {
+                        try {
+                            SpawnableMob mob = plugin.getMobManager().getSpwanableMob(entity);
+                            nearbyMobs.add(mob);
+                        } catch (UnknownMobException ignored) {
+                            entity.remove();
+                        }
+                    }
+                }
+                // if there are no mobs nearby we grap a random group and spawn some mobs
+                if (!nearbyMobs.isEmpty()) {
+                    // now we need to filter our all of the groups that are not matching nearby mobs
+                    for (MobGroup group : new ArrayList<>(virtualGroups)) {
+                        boolean inGroup = false;
+                        for (SpawnableMob mob : nearbyMobs) {
+                            if (group.isInGroup(mob)) {
+                                inGroup = true;
+                                break;
+                            }
+                        }
+                        if (!inGroup) {
+                            virtualGroups.remove(group);
+                        }
+                    }
+                }
+                event.setCancelled(true);
+                if (virtualGroups.isEmpty()) {
+                    return;
+                }
+                // okay now we have some groups, lets grap a random one and spawn stuff
+                MobGroup mobGroup = virtualGroups.get(MathUtil.RANDOM.nextInt(virtualGroups.size()));
+                mobGroup.spawn(event.getLocation());
             }
         }
     }

@@ -20,6 +20,8 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     public boolean isElite();
 
+    public boolean isSpawningNaturally();
+
     public List<LootTable> getLootTables();
 
     public CharacterTemplate getHighestThreat() throws CombatException;
