@@ -69,7 +69,8 @@ public class VirtualMobGroup implements MobGroup {
     public List<CharacterTemplate> spawn(Location location) {
 
         if (!spawnables.isEmpty()) {
-            return spawnables.get(MathUtil.RANDOM.nextInt(spawnables.size())).spawn(location);
+            Spawnable spawnable = spawnables.get(MathUtil.RANDOM.nextInt(spawnables.size()));
+            return spawnable.spawn(location);
         }
         return new ArrayList<>();
     }

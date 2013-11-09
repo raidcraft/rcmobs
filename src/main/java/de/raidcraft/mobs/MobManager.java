@@ -84,8 +84,8 @@ public final class MobManager implements Component, MobProvider {
                 continue;
             }
             String mobId = path + file.getName().replace(".yml", "");
-            Spawnable spawnable = registerAndReturnMob(mobId, config);
-            if (spawnable != null) createdMobs.add(spawnable);
+            SpawnableMob spawnable = registerAndReturnMob(mobId, config);
+            if (spawnable != null && spawnable.isSpawningNaturally()) createdMobs.add(spawnable);
         }
         // lets create a virtual group from the current path and all created mobs
         virtualGroups.put(path, new VirtualMobGroup(path, createdMobs));
@@ -107,7 +107,7 @@ public final class MobManager implements Component, MobProvider {
         load();
     }
 
-    private Spawnable registerAndReturnMob(String mobId, ConfigurationSection config) {
+    private SpawnableMob registerAndReturnMob(String mobId, ConfigurationSection config) {
 
         EntityType type = EntityType.fromName(config.getString("type"));
         if (type == null) {

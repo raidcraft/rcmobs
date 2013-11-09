@@ -24,6 +24,7 @@ public class SpawnableMob implements Spawnable {
     private final String mobName;
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
     private final EntityType type;
+    private final boolean spawnNaturally;
     private final ConfigurationSection config;
     private double spawnChance = 1.0;
 
@@ -32,6 +33,7 @@ public class SpawnableMob implements Spawnable {
         this.id = id;
         this.mobName = mobName;
         this.type = type;
+        this.spawnNaturally = config.getBoolean("spawning-naturally");
         this.config = config;
     }
 
@@ -53,6 +55,11 @@ public class SpawnableMob implements Spawnable {
     public EntityType getType() {
 
         return type;
+    }
+
+    public boolean isSpawningNaturally() {
+
+        return spawnNaturally;
     }
 
     public ConfigurationSection getConfig() {
