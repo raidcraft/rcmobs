@@ -33,7 +33,7 @@ public class SpawnableMob implements Spawnable {
         this.id = id;
         this.mobName = mobName;
         this.type = type;
-        this.spawnNaturally = config.getBoolean("spawning-naturally");
+        this.spawnNaturally = config.getBoolean("spawn-naturally");
         this.config = config;
     }
 
