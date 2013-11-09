@@ -116,7 +116,8 @@ public class ConfigurableMobGroup implements MobGroup {
                 newLocation = getRandomLocation(location, amount);
             }
 
-            spawnedMobs.addAll(mob.spawn(newLocation));
+            List<CharacterTemplate> spawn = mob.spawn(newLocation);
+            if (spawn != null) spawnedMobs.addAll(spawn);
             i++;
 
             if (i >= mobs.size()) {
