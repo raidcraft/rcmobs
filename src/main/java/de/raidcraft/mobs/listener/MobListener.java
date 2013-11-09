@@ -172,7 +172,7 @@ public class MobListener implements Listener {
         }*/
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntitySpawn(CreatureSpawnEvent event) {
 
         if (event.getEntity().getType() == EntityType.HORSE && plugin.getConfiguration().denyHorseSpawning) {
@@ -255,10 +255,9 @@ public class MobListener implements Listener {
     }
 
     // disable fire damage
-    //TODO maybe detect damage cause...
+    //TODO maybe detect damage cause and cancel if it isn't sunlight...
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityCombustion(EntityCombustEvent event) {
-
 
         if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
             return;
