@@ -64,7 +64,7 @@ public final class MobManager implements Component, MobProvider {
 
                 if(spawnableMobs.size() == 0) return;
                 for(int i = startIndex; i < startIndex+STEP_SIZE; i++) {
-                    if(i >= spawnableMobs.size()) { startIndex = 0; break; }
+                    if(i >= spawnableMobs.size()) { startIndex = 0; return; }
 
                     spawnableMobs.get(i).spawn();
                 }
