@@ -55,14 +55,22 @@ public final class MobManager implements Component, MobProvider {
         // start the spawn task for the fixed spawn locations
         long time = TimeUtil.secondsToTicks(plugin.getConfiguration().spawnTaskInterval);
         Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+
+            private static final int STEP_SIZE = 20;
+            private int startIndex = 0;
+
             @Override
             public void run() {
 
-                for (FixedSpawnLocation location : spawnableMobs) {
-                    location.spawn();
+                if(spawnableMobs.size() == 0) return;
+                for(int i = startIndex; i < startIndex+STEP_SIZE; i++) {
+                    if(i >= spawnableMobs.size()) { startIndex = 0; break; }
+
+                    spawnableMobs.get(i).spawn();
                 }
+                startIndex += STEP_SIZE;
             }
-        }, 100L, time);
+        }, 20L, time);
     }
 
     private void load(File directory, String path) {
