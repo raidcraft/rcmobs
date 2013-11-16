@@ -22,6 +22,8 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     public boolean isSpawningNaturally();
 
+    public boolean isWaterMob();
+
     public List<LootTable> getLootTables();
 
     public CharacterTemplate getHighestThreat() throws CombatException;

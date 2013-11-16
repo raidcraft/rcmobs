@@ -44,6 +44,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final boolean elite;
     private final boolean rare;
     private final boolean spawnNaturally;
+    private final boolean water;
     private final List<LootTable> lootTables = new ArrayList<>();
     private final Location spawnLocation;
     private final String hurtSound;
@@ -60,6 +61,7 @@ public class ConfigurableCreature extends AbstractMob {
         this.resetHealth = config.getBoolean("reset-health", true);
         this.elite = config.getBoolean("elite", false);
         this.rare = config.getBoolean("rare", false);
+        this.water = config.getBoolean("water", false);
         this.spawnNaturally = config.getBoolean("spawn-naturally", false);
         this.hurtSound = config.getString("sound.hurt", "random.classic_hurt");
         this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
@@ -202,6 +204,12 @@ public class ConfigurableCreature extends AbstractMob {
     public boolean isSpawningNaturally() {
 
         return spawnNaturally;
+    }
+
+    @Override
+    public boolean isWaterMob() {
+
+        return water;
     }
 
     public void checkSpawnPoint() {
