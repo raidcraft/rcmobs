@@ -240,7 +240,9 @@ public class ConfigurableCreature extends AbstractMob {
     @Override
     public double getDamage() {
 
-        return MathUtil.RANDOM.nextInt(maxDamage - minDamage) + minDamage;
+        int maxDmg = maxDamage;
+        if(maxDamage <= minDamage) maxDmg = minDamage + 1;
+        return MathUtil.RANDOM.nextInt(maxDmg - minDamage) + minDamage;
     }
 
     @Override
