@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.groups;
 
+import com.sk89q.worldedit.blocks.BlockType;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.SpawnableMob;
@@ -112,7 +113,9 @@ public class ConfigurableMobGroup implements MobGroup {
             // spawn with a slightly random offset
             Location newLocation = getRandomLocation(location, amount);
             while (newLocation.getBlock().getType() != Material.AIR
-                    || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
+                    || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR
+                    || BlockType.canPassThrough(newLocation.getBlock().getType().getId())
+                    || BlockType.canPassThrough(newLocation.getBlock().getRelative(BlockFace.UP).getType().getId())) {
                 newLocation = getRandomLocation(location, amount);
             }
 
