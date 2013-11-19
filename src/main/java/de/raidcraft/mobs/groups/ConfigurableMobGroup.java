@@ -111,12 +111,21 @@ public class ConfigurableMobGroup implements MobGroup {
         while (spawnedMobs.size() < amount) {
             Spawnable mob = mobs.get(i);
             // spawn with a slightly random offset
+            // some workarounds to prevent endless loops
             Location newLocation = getRandomLocation(location, amount);
-            while (newLocation.getBlock().getType() != Material.AIR
-                    || newLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR
-                    || BlockType.canPassThrough(newLocation.getBlock().getType().getId())
-                    || BlockType.canPassThrough(newLocation.getBlock().getRelative(BlockFace.UP).getType().getId())) {
+            boolean found = false;
+            for(int k = 0; k < 100; k++) {
+                if(newLocation.getBlock().getType() == Material.AIR
+                        || newLocation.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR
+                        || BlockType.canPassThrough(newLocation.getBlock().getType().getId())
+                        || BlockType.canPassThrough(newLocation.getBlock().getRelative(BlockFace.UP).getType().getId())) {
+                    found = true;
+                    break;
+                }
                 newLocation = getRandomLocation(location, amount);
+            }
+            if(!found) {
+                continue;
             }
 
             List<CharacterTemplate> spawn = mob.spawn(newLocation);
