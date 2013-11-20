@@ -38,4 +38,10 @@ public class MobQuestTrigger extends QuestTrigger implements Listener {
             inform("kill", (Player) lastDamageCause.getAttacker().getEntity());
         }
     }
+
+    @Override
+    public void unregister() {
+
+        RCMobDeathEvent.getHandlerList().unregister(this);
+    }
 }
