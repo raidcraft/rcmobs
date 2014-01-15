@@ -1,6 +1,5 @@
 package de.raidcraft.mobs.listener;
 
-import com.comphenix.packetwrapper.Packet3ENamedSoundEffect;
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ConnectionSide;
@@ -26,11 +25,19 @@ import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.ArrayList;
@@ -63,13 +70,14 @@ public class MobListener implements Listener {
                         PacketContainer packet = event.getPacket();
 
                         if (event.getPacketID() == Packets.Server.NAMED_SOUND_EFFECT) {
-                            // handle the mob hurt effect
+                            // TODO: disabled custom mobs sounds for now
+                            /*// handle the mob hurt effect
                             Packet3ENamedSoundEffect soundEffect = new Packet3ENamedSoundEffect(packet);
                             if (soundEffect.getSoundName().startsWith("mob.skeleton")) {
                                 // supress skeleton sounds since they are our custom mobs
                                 // TODO: make this much more flexible
                                 event.setCancelled(true);
-                            }
+                            }*/
                         }
 
                         // You may also want to check event.getPacketID()
