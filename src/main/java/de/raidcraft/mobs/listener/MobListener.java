@@ -100,6 +100,7 @@ public class MobListener implements Listener {
                         } else {
                             name = EntityUtil.drawMobName(
                                     character.getName(),
+                                    character.getAttachedLevel().getLevel(),
                                     mobColor,
                                     entity.hasMetadata("ELITE"),
                                     entity.hasMetadata("RARE"));
