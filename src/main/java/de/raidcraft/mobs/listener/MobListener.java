@@ -187,8 +187,9 @@ public class MobListener implements Listener {
         if (event.getEntity().getType() == EntityType.HORSE && event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM
                 && plugin.getConfiguration().denyHorseSpawning) {
             event.setCancelled(true);
+            return;
         }
-        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
             // check if there are custom mobs around and stop the spawning of the entity
             if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
                 event.setCancelled(true);
