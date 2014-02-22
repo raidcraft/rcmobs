@@ -188,12 +188,13 @@ public class MobListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (!plugin.getConfiguration().replaceHostileMobs && event.getEntity() instanceof Monster) {
+            return;
+        }
+        if (!plugin.getConfiguration().replaceAnimals && event.getEntity() instanceof Animals) {
+            return;
+        }
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            // lets not do anything for non hostile mobs
-            if ((plugin.getConfiguration().replaceHostileMobs && !(event.getEntity() instanceof Monster))
-                    && (plugin.getConfiguration().replaceAnimals && !(event.getEntity() instanceof Animals))) {
-                return;
-            }
             // check if there are custom mobs around and stop the spawning of the entity
             if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
                 event.setCancelled(true);
