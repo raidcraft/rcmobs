@@ -1,8 +1,9 @@
 package de.raidcraft.mobs.listener;
 
+import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -61,23 +62,21 @@ public class MobListener implements Listener {
 
         final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
         ProtocolLibrary.getProtocolManager().addPacketListener(
-                new PacketAdapter(plugin, ConnectionSide.SERVER_SIDE,
-                        Packets.Server.MOB_SPAWN,
-                        Packets.Server.ENTITY_METADATA,
-                        Packets.Server.NAMED_SOUND_EFFECT) {
+                new PacketAdapter(plugin,
+                        PacketType.Play.Server.NAMED_SOUND_EFFECT,
+                        PacketType.Play.Server.SPAWN_ENTITY,
+                        PacketType.Play.Server.ENTITY_METADATA) {
                     @Override
                     public void onPacketSending(PacketEvent event) {
                         PacketContainer packet = event.getPacket();
 
-                        if (event.getPacketID() == Packets.Server.NAMED_SOUND_EFFECT) {
-                            // TODO: disabled custom mobs sounds for now
-                            /*// handle the mob hurt effect
-                            Packet3ENamedSoundEffect soundEffect = new Packet3ENamedSoundEffect(packet);
+                        // handle the custom mob hurt effects
+                        if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+                            WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
                             if (soundEffect.getSoundName().startsWith("mob.skeleton")) {
                                 // supress skeleton sounds since they are our custom mobs
-                                // TODO: make this much more flexible
                                 event.setCancelled(true);
-                            }*/
+                            }
                         }
 
                         // You may also want to check event.getPacketID()
@@ -190,15 +189,16 @@ public class MobListener implements Listener {
             return;
         }
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+            // lets not do anything for non hostile mobs
+            if ((plugin.getConfiguration().replaceHostileMobs && !(event.getEntity() instanceof Monster))
+                    && (plugin.getConfiguration().replaceAnimals && !(event.getEntity() instanceof Animals))) {
+                return;
+            }
             // check if there are custom mobs around and stop the spawning of the entity
             if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
                 event.setCancelled(true);
             } else {
                 // lets replace all natural mobs with our own
-                if ((plugin.getConfiguration().replaceHostileMobs && !(event.getEntity() instanceof Monster))
-                        && (plugin.getConfiguration().replaceAnimals && !(event.getEntity() instanceof Animals))) {
-                    return;
-                }
                 List<MobGroup> virtualGroups = plugin.getMobManager().getVirtualGroups();
                 if (virtualGroups.isEmpty()) {
                     return;
