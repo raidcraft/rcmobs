@@ -1,6 +1,6 @@
 package de.raidcraft.mobs;
 
-import com.sk89q.craftbook.bukkit.CircuitCore;
+import com.sk89q.craftbook.circuits.ic.ICManager;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
@@ -128,10 +128,11 @@ public class MobsPlugin extends BasePlugin implements Listener {
     private void registerCustomICs() {
         Plugin plugin = Bukkit.getPluginManager().getPlugin("CraftBook");
         if (plugin != null) {
-            CircuitCore craftbook = CircuitCore.inst();
+
             // lets register all of our ics
-            craftbook.registerIC("RCM1200", "cus ent spawner", new SpawnCustomCreature.SpawnCustomCreatureFactory(getServer()), CircuitCore.FAMILY_SISO);
-            craftbook.registerIC("RCM0001", "use ability", new TriggerMobAbility.TriggerMobAbilityFactory(getServer()), CircuitCore.FAMILY_SISO);
+            ICManager.inst().registerIC("RCM1200", "cus ent spawner", new SpawnCustomCreature.SpawnCustomCreatureFactory(getServer()), ICManager.familySISO);
+            ICManager.inst().registerIC("RCM0001", "use ability", new TriggerMobAbility.TriggerMobAbilityFactory(getServer()), ICManager.familySISO);
+
         }
     }
 
