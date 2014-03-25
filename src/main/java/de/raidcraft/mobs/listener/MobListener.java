@@ -41,6 +41,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,10 +189,7 @@ public class MobListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (!plugin.getConfiguration().replaceHostileMobs && event.getEntity() instanceof Monster) {
-            return;
-        }
-        if (!plugin.getConfiguration().replaceAnimals && event.getEntity() instanceof Animals) {
+        if (!Arrays.asList(plugin.getConfiguration().replacedMobs).contains(event.getEntity().getType().name())) {
             return;
         }
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
