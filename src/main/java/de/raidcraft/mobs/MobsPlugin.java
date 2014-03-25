@@ -162,6 +162,24 @@ public class MobsPlugin extends BasePlugin implements Listener {
         public boolean replaceAnimals = false;
         @Setting("default.natural-spawning-adapt-radius")
         public int naturalAdaptRadius = 25;
+        @Setting("default.replaced-mobs")
+        public String[] replacedMobs = {
+            "BLAZE",
+            "ZOMBIE",
+            "SKELETON",
+            "CREEPER",
+            "SPIDER",
+            "GIANT",
+            "SLIME",
+            "GHAST",
+            "PIG_ZOMBIE",
+            "ENDERMAN",
+            "CAVE_SPIDER",
+            "SILVERFISH",
+            "MAGMA_CUBE",
+            "WITCH",
+            "IRON_GOLEM"
+        };
 
         public LocalConfiguration(MobsPlugin plugin) {
 
