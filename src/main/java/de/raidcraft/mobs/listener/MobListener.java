@@ -34,11 +34,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.Arrays;
@@ -295,5 +291,13 @@ public class MobListener implements Listener {
                 entity.remove();
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onHorseDamage(EntityDamageEvent event) {
+
+        if(event.getEntityType() != EntityType.HORSE) return;
+
+        event.setCancelled(true);
     }
 }
