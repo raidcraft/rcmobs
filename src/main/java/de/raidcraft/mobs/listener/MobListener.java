@@ -26,19 +26,17 @@ import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,8 +67,8 @@ public class MobListener implements Listener {
 
                         // handle the custom mob hurt effects
                         if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-                            WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
-                            if (soundEffect.getSoundName().startsWith("mob.skeleton")) {
+                            WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect(event.getPacket());
+                            if (false) {
                                 // supress skeleton sounds since they are our custom mobs
                                 event.setCancelled(true);
                             }

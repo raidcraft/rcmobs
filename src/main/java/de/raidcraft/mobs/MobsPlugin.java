@@ -1,6 +1,5 @@
 package de.raidcraft.mobs;
 
-import com.sk89q.craftbook.circuits.ic.ICManager;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
@@ -12,8 +11,6 @@ import de.raidcraft.api.quests.InvalidTypeException;
 import de.raidcraft.api.quests.QuestConfigLoader;
 import de.raidcraft.api.quests.QuestException;
 import de.raidcraft.api.quests.Quests;
-import de.raidcraft.mobs.circuits.SpawnCustomCreature;
-import de.raidcraft.mobs.circuits.TriggerMobAbility;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
@@ -28,7 +25,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,14 +66,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         } catch (InvalidTypeException | QuestException e) {
             getLogger().warning(e.getMessage());
         }
-
-        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-            @Override
-            public void run() {
-
-                registerCustomICs();
-            }
-        }, 1L);
 
         final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
@@ -123,17 +111,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         tables.add(TMobGroupSpawnLocation.class);
         tables.add(TMobSpawnLocation.class);
         return tables;
-    }
-
-    private void registerCustomICs() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("CraftBook");
-        if (plugin != null) {
-
-            // lets register all of our ics
-            ICManager.inst().registerIC("RCM1200", "cus ent spawner", new SpawnCustomCreature.SpawnCustomCreatureFactory(getServer()), ICManager.familySISO);
-            ICManager.inst().registerIC("RCM0001", "use ability", new TriggerMobAbility.TriggerMobAbilityFactory(getServer()), ICManager.familySISO);
-
-        }
     }
 
     public MobManager getMobManager() {

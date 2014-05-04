@@ -1,5 +1,7 @@
 package de.raidcraft.mobs.creatures;
 
+import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
+import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.loot.LootPlugin;
@@ -252,15 +254,14 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void playSound(String name, float pitch, float volume) {
 
-        // TODO: reenable custom mob sounds
-/*        Location location = getEntity().getLocation();
-        Packet3ENamedSoundEffect effect = new Packet3ENamedSoundEffect();
-        effect.setSoundName(name);
-        effect.setPitch(pitch);
-        effect.setEffectPositionX(location.getX());
-        effect.setEffectPositionY(location.getY());
-        effect.setEffectPositionZ(location.getZ());
-        effect.setVolume(volume);
-        ProtocolLibrary.getProtocolManager().broadcastServerPacket(effect.getHandle());*/
+        Location location = getEntity().getLocation();
+        WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
+        soundEffect.setSoundName(name);
+        soundEffect.setPitch(pitch);
+        soundEffect.setVolume(volume);
+        soundEffect.setEffectPositionX(location.getX());
+        soundEffect.setEffectPositionY(location.getY());
+        soundEffect.setEffectPositionZ(location.getZ());
+        ProtocolLibrary.getProtocolManager().broadcastServerPacket(soundEffect.getHandle());
     }
 }
