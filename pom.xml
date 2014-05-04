@@ -24,9 +24,8 @@
     <name>RCMobs</name>
     
     <scm>
-        <developerConnection>scm:git:ssh://git@raid-craft.de:22109/raid-craft-de/skillsandeffects.git</developerConnection>
-      <tag>mobs-1.1.4</tag>
-  </scm>
+        <developerConnection>scm:git:ssh://git@raid-craft.de:22109/raid-craft-de/${project.artifactId}.git</developerConnection>
+    </scm>
 
     <parent>
         <groupId>de.raidcraft</groupId>
