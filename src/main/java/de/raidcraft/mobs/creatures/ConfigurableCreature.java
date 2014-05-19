@@ -74,15 +74,17 @@ public class ConfigurableCreature extends AbstractMob {
         int maxHealth = config.getInt("max-health", minHealth);
 
         LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
-        for (String table : config.getStringList("loot-tables")) {
-            try {
-                LootTable lootTable = tableManager.getTable(table);
-                if (lootTable == null) {
-                    lootTable = tableManager.getLevelDependantLootTable(table, getAttachedLevel().getLevel());
+        if (tableManager != null) {
+            for (String table : config.getStringList("loot-tables")) {
+                try {
+                    LootTable lootTable = tableManager.getTable(table);
+                    if (lootTable == null) {
+                        lootTable = tableManager.getLevelDependantLootTable(table, getAttachedLevel().getLevel());
+                    }
+                    lootTables.add(lootTable);
+                } catch (LootTableNotExistsException e) {
+                    RaidCraft.LOGGER.warning("Loading " + getName() + ": " + e.getMessage());
                 }
-                lootTables.add(lootTable);
-            } catch (LootTableNotExistsException e) {
-                RaidCraft.LOGGER.warning("Loading " + getName() + ": " + e.getMessage());
             }
         }
 
