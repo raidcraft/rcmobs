@@ -67,11 +67,12 @@ public class MobsPlugin extends BasePlugin implements Listener {
             getLogger().warning(e.getMessage());
         }
 
-        final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
             public void run() {
 
+                CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
+                if (characterManager == null) return;
                 for (World world : Bukkit.getWorlds()) {
                     for (LivingEntity entity : world.getLivingEntities()) {
                         if (entity.hasMetadata("RC_CUSTOM_MOB")) {
