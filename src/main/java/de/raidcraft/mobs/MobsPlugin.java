@@ -44,7 +44,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
         registerEvents(this);
-        new MobListener(this);
+        Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
 
         try {
             Quests.registerTrigger(this, MobQuestTrigger.class);
