@@ -41,6 +41,9 @@ public final class MobManager implements Component, MobProvider {
     private final Map<String, MobGroup> virtualGroups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
     private final List<FixedSpawnLocation> spawnableMobs = new ArrayList<>();
+    private int loadedMobs = 0;
+    private int loadedMobGroups = 0;
+    private int loadedSpawnLocations = 0;
 
     protected MobManager(MobsPlugin plugin) {
 
@@ -101,9 +104,15 @@ public final class MobManager implements Component, MobProvider {
 
     private void load() {
 
+        loadedMobs = 0;
+        loadedMobGroups = 0;
+        loadedSpawnLocations = 0;
         load(baseDir, "");
+        plugin.getLogger().info("Loaded " + loadedMobs + " custom mobs!");
         loadGroups();
+        plugin.getLogger().info("Loaded " + loadedMobGroups + " mob groups!");
         loadSpawnLocations();
+        plugin.getLogger().info("Loaded " + loadedSpawnLocations + " spawn locations");
     }
 
     protected void reload() {
@@ -126,7 +135,7 @@ public final class MobManager implements Component, MobProvider {
         }
         SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
         mobs.put(mobId, mob);
-        plugin.getLogger().info("Loaded custom mob: " + mob.getMobName());
+        loadedMobs++;
         return mob;
     }
 
@@ -141,7 +150,7 @@ public final class MobManager implements Component, MobProvider {
 
         ConfigurableMobGroup group = new ConfigurableMobGroup(id, config);
         groups.put(group.getName(), group);
-        plugin.getLogger().info("Loaded mob group: " + group.getName());
+        loadedMobGroups++;
     }
 
     private void loadGroups() {
@@ -164,6 +173,7 @@ public final class MobManager implements Component, MobProvider {
                         spwanableMob,
                         new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
                         location.getCooldown());
+                loadedSpawnLocations++;
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
@@ -183,6 +193,7 @@ public final class MobManager implements Component, MobProvider {
                 spawnLocation.setSpawnTreshhold(mobGroup.getRespawnTreshhold());
                 // uncomment to overwrite the database cooldown settings
 //                spawnLocation.setCooldown(TimeUtil.secondsToMillis(mobGroup.getSpawnInterval()));
+                loadedSpawnLocations++;
             } catch (UnknownMobException e) {
                 plugin.getLogger().warning(e.getMessage());
             }
