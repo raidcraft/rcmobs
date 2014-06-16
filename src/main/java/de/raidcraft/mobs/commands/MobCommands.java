@@ -92,8 +92,8 @@ public class MobCommands {
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
-            sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
             plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown());
+            sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
