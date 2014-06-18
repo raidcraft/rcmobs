@@ -1,6 +1,5 @@
 package de.raidcraft.mobs.quests;
 
-import de.raidcraft.api.quests.QuestTrigger;
 import de.raidcraft.api.quests.quest.trigger.Trigger;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.skills.api.combat.action.Attack;
