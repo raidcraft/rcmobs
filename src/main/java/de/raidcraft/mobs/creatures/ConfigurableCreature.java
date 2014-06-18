@@ -99,6 +99,7 @@ public class ConfigurableCreature extends AbstractMob {
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         setName(config.getString("name"));
+        getEntity().setCanPickupItems(config.getBoolean("item-pickup", false));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
         if (config.getBoolean("ranged", false)) {
