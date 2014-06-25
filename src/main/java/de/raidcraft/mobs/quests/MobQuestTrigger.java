@@ -1,10 +1,8 @@
 package de.raidcraft.mobs.quests;
 
-import de.raidcraft.api.quests.QuestTrigger;
-import de.raidcraft.api.quests.quest.trigger.Trigger;
+import de.raidcraft.api.action.trigger.Trigger;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.skills.api.combat.action.Attack;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,30 +10,20 @@ import org.bukkit.event.Listener;
 /**
  * @author Silthus
  */
-@QuestTrigger.Name("mob")
-public class MobQuestTrigger extends QuestTrigger implements Listener {
+public class MobQuestTrigger extends Trigger implements Listener {
 
-    private String mobId;
+    public MobQuestTrigger() {
 
-    protected MobQuestTrigger(Trigger trigger) {
-
-        super(trigger);
+        super("mob", "kill");
     }
 
-    @Override
-    protected void load(ConfigurationSection data) {
-
-        mobId = data.getString("mob");
-    }
-
-    @Method("kill")
     @EventHandler(ignoreCancelled = true)
     public void onMobDeath(RCMobDeathEvent event) {
 
-        // TODO: improve this to allow party killing
         Attack lastDamageCause = event.getMob().getLastDamageCause();
-        if (event.getMob().getId().equalsIgnoreCase(mobId) && lastDamageCause != null && lastDamageCause.getAttacker().getEntity() instanceof Player) {
-            inform("kill", (Player) lastDamageCause.getAttacker().getEntity());
-        }
+        if (lastDamageCause == null || !(lastDamageCause.getAttacker().getEntity() instanceof Player)) return;
+        Player player = (Player) lastDamageCause.getAttacker().getEntity();
+        // TODO: improve this to allow party killing
+        informListeners("kill", player, config -> event.getMob().getId().equalsIgnoreCase(config.getString("mob")));
     }
 }
