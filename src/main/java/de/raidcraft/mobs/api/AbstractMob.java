@@ -68,7 +68,11 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
         if (!hasEffect(Combat.class)) {
             return new ArrayList<>();
         }
-        return new ArrayList<CharacterTemplate>(getEffect(Combat.class).getInvolvedCharacters());
+        Combat combat = getGlobalEffect(Combat.class);
+        if (combat != null) {
+            return new ArrayList<CharacterTemplate>(combat.getInvolvedCharacters());
+        }
+        return new ArrayList<>();
     }
 
     @Override

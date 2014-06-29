@@ -5,6 +5,8 @@ import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.TimeUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -20,10 +22,18 @@ import java.util.List;
  */
 public class FixedSpawnLocation implements Spawnable, Listener {
 
+    @Getter
     private final Spawnable spawnable;
+    @Getter
     private final Location location;
+    @Getter
+    @Setter
     private long cooldown;
+    @Getter
+    @Setter
     private long lastSpawn;
+    @Getter
+    @Setter
     private int spawnTreshhold = 0;
     private List<CharacterTemplate> spawnedMobs = new ArrayList<>();
 
@@ -34,46 +44,6 @@ public class FixedSpawnLocation implements Spawnable, Listener {
         this.cooldown = TimeUtil.secondsToMillis(cooldown);
     }
 
-    public Spawnable getSpawnable() {
-
-        return spawnable;
-    }
-
-    public Location getLocation() {
-
-        return location;
-    }
-
-    public void setCooldown(long cooldown) {
-
-        this.cooldown = cooldown;
-    }
-
-    public long getCooldown() {
-
-        return cooldown;
-    }
-
-    public long getLastSpawn() {
-
-        return lastSpawn;
-    }
-
-    public void setLastSpawn(long lastSpawn) {
-
-        this.lastSpawn = lastSpawn;
-    }
-
-    public int getSpawnTreshhold() {
-
-        return spawnTreshhold;
-    }
-
-    public void setSpawnTreshhold(int spawnTreshhold) {
-
-        this.spawnTreshhold = spawnTreshhold;
-    }
-
     public void addSpawnedMob(CharacterTemplate mob) {
 
         spawnedMobs.add(mob);
@@ -81,7 +51,9 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
     public void removeSpawnedMob(CharacterTemplate mob) {
 
-        spawnedMobs.remove(mob);
+        if (spawnedMobs.contains(mob)) {
+            spawnedMobs.remove(mob);
+        }
     }
 
     public int getSpawnedMobCount() {
@@ -94,7 +66,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
         if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
             CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
-            spawnedMobs.remove(character);
+            removeSpawnedMob(character);
         }
     }
 
@@ -127,8 +99,15 @@ public class FixedSpawnLocation implements Spawnable, Listener {
             return;
         }
         // spawn the mob
-        spawnedMobs.addAll(spawn(location));
-        lastSpawn = System.currentTimeMillis();
+        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation());
+        if (newSpawnableMobs != null) {
+            if (newSpawnableMobs.size() > 1) {
+                spawnedMobs.addAll(newSpawnableMobs);
+            } else {
+                spawnedMobs.add(newSpawnableMobs.get(0));
+            }
+        }
+        setLastSpawn(System.currentTimeMillis());
     }
 
     @Override
@@ -145,7 +124,7 @@ public class FixedSpawnLocation implements Spawnable, Listener {
 
         FixedSpawnLocation location1 = (FixedSpawnLocation) o;
 
-        return location.equals(location1.location) && spawnable.equals(location1.spawnable);
+        return getLocation().equals(location1.getLocation()) && getSpawnable().equals(location1.getSpawnable());
     }
 
     @Override

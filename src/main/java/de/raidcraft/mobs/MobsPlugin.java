@@ -5,9 +5,9 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
+import de.raidcraft.api.action.trigger.TriggerManager;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
-import de.raidcraft.api.quests.InvalidTypeException;
 import de.raidcraft.api.quests.QuestConfigLoader;
 import de.raidcraft.api.quests.QuestException;
 import de.raidcraft.api.quests.Quests;
@@ -45,9 +45,9 @@ public class MobsPlugin extends BasePlugin implements Listener {
         this.mobManager = new MobManager(this);
         registerEvents(this);
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
+        TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
 
         try {
-            Quests.registerTrigger(this, MobQuestTrigger.class);
             // register our quest loader
             Quests.registerQuestLoader(new QuestConfigLoader("mob") {
                 @Override
@@ -63,7 +63,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
                     getMobManager().registerMobGroup(id, config);
                 }
             });
-        } catch (InvalidTypeException | QuestException e) {
+        } catch (QuestException e) {
             getLogger().warning(e.getMessage());
         }
 
@@ -74,14 +74,13 @@ public class MobsPlugin extends BasePlugin implements Listener {
                 CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
                 if (characterManager == null) return;
                 for (World world : Bukkit.getWorlds()) {
-                    for (LivingEntity entity : world.getLivingEntities()) {
-                        if (entity.hasMetadata("RC_CUSTOM_MOB")) {
-                            CharacterTemplate character = characterManager.getCharacter(entity);
-                            if (character instanceof ConfigurableCreature) {
-                                ((ConfigurableCreature) character).checkSpawnPoint();
-                            }
+                    world.getLivingEntities().stream()
+                            .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB")).forEach(entity -> {
+                        CharacterTemplate character = characterManager.getCharacter(entity);
+                        if (character instanceof ConfigurableCreature) {
+                            ((ConfigurableCreature) character).checkSpawnPoint();
                         }
-                    }
+                    });
                 }
             }
         }, 100L, 100L);
