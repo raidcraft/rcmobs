@@ -5,6 +5,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
+import de.raidcraft.api.action.requirement.RequirementFactory;
 import de.raidcraft.api.action.trigger.TriggerManager;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
@@ -15,6 +16,7 @@ import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.quests.MobQuestTrigger;
+import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.skills.CharacterManager;
@@ -23,7 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -45,7 +47,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         this.mobManager = new MobManager(this);
         registerEvents(this);
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
-        TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
 
         try {
             // register our quest loader
@@ -67,21 +68,18 @@ public class MobsPlugin extends BasePlugin implements Listener {
             getLogger().warning(e.getMessage());
         }
 
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
 
-                CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
-                if (characterManager == null) return;
-                for (World world : Bukkit.getWorlds()) {
-                    world.getLivingEntities().stream()
-                            .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB")).forEach(entity -> {
-                        CharacterTemplate character = characterManager.getCharacter(entity);
-                        if (character instanceof ConfigurableCreature) {
-                            ((ConfigurableCreature) character).checkSpawnPoint();
-                        }
-                    });
-                }
+            CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
+            if (characterManager == null) return;
+            for (World world : Bukkit.getWorlds()) {
+                world.getLivingEntities().stream()
+                        .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB")).forEach(entity -> {
+                    CharacterTemplate character = characterManager.getCharacter(entity);
+                    if (character instanceof ConfigurableCreature) {
+                        ((ConfigurableCreature) character).checkSpawnPoint();
+                    }
+                });
             }
         }, 100L, 100L);
     }
@@ -91,17 +89,21 @@ public class MobsPlugin extends BasePlugin implements Listener {
 
         // on shutdown butcher all of our custom mobs
         for (World world : Bukkit.getWorlds()) {
-            for (LivingEntity entity : world.getLivingEntities()) {
-                if (entity.hasMetadata("RC_CUSTOM_MOB")) {
-                    entity.remove();
-                }
-            }
+            world.getLivingEntities().stream()
+                    .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB"))
+                    .forEach(Entity::remove);
         }
     }
 
     public void reload() {
 
         this.mobManager.reload();
+    }
+
+    private void registerActionAPI() {
+
+        TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
+        RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
     }
 
     @Override

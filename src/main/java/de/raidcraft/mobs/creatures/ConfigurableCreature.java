@@ -107,6 +107,7 @@ public class ConfigurableCreature extends AbstractMob {
         }
         // set custom meta data to identify our mob
         MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+        getEntity().setMetadata("RC_MOB_ID", new FixedMetadataValue(plugin, getId()));
         getEntity().setMetadata("RC_CUSTOM_MOB", new FixedMetadataValue(plugin, true));
         if (elite) getEntity().setMetadata("ELITE", new FixedMetadataValue(plugin, true));
         if (rare) getEntity().setMetadata("RARE", new FixedMetadataValue(plugin, true));
