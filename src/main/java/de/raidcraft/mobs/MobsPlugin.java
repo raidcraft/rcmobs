@@ -49,6 +49,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
 
         try {
+            registerActionAPI();
             // register our quest loader
             Quests.registerQuestLoader(new QuestConfigLoader("mob") {
                 @Override
