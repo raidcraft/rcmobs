@@ -150,6 +150,7 @@ public class MobListener implements Listener {
         }
     }
 
+    // TODO: finish checkPathfinding
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void checkPathfinding(EntityDamageByEntityEvent event) {
 

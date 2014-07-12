@@ -32,6 +32,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
+// TODO: why implements Listener?
 public class MobsPlugin extends BasePlugin implements Listener {
 
     private MobManager mobManager;
