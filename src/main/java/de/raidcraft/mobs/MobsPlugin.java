@@ -5,6 +5,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
+import de.raidcraft.api.action.requirement.RequirementFactory;
 import de.raidcraft.api.action.trigger.TriggerManager;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
@@ -15,6 +16,7 @@ import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.quests.MobQuestTrigger;
+import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.skills.CharacterManager;
@@ -47,6 +49,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         registerEvents(this);
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
         TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
+        RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
 
         try {
             // register our quest loader
