@@ -70,6 +70,10 @@ public class ConfigurableCreature extends AbstractMob {
         int minLevel = config.getInt("min-level", 1);
         int maxLevel = config.getInt("max-level", minLevel);
         getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel - minLevel) + minLevel);
+        if (getAttachedLevel().getLevel() <= 0) {
+            RaidCraft.getComponent(MobsPlugin.class).getLogger().info(getId() + ":" + getName()
+                    + " has level: " + getAttachedLevel().getLevel());
+        }
         int minHealth = config.getInt("min-health", (int) CustomMobUtil.getMaxHealth(getAttachedLevel().getLevel()));
         int maxHealth = config.getInt("max-health", minHealth);
 
