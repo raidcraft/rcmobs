@@ -69,7 +69,7 @@ public class ConfigurableCreature extends AbstractMob {
         this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.5);
         int minLevel = config.getInt("min-level", 1);
         int maxLevel = config.getInt("max-level", minLevel);
-        getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
+        getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel - minLevel) + minLevel);
         int minHealth = config.getInt("min-health", (int) CustomMobUtil.getMaxHealth(getAttachedLevel().getLevel()));
         int maxHealth = config.getInt("max-health", minHealth);
 
@@ -244,7 +244,7 @@ public class ConfigurableCreature extends AbstractMob {
     public double getDamage() {
 
         int maxDmg = maxDamage;
-        if(maxDamage <= minDamage) maxDmg = minDamage + 1;
+        if (maxDamage <= minDamage) maxDmg = minDamage + 1;
         return MathUtil.RANDOM.nextInt(maxDmg - minDamage) + minDamage;
     }
 
