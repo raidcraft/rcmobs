@@ -64,7 +64,6 @@ public final class MobManager implements Component, MobProvider {
 
             @Override
             public void run() {
-                plugin.getLogger().info("try to spawn mobs");
                 if(spawnableMobs.size() == 0) return;
                 for(int i = startIndex; i < startIndex+STEP_SIZE; i++) {
                     if(i >= spawnableMobs.size()) { startIndex = 0; return; }
