@@ -4,15 +4,16 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
-import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -161,5 +162,65 @@ public class MobCommands {
             return;
         }
         throw new CommandException("Keine Einträge in der Datenbank gefunden!");
+    }
+
+    @Command(
+            aliases = {"debug"},
+            desc = "show all mob spawn locations",
+            flags = "r:"
+    )
+    @CommandPermissions("rcmobs.deletespawn")
+    public void debug(CommandContext args, CommandSender sender) throws CommandException {
+
+        if (!(sender instanceof Player)) {
+            return;
+        }
+        Player player = (Player) sender;
+        String world = player.getWorld().getName().toLowerCase();
+        plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList()
+                .forEach(loc -> {
+                    try {
+                        if (loc.getWorld().toLowerCase().equals(world)) {
+                            fakeBeacon(player, loc.getBukkitLocation());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+        plugin.getDatabase().find(TMobSpawnLocation.class).findList()
+                .forEach(loc -> {
+                    try {
+                        if (loc.getWorld().toLowerCase().equals(world)) {
+                            fakeBeacon(player, loc.getBukkitLocation());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    public static void fakeBeacon(Player player, Location location) {
+
+        // TODO: to it better
+        Location a1 = location.clone().add(-1, -1, 1);
+        Location a2 = location.clone().add(-1, -1, 0);
+        Location a3 = location.clone().add(-1, -1, -1);
+        Location b1 = location.clone().add(0, -1, 1);
+        Location b2 = location.clone().add(0, -1, 0);
+        Location b3 = location.clone().add(0, -1, -1);
+        Location c1 = location.clone().add(1, -1, 1);
+        Location c2 = location.clone().add(1, -1, 0);
+        Location c3 = location.clone().add(1, -1, -1);
+        player.sendBlockChange(a1, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(a2, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(a3, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(b1, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(b2, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(b3, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(c1, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(c2, Material.DIAMOND_BLOCK, (byte) 0);
+        player.sendBlockChange(c3, Material.DIAMOND_BLOCK, (byte) 0);
+
+        player.sendBlockChange(location, Material.BEACON, (byte) 3);
     }
 }
