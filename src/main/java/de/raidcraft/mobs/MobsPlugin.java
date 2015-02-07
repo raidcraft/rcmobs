@@ -9,9 +9,6 @@ import de.raidcraft.api.action.requirement.RequirementFactory;
 import de.raidcraft.api.action.trigger.TriggerManager;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
-import de.raidcraft.api.quests.QuestConfigLoader;
-import de.raidcraft.api.quests.QuestException;
-import de.raidcraft.api.quests.Quests;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
@@ -24,7 +21,6 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
 
@@ -50,26 +46,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
         TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
         RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
-
-        try {
-            // register our quest loader
-            Quests.registerQuestLoader(new QuestConfigLoader("mob") {
-                @Override
-                public void loadConfig(String id, ConfigurationSection config) {
-
-                    getMobManager().registerMob(id, config);
-                }
-            });
-            Quests.registerQuestLoader(new QuestConfigLoader("mobgroup") {
-                @Override
-                public void loadConfig(String id, ConfigurationSection config) {
-
-                    getMobManager().registerMobGroup(id, config);
-                }
-            });
-        } catch (QuestException e) {
-            getLogger().warning(e.getMessage());
-        }
 
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
@@ -145,21 +121,21 @@ public class MobsPlugin extends BasePlugin implements Listener {
         public int naturalAdaptRadius = 25;
         @Setting("default.replaced-mobs")
         public String[] replacedMobs = {
-            "BLAZE",
-            "ZOMBIE",
-            "SKELETON",
-            "CREEPER",
-            "SPIDER",
-            "GIANT",
-            "SLIME",
-            "GHAST",
-            "PIG_ZOMBIE",
-            "ENDERMAN",
-            "CAVE_SPIDER",
-            "SILVERFISH",
-            "MAGMA_CUBE",
-            "WITCH",
-            "IRON_GOLEM"
+                "BLAZE",
+                "ZOMBIE",
+                "SKELETON",
+                "CREEPER",
+                "SPIDER",
+                "GIANT",
+                "SLIME",
+                "GHAST",
+                "PIG_ZOMBIE",
+                "ENDERMAN",
+                "CAVE_SPIDER",
+                "SILVERFISH",
+                "MAGMA_CUBE",
+                "WITCH",
+                "IRON_GOLEM"
         };
 
         public LocalConfiguration(MobsPlugin plugin) {
