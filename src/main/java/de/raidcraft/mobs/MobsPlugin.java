@@ -5,6 +5,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
+import de.raidcraft.api.action.action.ActionFactory;
 import de.raidcraft.api.action.requirement.RequirementFactory;
 import de.raidcraft.api.action.trigger.TriggerManager;
 import de.raidcraft.api.config.ConfigurationBase;
@@ -13,6 +14,7 @@ import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.quests.MobQuestTrigger;
+import de.raidcraft.mobs.quests.MobSpawnAction;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
@@ -46,6 +48,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
         TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
         RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
+        ActionFactory.getInstance().registerAction(this, "mob.spawn", new MobSpawnAction());
 
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
@@ -71,11 +74,9 @@ public class MobsPlugin extends BasePlugin implements Listener {
 
         // on shutdown butcher all of our custom mobs
         for (World world : Bukkit.getWorlds()) {
-            for (LivingEntity entity : world.getLivingEntities()) {
-                if (entity.hasMetadata("RC_CUSTOM_MOB")) {
-                    entity.remove();
-                }
-            }
+            world.getLivingEntities().stream()
+                    .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB"))
+                    .forEach(org.bukkit.entity.LivingEntity::remove);
         }
     }
 
