@@ -32,7 +32,11 @@ public class MobSpawnAction implements Action<Player> {
                     config.getDouble("y"),
                     config.getDouble("z")
             );
-            mob.spawn(location);
+            if (config.isSet("id")) {
+                mob.spawn(config.getString("id"), location);
+            } else {
+                mob.spawn(location);
+            }
         } catch (UnknownMobException e) {
             RaidCraft.LOGGER.warning(e.getMessage());
             player.sendMessage(ChatColor.RED + "Error spawning mob with action! " + e.getMessage());

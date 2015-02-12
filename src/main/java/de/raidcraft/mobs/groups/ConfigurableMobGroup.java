@@ -5,6 +5,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
+import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
-public class ConfigurableMobGroup implements MobGroup {
+public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup {
 
     private final String name;
     private final int minInterval;

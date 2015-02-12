@@ -13,7 +13,10 @@ import de.raidcraft.api.config.Setting;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
+import de.raidcraft.mobs.quests.GroupRemoveAction;
+import de.raidcraft.mobs.quests.GroupSpawnAction;
 import de.raidcraft.mobs.quests.MobQuestTrigger;
+import de.raidcraft.mobs.quests.MobRemoveAction;
 import de.raidcraft.mobs.quests.MobSpawnAction;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -23,7 +26,6 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -49,22 +51,22 @@ public class MobsPlugin extends BasePlugin implements Listener {
         TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
         RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
         ActionFactory.getInstance().registerAction(this, "mob.spawn", new MobSpawnAction());
+        ActionFactory.getInstance().registerAction(this, "mob.remove", new MobRemoveAction());
+        ActionFactory.getInstance().registerAction(this, "group.spawn", new GroupSpawnAction());
+        ActionFactory.getInstance().registerAction(this, "group.remove", new GroupRemoveAction());
 
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
 
-                CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
-                if (characterManager == null) return;
-                for (World world : Bukkit.getWorlds()) {
-                    world.getLivingEntities().stream()
-                            .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB")).forEach(entity -> {
-                        CharacterTemplate character = characterManager.getCharacter(entity);
-                        if (character instanceof ConfigurableCreature) {
-                            ((ConfigurableCreature) character).checkSpawnPoint();
-                        }
-                    });
-                }
+            CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
+            if (characterManager == null) return;
+            for (World world : Bukkit.getWorlds()) {
+                world.getLivingEntities().stream()
+                        .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB")).forEach(entity -> {
+                    CharacterTemplate character = characterManager.getCharacter(entity);
+                    if (character instanceof ConfigurableCreature) {
+                        ((ConfigurableCreature) character).checkSpawnPoint();
+                    }
+                });
             }
         }, 100L, 100L);
     }

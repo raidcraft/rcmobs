@@ -11,4 +11,14 @@ import java.util.List;
 public interface Spawnable {
 
     public List<CharacterTemplate> spawn(Location location);
+
+    public default List<CharacterTemplate> spawn(String source, Location location) {
+
+        return spawn(location);
+    }
+
+    public default void remove(String source) {
+
+        throw new UnsupportedOperationException();
+    }
 }

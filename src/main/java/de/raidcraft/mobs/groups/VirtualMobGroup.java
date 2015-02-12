@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.groups;
 
+import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
-public class VirtualMobGroup implements MobGroup {
+public class VirtualMobGroup extends AbstractSpawnable implements MobGroup {
 
     private final String name;
     private final List<Spawnable> spawnables;
