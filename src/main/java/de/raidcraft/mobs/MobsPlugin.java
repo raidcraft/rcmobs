@@ -5,9 +5,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
-import de.raidcraft.api.action.action.ActionFactory;
-import de.raidcraft.api.action.requirement.RequirementFactory;
-import de.raidcraft.api.action.trigger.TriggerManager;
+import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
 import de.raidcraft.mobs.commands.MobCommands;
@@ -48,12 +46,8 @@ public class MobsPlugin extends BasePlugin implements Listener {
         this.mobManager = new MobManager(this);
         registerEvents(this);
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
-        TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
-        RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
-        ActionFactory.getInstance().registerAction(this, "mob.spawn", new MobSpawnAction());
-        ActionFactory.getInstance().registerAction(this, "mob.remove", new MobRemoveAction());
-        ActionFactory.getInstance().registerAction(this, "group.spawn", new GroupSpawnAction());
-        ActionFactory.getInstance().registerAction(this, "group.remove", new GroupRemoveAction());
+
+        registerActionAPI();
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
 
@@ -85,6 +79,17 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public void reload() {
 
         this.mobManager.reload();
+    }
+
+    private void registerActionAPI() {
+
+        ActionAPI.register(this)
+                .trigger(new MobQuestTrigger())
+                .requirement("mob.kill", new MobKillRequirement())
+                .action("mob.spawn", new MobSpawnAction())
+                .action("mob.remove", new MobRemoveAction())
+                .action("group.spawn", new GroupSpawnAction())
+                .action("group.remove", new GroupRemoveAction());
     }
 
     @Override
