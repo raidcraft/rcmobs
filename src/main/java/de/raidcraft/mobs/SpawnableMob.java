@@ -1,8 +1,8 @@
 package de.raidcraft.mobs;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
-import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
-public class SpawnableMob implements Spawnable {
+public class SpawnableMob extends AbstractSpawnable {
 
     private final String id;
     private final String mobName;
@@ -84,7 +84,7 @@ public class SpawnableMob implements Spawnable {
         // spawn is not forced so we calculate the spawn chance
         if (getSpawnChance() < 1.0) {
             if (Math.random() > getSpawnChance()) {
-                return null;
+                return new ArrayList<>();
             }
         }
         Mob mob = manager.spawnCharacter(type, location, mClass, config);

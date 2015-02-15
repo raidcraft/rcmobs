@@ -69,7 +69,16 @@ public class ConfigurableCreature extends AbstractMob {
         this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.5);
         int minLevel = config.getInt("min-level", 1);
         int maxLevel = config.getInt("max-level", minLevel);
-        getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(maxLevel) + minLevel);
+        int diffLevel = maxLevel - minLevel;
+        if (diffLevel <= 0) {
+            getAttachedLevel().setLevel(minLevel);
+        } else {
+            getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(diffLevel) + minLevel);
+        }
+        if (getAttachedLevel().getLevel() <= 0) {
+            RaidCraft.getComponent(MobsPlugin.class).getLogger().info(getId() + ":" + getName()
+                    + " has level: " + getAttachedLevel().getLevel());
+        }
         int minHealth = config.getInt("min-health", (int) CustomMobUtil.getMaxHealth(getAttachedLevel().getLevel()));
         int maxHealth = config.getInt("max-health", minHealth);
 
@@ -245,7 +254,7 @@ public class ConfigurableCreature extends AbstractMob {
     public double getDamage() {
 
         int maxDmg = maxDamage;
-        if(maxDamage <= minDamage) maxDmg = minDamage + 1;
+        if (maxDamage <= minDamage) maxDmg = minDamage + 1;
         return MathUtil.RANDOM.nextInt(maxDmg - minDamage) + minDamage;
     }
 

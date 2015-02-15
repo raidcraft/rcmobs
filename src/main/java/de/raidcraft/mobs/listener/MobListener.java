@@ -32,9 +32,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +70,7 @@ public class MobListener implements Listener {
                         PacketType.Play.Server.ENTITY_METADATA) {
                     @Override
                     public void onPacketSending(PacketEvent event) {
+
                         PacketContainer packet = event.getPacket();
 
                         // handle the custom mob hurt effects
@@ -150,6 +158,7 @@ public class MobListener implements Listener {
         }
     }
 
+    // TODO: finish checkPathfinding
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void checkPathfinding(EntityDamageByEntityEvent event) {
 
@@ -186,7 +195,8 @@ public class MobListener implements Listener {
         if (!Arrays.asList(plugin.getConfiguration().replacedMobs).contains(event.getEntity().getType().name())) {
             return;
         }
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL
+                || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE) {
             // check if there are custom mobs around and stop the spawning of the entity
             if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
                 event.setCancelled(true);
@@ -277,7 +287,7 @@ public class MobListener implements Listener {
         // kill all out custom mobs in the chunks and reset their spawn timer
         for (Entity entity : event.getChunk().getEntities()) {
             // ignore citizen npcs
-            if(entity.hasMetadata("NPC")) {
+            if (entity.hasMetadata("NPC")) {
                 return;
             }
 
@@ -291,10 +301,35 @@ public class MobListener implements Listener {
         }
     }
 
+    private FileWriter log;
+
+    // hotfix for removing vanilla mobs
+    @EventHandler(ignoreCancelled = true)
+    public void onChunkUnload(ChunkLoadEvent event) {
+
+        // kill all out custom mobs in the chunks and reset their spawn timer
+        for (Entity entity : event.getChunk().getEntities()) {
+            // ignore citizen npcs
+            if (entity.hasMetadata("NPC")) {
+                return;
+            }
+
+            if (entity instanceof LivingEntity) {
+                if (entity.getType() == EntityType.ENDERMAN ||
+                        entity.getType() == EntityType.CREEPER ||
+                        entity.getType() == EntityType.VILLAGER ||
+                        entity.getType() == EntityType.IRON_GOLEM) {
+                    entity.remove();
+                    plugin.getLogger().info("remove mob: " + entity.getType() + " at " + entity.getLocation().toString());
+                }
+            }
+        }
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onHorseDamage(EntityDamageEvent event) {
 
-        if(event.getEntityType() != EntityType.HORSE) return;
+        if (event.getEntityType() != EntityType.HORSE) return;
 
         event.setCancelled(true);
     }

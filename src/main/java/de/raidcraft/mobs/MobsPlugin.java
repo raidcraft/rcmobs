@@ -5,17 +5,17 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
-import de.raidcraft.api.action.requirement.RequirementFactory;
-import de.raidcraft.api.action.trigger.TriggerManager;
+import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
-import de.raidcraft.api.quests.QuestConfigLoader;
-import de.raidcraft.api.quests.QuestException;
-import de.raidcraft.api.quests.Quests;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
+import de.raidcraft.mobs.quests.GroupRemoveAction;
+import de.raidcraft.mobs.quests.GroupSpawnAction;
 import de.raidcraft.mobs.quests.MobQuestTrigger;
+import de.raidcraft.mobs.quests.MobRemoveAction;
+import de.raidcraft.mobs.quests.MobSpawnAction;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
@@ -24,8 +24,6 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -34,6 +32,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
+// TODO: why implements Listener?
 public class MobsPlugin extends BasePlugin implements Listener {
 
     private MobManager mobManager;
@@ -48,26 +47,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         registerEvents(this);
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
 
-        try {
-            registerActionAPI();
-            // register our quest loader
-            Quests.registerQuestLoader(new QuestConfigLoader("mob") {
-                @Override
-                public void loadConfig(String id, ConfigurationSection config) {
-
-                    getMobManager().registerMob(id, config);
-                }
-            });
-            Quests.registerQuestLoader(new QuestConfigLoader("mobgroup") {
-                @Override
-                public void loadConfig(String id, ConfigurationSection config) {
-
-                    getMobManager().registerMobGroup(id, config);
-                }
-            });
-        } catch (QuestException e) {
-            getLogger().warning(e.getMessage());
-        }
+        registerActionAPI();
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
 
@@ -92,7 +72,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         for (World world : Bukkit.getWorlds()) {
             world.getLivingEntities().stream()
                     .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB"))
-                    .forEach(Entity::remove);
+                    .forEach(org.bukkit.entity.LivingEntity::remove);
         }
     }
 
@@ -103,8 +83,13 @@ public class MobsPlugin extends BasePlugin implements Listener {
 
     private void registerActionAPI() {
 
-        TriggerManager.getInstance().registerTrigger(this, new MobQuestTrigger());
-        RequirementFactory.getInstance().registerRequirement(this, "mob.kill", new MobKillRequirement());
+        ActionAPI.register(this)
+                .trigger(new MobQuestTrigger())
+                .requirement("mob.kill", new MobKillRequirement())
+                .action("mob.spawn", new MobSpawnAction())
+                .action("mob.remove", new MobRemoveAction())
+                .action("group.spawn", new GroupSpawnAction())
+                .action("group.remove", new GroupRemoveAction());
     }
 
     @Override
@@ -144,21 +129,21 @@ public class MobsPlugin extends BasePlugin implements Listener {
         public int naturalAdaptRadius = 25;
         @Setting("default.replaced-mobs")
         public String[] replacedMobs = {
-            "BLAZE",
-            "ZOMBIE",
-            "SKELETON",
-            "CREEPER",
-            "SPIDER",
-            "GIANT",
-            "SLIME",
-            "GHAST",
-            "PIG_ZOMBIE",
-            "ENDERMAN",
-            "CAVE_SPIDER",
-            "SILVERFISH",
-            "MAGMA_CUBE",
-            "WITCH",
-            "IRON_GOLEM"
+                "BLAZE",
+                "ZOMBIE",
+                "SKELETON",
+                "CREEPER",
+                "SPIDER",
+                "GIANT",
+                "SLIME",
+                "GHAST",
+                "PIG_ZOMBIE",
+                "ENDERMAN",
+                "CAVE_SPIDER",
+                "SILVERFISH",
+                "MAGMA_CUBE",
+                "WITCH",
+                "IRON_GOLEM"
         };
 
         public LocalConfiguration(MobsPlugin plugin) {

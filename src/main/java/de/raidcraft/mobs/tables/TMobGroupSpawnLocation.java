@@ -1,6 +1,8 @@
 package de.raidcraft.mobs.tables;
 
 import com.avaje.ebean.validation.NotNull;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -103,5 +105,10 @@ public class TMobGroupSpawnLocation {
     public void setLastSpawn(Timestamp lastSpawn) {
 
         this.lastSpawn = lastSpawn;
+    }
+
+    public Location getBukkitLocation() {
+        // TODO: cache it
+        return new Location(Bukkit.getWorld(getWorld()), getX(), getY(), getZ());
     }
 }

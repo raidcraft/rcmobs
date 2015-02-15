@@ -5,6 +5,7 @@ import de.raidcraft.api.action.requirement.Requirement;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.hero.Hero;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player;
 public class MobKillRequirement implements Requirement<Player> {
 
     @Override
-    public boolean test(Player player) {
+    public boolean test(Player player, ConfigurationSection config) {
 
         CharacterManager component = RaidCraft.getComponent(CharacterManager.class);
         Hero hero = component.getHero(player);
@@ -21,6 +22,6 @@ public class MobKillRequirement implements Requirement<Player> {
         return lastKill != null
                 && lastKill.getEntity().hasMetadata("RC_MOB_ID")
                 && lastKill.getEntity().getMetadata("RC_MOB_ID").stream()
-                .anyMatch(value -> value.asString().equalsIgnoreCase(getConfig().getString("mob")));
+                .anyMatch(value -> value.asString().equalsIgnoreCase(config.getString("mob")));
     }
 }
