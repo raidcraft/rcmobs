@@ -8,6 +8,9 @@ import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
+import de.raidcraft.api.mobs.Mobs;
+import de.raidcraft.api.quests.QuestConfigLoader;
+import de.raidcraft.api.quests.Quests;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
@@ -24,6 +27,7 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
 
         registerActionAPI();
+        registerQuestConfigLoader();
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
 
@@ -90,6 +95,30 @@ public class MobsPlugin extends BasePlugin implements Listener {
                 .action("mob.remove", new MobRemoveAction())
                 .action("group.spawn", new GroupSpawnAction())
                 .action("group.remove", new GroupRemoveAction());
+    }
+
+    private void registerQuestConfigLoader() {
+
+        // register mob config loader
+        Quests.registerQuestLoader(new QuestConfigLoader("mob") {
+            @Override
+            public void loadConfig(String id, ConfigurationSection config) {
+
+                RaidCraft.getComponent(MobsPlugin.class).getMobManager().registerMob(id, config);
+            }
+
+            @Override
+            public String replaceReference(String key) {
+
+                return Mobs.getFriendlyName(key);
+            }
+        });
+        Quests.registerQuestLoader(new QuestConfigLoader("mobgroup") {
+            @Override
+            public void loadConfig(String id, ConfigurationSection config) {
+                RaidCraft.getComponent(MobsPlugin.class).getMobManager().registerMobGroup(id, config);
+            }
+        });
     }
 
     @Override
