@@ -22,6 +22,8 @@ import de.raidcraft.mobs.quests.MobSpawnAction;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
+import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
@@ -127,6 +129,8 @@ public class MobsPlugin extends BasePlugin implements Listener {
         ArrayList<Class<?>> tables = new ArrayList<>();
         tables.add(TMobGroupSpawnLocation.class);
         tables.add(TMobSpawnLocation.class);
+        tables.add(TSpawnedMob.class);
+        tables.add(TSpawnedMobGroup.class);
         return tables;
     }
 

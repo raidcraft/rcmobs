@@ -4,10 +4,14 @@ import com.avaje.ebean.validation.NotNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Silthus
@@ -26,6 +30,8 @@ public class TMobGroupSpawnLocation {
     private String world;
     private double cooldown;
     private Timestamp lastSpawn;
+    @OneToMany(mappedBy = "spawn_group_location_source_id", cascade = CascadeType.REMOVE)
+    private List<TSpawnedMobGroup> spawnedMobGroups = new ArrayList<>();
 
     public int getId() {
 
