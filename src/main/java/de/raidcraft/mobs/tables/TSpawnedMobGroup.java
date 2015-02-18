@@ -23,6 +23,7 @@ public class TSpawnedMobGroup {
 
     @Id
     private int id;
+    private String mobGroup;
     private Timestamp spawnTime;
     @ManyToOne(optional = true)
     private TMobGroupSpawnLocation spawnGroupLocationSource;

@@ -22,6 +22,7 @@ public class TSpawnedMob {
     @Id
     private int id;
     private UUID uuid;
+    private String mob;
     private Timestamp spawnTime;
     @ManyToOne(optional = true)
     private TMobSpawnLocation spawnLocationSource;
