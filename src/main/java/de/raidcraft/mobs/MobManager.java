@@ -12,6 +12,7 @@ import de.raidcraft.mobs.groups.ConfigurableMobGroup;
 import de.raidcraft.mobs.groups.VirtualMobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
+import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.LocationUtil;
@@ -22,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,8 @@ public final class MobManager implements Component, MobProvider {
     private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
     private final Map<String, MobGroup> virtualGroups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
-    private final List<FixedSpawnLocation> spawnableMobs = new ArrayList<>();
+    private final List<MobSpawnLocation> spawnableMobs = new ArrayList<>();
+    private final List<MobGroupSpawnLocation> spawnableGroups = new ArrayList<>();
     private int loadedMobs = 0;
     private int loadedMobGroups = 0;
     private int loadedSpawnLocations = 0;
@@ -164,56 +167,62 @@ public final class MobManager implements Component, MobProvider {
 
         // lets load single spawn locations first
         for (TMobSpawnLocation location : plugin.getDatabase().find(TMobSpawnLocation.class).findList()) {
-            try {
-                if (plugin.getServer().getWorld(location.getWorld()) == null) {
-                    continue;
-                }
-                SpawnableMob spwanableMob = getSpwanableMob(location.getMob());
-                addSpawnLocation(
-                        spwanableMob,
-                        new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
-                        location.getCooldown());
-                loadedSpawnLocations++;
-            } catch (UnknownMobException e) {
-                plugin.getLogger().warning(e.getMessage());
+            if (plugin.getServer().getWorld(location.getWorld()) == null) {
+                continue;
             }
+            addSpawnLocation(location);
+            loadedSpawnLocations++;
         }
         // and now load the group spawn locations
         for (TMobGroupSpawnLocation location : plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList()) {
-            try {
-                if (plugin.getServer().getWorld(location.getWorld()) == null) {
-                    continue;
-                }
-                MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
-                FixedSpawnLocation spawnLocation = addSpawnLocation(
-                        mobGroup,
-                        new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()),
-                        location.getCooldown()
-                );
-                spawnLocation.setSpawnTreshhold(mobGroup.getRespawnTreshhold());
-                // uncomment to overwrite the database cooldown settings
-//                spawnLocation.setCooldown(TimeUtil.secondsToMillis(mobGroup.getSpawnInterval()));
-                loadedSpawnLocations++;
-            } catch (UnknownMobException e) {
-                plugin.getLogger().warning(e.getMessage());
+            if (plugin.getServer().getWorld(location.getWorld()) == null) {
+                continue;
             }
+            addSpawnLocation(location);
+            loadedSpawnLocations++;
         }
     }
 
-    public FixedSpawnLocation addSpawnLocation(Spawnable spawnable, Location location, double minCooldown) {
+    public MobSpawnLocation addSpawnLocation(TMobSpawnLocation location) {
 
-        FixedSpawnLocation mob = new FixedSpawnLocation(spawnable, location, minCooldown);
-        plugin.registerEvents(mob);
-        spawnableMobs.add(mob);
-        return mob;
+        try {
+            MobSpawnLocation mob = new MobSpawnLocation(location);
+            plugin.registerEvents(mob);
+            spawnableMobs.add(mob);
+            return mob;
+        } catch (UnknownMobException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public SpawnableMob getSpwanableMob(LivingEntity entity) throws UnknownMobException {
+    public MobGroupSpawnLocation addSpawnLocation(TMobGroupSpawnLocation location) {
 
-        if (entity.hasMetadata("RC_MOB_ID")) {
-            return getSpwanableMob(entity.getMetadata("RC_MOB_ID").get(0).asString());
+        try {
+            MobGroupSpawnLocation group = new MobGroupSpawnLocation(location);
+            plugin.registerEvents(group);
+            spawnableGroups.add(group);
+            return group;
+        } catch (UnknownMobException e) {
+            e.printStackTrace();
+            return null;
         }
-        throw new UnknownMobException("The entity has no mob id meta data.");
+    }
+
+    public boolean isSpawnedMob(LivingEntity entity) {
+
+        return plugin.getDatabase().find(TSpawnedMob.class, entity.getUniqueId()) != null;
+    }
+
+    @Nullable
+    public TSpawnedMob getSpawnedMob(LivingEntity entity) {
+
+        return plugin.getDatabase().find(TSpawnedMob.class, entity.getUniqueId());
+    }
+
+    public SpawnableMob getSpawnableMob(TSpawnedMob spawnedMob) throws UnknownMobException {
+
+        return getSpwanableMob(spawnedMob.getMob());
     }
 
     public SpawnableMob getSpwanableMob(String name) throws UnknownMobException {
@@ -221,12 +230,10 @@ public final class MobManager implements Component, MobProvider {
         if (mobs.containsKey(name)) {
             return mobs.get(name);
         }
-        List<SpawnableMob> spawnableMobs = new ArrayList<>();
-        for (String mobName : mobs.keySet()) {
-            if (mobName.contains(name)) {
-                spawnableMobs.add(mobs.get(mobName));
-            }
-        }
+        List<SpawnableMob> spawnableMobs = mobs.keySet().stream()
+                .filter(mobName -> mobName.contains(name))
+                .map(mobs::get)
+                .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
             throw new UnknownMobException("Keine Kreatur mit dem Namen " + name + " gefunden!");
         }
@@ -270,25 +277,25 @@ public final class MobManager implements Component, MobProvider {
         return getSpwanableMob(name).spawn(location).get(0);
     }
 
-    public List<FixedSpawnLocation> getSpawnLocations() {
+    public List<MobSpawnLocation> getSpawnLocations() {
 
         return spawnableMobs;
     }
 
-    public void addSpawnLocation(FixedSpawnLocation location) {
+    public void addSpawnLocation(MobSpawnLocation location) {
 
         spawnableMobs.add(location);
     }
 
-    public boolean removeSpawnLocation(FixedSpawnLocation location) {
+    public boolean removeSpawnLocation(MobSpawnLocation location) {
 
         return spawnableMobs.remove(location);
     }
 
-    public FixedSpawnLocation getClosestSpawnLocation(Location location, int distance) {
+    public MobSpawnLocation getClosestSpawnLocation(Location location, int distance) {
 
-        FixedSpawnLocation closest = null;
-        for (FixedSpawnLocation spawnLocation : getSpawnLocations()) {
+        MobSpawnLocation closest = null;
+        for (MobSpawnLocation spawnLocation : getSpawnLocations()) {
             int blockDistance = LocationUtil.getBlockDistance(location, spawnLocation.getLocation());
             if (blockDistance < distance) {
                 closest = spawnLocation;

@@ -1,17 +1,20 @@
 package de.raidcraft.mobs;
 
+import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
+import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
-import org.bukkit.metadata.FixedMetadataValue;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,10 +90,18 @@ public class SpawnableMob extends AbstractSpawnable {
                 return new ArrayList<>();
             }
         }
-        Mob mob = manager.spawnCharacter(type, location, mClass, config);
-        mob.setId(getId());
-        mob.getEntity().setMetadata("RC_MOB_ID", new FixedMetadataValue(RaidCraft.getComponent(MobsPlugin.class), getId()));
         ArrayList<CharacterTemplate> mobs = new ArrayList<>();
+        Mob mob = manager.spawnCharacter(type, location, mClass, config);
+        if (mob == null) {
+            return mobs;
+        }
+        mob.setId(getId());
+        EbeanServer database = RaidCraft.getDatabase(MobsPlugin.class);
+        TSpawnedMob spawnedMob = new TSpawnedMob();
+        spawnedMob.setMob(getId());
+        spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
+        spawnedMob.setUuid(mob.getEntity().getUniqueId());
+        database.save(spawnedMob);
         mobs.add(mob);
         return mobs;
     }

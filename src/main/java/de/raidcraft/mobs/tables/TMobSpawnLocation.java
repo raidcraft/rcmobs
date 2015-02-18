@@ -1,6 +1,8 @@
 package de.raidcraft.mobs.tables;
 
 import com.avaje.ebean.validation.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -20,8 +22,8 @@ import java.util.List;
  */
 @Entity
 @Table(name = "rcmobs_mob_spawn_location")
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(of = "id")
 public class TMobSpawnLocation {
 
     @Id

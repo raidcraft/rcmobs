@@ -4,7 +4,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import de.raidcraft.mobs.FixedSpawnLocation;
+import de.raidcraft.mobs.MobSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
@@ -93,7 +93,7 @@ public class MobCommands {
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
-            plugin.getMobManager().addSpawnLocation(mob, location, spawn.getCooldown());
+            plugin.getMobManager().addSpawnLocation(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
@@ -122,7 +122,7 @@ public class MobCommands {
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
-            plugin.getMobManager().addSpawnLocation(mobGroup, location, spawn.getCooldown());
+            plugin.getMobManager().addSpawnLocation(spawn);
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }
@@ -137,7 +137,7 @@ public class MobCommands {
     public void deleteSpawnPoint(CommandContext args, CommandSender sender) throws CommandException {
 
         int radius = args.getFlagInteger('r', 30);
-        FixedSpawnLocation spawn = plugin.getMobManager().getClosestSpawnLocation(((Player) sender).getLocation(), radius);
+        MobSpawnLocation spawn = plugin.getMobManager().getClosestSpawnLocation(((Player) sender).getLocation(), radius);
         if (spawn == null) {
             throw new CommandException("Keinen Spawnpunkt im Radius von " + radius + " Metern gefunden.");
         }

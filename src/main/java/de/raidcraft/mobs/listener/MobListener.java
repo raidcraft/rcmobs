@@ -11,13 +11,13 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
-import de.raidcraft.mobs.FixedSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
+import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -39,9 +39,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -209,9 +207,10 @@ public class MobListener implements Listener {
                 List<SpawnableMob> nearbyMobs = new ArrayList<>();
                 // first we want to check all nearby entities for custom mobs so we can spawn more of the same type
                 for (LivingEntity entity : BukkitUtil.getNearbyEntities(event.getEntity(), plugin.getConfiguration().naturalAdaptRadius)) {
-                    if (entity.hasMetadata("RC_CUSTOM_MOB")) {
+                    TSpawnedMob spawnedMob = plugin.getDatabase().find(TSpawnedMob.class, entity.getUniqueId());
+                    if (spawnedMob != null) {
                         try {
-                            SpawnableMob mob = plugin.getMobManager().getSpwanableMob(entity);
+                            SpawnableMob mob = plugin.getMobManager().getSpwanableMob(spawnedMob.getMob());
                             nearbyMobs.add(mob);
                         } catch (UnknownMobException ignored) {
                             entity.remove();
@@ -251,7 +250,8 @@ public class MobListener implements Listener {
         if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
             return;
         }
-        if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
+        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(event.getEntity());
+        if (spawnedMob != null) {
             event.getDrops().clear();
             event.setDroppedExp(0);
             // add our custom drops
@@ -265,6 +265,7 @@ public class MobListener implements Listener {
                     }
                 }
             }
+            plugin.getDatabase().delete(spawnedMob);
         }
     }
 
@@ -276,53 +277,8 @@ public class MobListener implements Listener {
         if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
             return;
         }
-        if (event.getEntity().hasMetadata("RC_CUSTOM_MOB")) {
+        if (event.getEntity() instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) {
             event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onChunkUnload(ChunkUnloadEvent event) {
-
-        // kill all out custom mobs in the chunks and reset their spawn timer
-        for (Entity entity : event.getChunk().getEntities()) {
-            // ignore citizen npcs
-            if (entity.hasMetadata("NPC")) {
-                return;
-            }
-
-            if (entity instanceof LivingEntity && entity.hasMetadata("RC_CUSTOM_MOB")) {
-                FixedSpawnLocation spawnLocation = plugin.getMobManager().getClosestSpawnLocation(entity.getLocation(), 10);
-                if (spawnLocation != null && spawnLocation.getSpawnedMobCount() > 0) {
-                    spawnLocation.setLastSpawn(0);
-                }
-                entity.remove();
-            }
-        }
-    }
-
-    private FileWriter log;
-
-    // hotfix for removing vanilla mobs
-    @EventHandler(ignoreCancelled = true)
-    public void onChunkUnload(ChunkLoadEvent event) {
-
-        // kill all out custom mobs in the chunks and reset their spawn timer
-        for (Entity entity : event.getChunk().getEntities()) {
-            // ignore citizen npcs
-            if (entity.hasMetadata("NPC")) {
-                return;
-            }
-
-            if (entity instanceof LivingEntity) {
-                if (entity.getType() == EntityType.ENDERMAN ||
-                        entity.getType() == EntityType.CREEPER ||
-                        entity.getType() == EntityType.VILLAGER ||
-                        entity.getType() == EntityType.IRON_GOLEM) {
-                    entity.remove();
-                    plugin.getLogger().info("remove mob: " + entity.getType() + " at " + entity.getLocation().toString());
-                }
-            }
         }
     }
 
@@ -332,5 +288,27 @@ public class MobListener implements Listener {
         if (event.getEntityType() != EntityType.HORSE) return;
 
         event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onChunkLoad(ChunkLoadEvent event) {
+
+        // respawn all custom entities when a chunk reloads
+        for (Entity entity : event.getChunk().getEntities()) {
+            if (entity instanceof LivingEntity) {
+                TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
+                if (spawnedMob != null) {
+                    try {
+                        entity.remove();
+                        SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(spawnedMob);
+                        List<CharacterTemplate> spawn = spawnableMob.spawn(entity.getLocation());
+                        spawnedMob.setUuid(spawn.get(0).getEntity().getUniqueId());
+                        plugin.getDatabase().save(spawnedMob);
+                    } catch (UnknownMobException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 }

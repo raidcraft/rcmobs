@@ -33,12 +33,13 @@ public class TMobGroupSpawnLocation {
     private int z;
     private String world;
     private double cooldown;
+    private int respawnTreshhold;
     private Timestamp lastSpawn;
     @OneToMany(mappedBy = "spawn_group_location_source_id", cascade = CascadeType.REMOVE)
     private List<TSpawnedMobGroup> spawnedMobGroups = new ArrayList<>();
 
     public Location getBukkitLocation() {
-        // TODO: cache it
+
         return new Location(Bukkit.getWorld(getWorld()), getX(), getY(), getZ());
     }
 }

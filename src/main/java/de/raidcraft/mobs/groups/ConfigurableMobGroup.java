@@ -1,13 +1,17 @@
 package de.raidcraft.mobs.groups;
 
+import com.avaje.ebean.EbeanServer;
 import com.sk89q.worldedit.blocks.BlockType;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
+import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
+import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.Location;
@@ -15,6 +19,8 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,8 +144,18 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             }
         }
         CharacterTemplate characterTemplate = spawnedMobs.get(0);
+        EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
+        TSpawnedMobGroup spawnedMobGroup = new TSpawnedMobGroup();
+        spawnedMobGroup.setMobGroup(getName());
+        spawnedMobGroup.setSpawnTime(Timestamp.from(Instant.now()));
+        db.save(spawnedMobGroup);
         for (CharacterTemplate mob : spawnedMobs) {
             mob.joinParty(characterTemplate.getParty());
+            TSpawnedMob spawnedMob = db.find(TSpawnedMob.class, mob.getEntity().getUniqueId());
+            if (spawnedMob != null) {
+                spawnedMob.setMobGroupSource(spawnedMobGroup);
+                db.save(spawnedMob);
+            }
         }
         return spawnedMobs;
     }
