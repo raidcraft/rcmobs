@@ -16,7 +16,7 @@ import java.util.List;
  * @author mdoering
  */
 @Entity
-@Table(name = "rcmobs_mob_group_spawn_location")
+@Table(name = "rcmobs_spawned_mob_groups")
 @Getter
 @Setter
 public class TSpawnedMobGroup {
