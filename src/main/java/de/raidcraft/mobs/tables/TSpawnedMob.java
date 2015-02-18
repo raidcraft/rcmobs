@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author mdoering
  */
 @Entity
-@Table(name = "rcmobs_mob_spawn_location")
+@Table(name = "rcmobs_spawned_mobs")
 @Getter
 @Setter
 public class TSpawnedMob {
