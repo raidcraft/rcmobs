@@ -82,7 +82,7 @@ public class MobSpawnLocation implements Spawnable, Listener {
             return;
         }
         // dont spawn stuff if it is still on cooldown
-        if (checkCooldown && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
+        if (getLastSpawn() != null && checkCooldown && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
             return;
         }
         if (getSpawnedMobCount() > getSpawnTreshhold()) {
