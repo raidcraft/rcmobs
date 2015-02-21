@@ -93,7 +93,7 @@ public class MobSpawnLocation implements Spawnable, Listener {
         if (newSpawnableMobs != null) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
             for (CharacterTemplate mob : newSpawnableMobs) {
-                TSpawnedMob spawnedMob = db.find(TSpawnedMob.class, mob.getEntity().getUniqueId());
+                TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
                 if (spawnedMob == null) {
                     spawnedMob = new TSpawnedMob();
                     spawnedMob.setMob(getDatabaseEntry().getMob());

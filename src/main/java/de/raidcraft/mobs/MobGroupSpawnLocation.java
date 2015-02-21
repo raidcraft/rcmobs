@@ -104,7 +104,7 @@ public class MobGroupSpawnLocation implements Spawnable, Listener {
             spawnedMobGroup.setSpawnGroupLocationSource(getDatabaseEntry());
             db.save(spawnedMobGroup);
             for (CharacterTemplate mob : newSpawnableMobs) {
-                TSpawnedMob spawnedMob = db.find(TSpawnedMob.class, mob.getEntity().getUniqueId());
+                TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
                 spawnedMob.setMobGroupSource(spawnedMobGroup);
                 db.save(spawnedMob);
             }
