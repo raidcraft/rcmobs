@@ -29,6 +29,6 @@ public class TSpawnedMobGroup {
     @ManyToOne(optional = true)
     private TMobGroupSpawnLocation spawnGroupLocationSource;
     @OneToMany
-    @JoinColumn(name = "mob_groupsource_id")
+    @JoinColumn(name = "mob_group_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 }
