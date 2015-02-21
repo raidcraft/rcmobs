@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -28,5 +29,6 @@ public class TSpawnedMobGroup {
     @ManyToOne(optional = true)
     private TMobGroupSpawnLocation spawnGroupLocationSource;
     @OneToMany
+    @JoinColumn(name = "mob_groupsource_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 }

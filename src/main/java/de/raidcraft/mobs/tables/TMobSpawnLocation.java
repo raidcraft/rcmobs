@@ -3,14 +3,12 @@ package de.raidcraft.mobs.tables;
 import com.avaje.ebean.validation.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
@@ -37,6 +35,7 @@ public class TMobSpawnLocation {
     private double cooldown;
     private Timestamp lastSpawn;
     @OneToMany
+    @JoinColumn(name = "spawn_location_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 
     public Location getBukkitLocation() {

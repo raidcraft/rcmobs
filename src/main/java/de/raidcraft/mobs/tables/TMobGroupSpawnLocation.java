@@ -6,9 +6,9 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
@@ -36,6 +36,7 @@ public class TMobGroupSpawnLocation {
     private int respawnTreshhold;
     private Timestamp lastSpawn;
     @OneToMany
+    @JoinColumn(name = "spawn_group_location_source_id")
     private List<TSpawnedMobGroup> spawnedMobGroups = new ArrayList<>();
 
     public Location getBukkitLocation() {
