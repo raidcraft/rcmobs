@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Silthus
@@ -250,7 +251,16 @@ public final class MobManager implements Component, MobProvider {
 
         MobGroup group = groups.get(name);
         if (group == null) {
-            throw new UnknownMobException("The group " + name + " does not exist!");
+            // try to loop and find a more unprecise match
+            List<String> mobGroups = groups.keySet().stream()
+                    .filter(g -> g.toLowerCase().endsWith(name.toLowerCase()))
+                    .collect(Collectors.toList());
+            if (mobGroups.size() < 0) {
+                throw new UnknownMobException("No mob group with the name " + name + " found!");
+            } else if (mobGroups.size() > 1) {
+                throw new UnknownMobException("Multiple mob groups with the name " + name + " found: " + String.join(",", mobGroups));
+            }
+            group = groups.get(mobGroups.get(0));
         }
         return group;
     }
