@@ -27,6 +27,6 @@ public class TSpawnedMobGroup {
     private Timestamp spawnTime;
     @ManyToOne(optional = true)
     private TMobGroupSpawnLocation spawnGroupLocationSource;
-    @OneToMany(mappedBy = "mob_group_source")
+    @OneToMany(mappedBy = "mob_group_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 }
