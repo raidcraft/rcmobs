@@ -2,6 +2,7 @@ package de.raidcraft.mobs.requirements;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.action.requirement.Requirement;
+import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.hero.Hero;
@@ -20,8 +21,7 @@ public class MobKillRequirement implements Requirement<Player> {
         Hero hero = component.getHero(player);
         CharacterTemplate lastKill = hero.getLastKill();
         return lastKill != null
-                && lastKill.getEntity().hasMetadata("RC_MOB_ID")
-                && lastKill.getEntity().getMetadata("RC_MOB_ID").stream()
-                .anyMatch(value -> value.asString().equalsIgnoreCase(config.getString("mob")));
+                && lastKill instanceof Mob
+                && ((Mob) lastKill).getId().equals(config.getString("mob"));
     }
 }
