@@ -106,7 +106,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
 
-                RaidCraft.getComponent(MobsPlugin.class).getMobManager().registerMob(id, config);
+                getMobManager().registerMob(id, config);
             }
 
             @Override
@@ -118,7 +118,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         Quests.registerQuestLoader(new QuestConfigLoader("mobgroup") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
-                RaidCraft.getComponent(MobsPlugin.class).getMobManager().registerMobGroup(id, config);
+                getMobManager().registerMobGroup(id, config);
             }
         });
     }
