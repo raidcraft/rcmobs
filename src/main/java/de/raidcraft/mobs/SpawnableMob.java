@@ -97,11 +97,13 @@ public class SpawnableMob extends AbstractSpawnable {
         }
         mob.setId(getId());
         EbeanServer database = RaidCraft.getDatabase(MobsPlugin.class);
-        TSpawnedMob spawnedMob = new TSpawnedMob();
-        spawnedMob.setMob(getId());
-        spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
-        spawnedMob.setUuid(mob.getEntity().getUniqueId());
-        database.save(spawnedMob);
+        TSpawnedMob spawnedMob = database.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
+        if (spawnedMob == null) {
+            spawnedMob.setMob(getId());
+            spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
+            spawnedMob.setUuid(mob.getEntity().getUniqueId());
+            database.save(spawnedMob);
+        }
         mobs.add(mob);
         return mobs;
     }

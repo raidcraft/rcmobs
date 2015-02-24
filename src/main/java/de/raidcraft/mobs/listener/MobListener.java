@@ -301,9 +301,8 @@ public class MobListener implements Listener {
                     try {
                         entity.remove();
                         SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(spawnedMob);
-                        List<CharacterTemplate> spawn = spawnableMob.spawn(entity.getLocation());
-                        spawnedMob.setUuid(spawn.get(0).getEntity().getUniqueId());
-                        plugin.getDatabase().save(spawnedMob);
+                        plugin.getDatabase().delete(spawnedMob);
+                        spawnableMob.spawn(entity.getLocation());
                     } catch (UnknownMobException e) {
                         e.printStackTrace();
                     }
