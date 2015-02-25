@@ -99,6 +99,7 @@ public class SpawnableMob extends AbstractSpawnable {
         EbeanServer database = RaidCraft.getDatabase(MobsPlugin.class);
         TSpawnedMob spawnedMob = database.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
         if (spawnedMob == null) {
+	        spawnedMob = new TSpawnedMob();
             spawnedMob.setMob(getId());
             spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
             spawnedMob.setUuid(mob.getEntity().getUniqueId());
