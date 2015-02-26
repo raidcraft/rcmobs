@@ -262,7 +262,7 @@ public final class MobManager implements Component, MobProvider {
             List<String> mobGroups = groups.keySet().stream()
                     .filter(g -> g.toLowerCase().endsWith(name.toLowerCase()))
                     .collect(Collectors.toList());
-            if (mobGroups.size() < 0) {
+            if (mobGroups.size() < 1) {
                 throw new UnknownMobException("No mob group with the name " + name + " found!");
             } else if (mobGroups.size() > 1) {
                 throw new UnknownMobException("Multiple mob groups with the name " + name + " found: " + String.join(",", mobGroups));
