@@ -19,6 +19,12 @@ public class MobGroupTrigger extends Trigger implements Listener {
 
         super("group", "kill");
     }
+    
+    @Information(
+            value = "group.kill",
+            desc = "Is triggered when the given mob group was killed by the player.",
+            conf = {"group"}
+    )
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onGroupKill(RCMobGroupDeathEvent event) {
