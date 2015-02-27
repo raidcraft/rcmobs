@@ -65,14 +65,11 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     @SuppressWarnings("unchecked")
     public List<CharacterTemplate> getInvolvedTargets() {
 
-        if (!hasEffect(Combat.class)) {
+        Combat combat = getLastCombat();
+        if (combat == null) {
             return new ArrayList<>();
         }
-        Combat combat = getGlobalEffect(Combat.class);
-        if (combat != null) {
-            return new ArrayList<CharacterTemplate>(combat.getInvolvedCharacters());
-        }
-        return new ArrayList<>();
+        return new ArrayList<>(combat.getInvolvedCharacters());
     }
 
     @Override
