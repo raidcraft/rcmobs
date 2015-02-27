@@ -24,7 +24,7 @@ import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
-import de.raidcraft.mobs.trigger.MobQuestTrigger;
+import de.raidcraft.mobs.trigger.MobTrigger;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
@@ -92,7 +92,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
     private void registerActionAPI() {
 
         ActionAPI.register(this)
-                .trigger(new MobQuestTrigger())
+                .trigger(new MobTrigger())
                 .trigger(new MobGroupTrigger())
                 .requirement("mob.kill", new MobKillRequirement())
                 .action("mob.spawn", new MobSpawnAction())

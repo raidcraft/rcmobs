@@ -29,6 +29,11 @@ public class MobGroupTrigger extends Trigger implements Listener {
         super("group", "kill");
     }
 
+    @Information(
+            value = "group.kill",
+            desc = "Is triggered when the given mob group was killed. Will inform all involed players",
+            conf = {"id", "group"}
+    )
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onGroupKill(RCMobGroupDeathEvent event) {
 
@@ -52,7 +57,11 @@ public class MobGroupTrigger extends Trigger implements Listener {
             }
             for (Map.Entry<String, Set<Hero>> entry : heroes.entrySet()) {
                 for (Hero hero : entry.getValue()) {
-                    informListeners("kill", hero.getPlayer(), config -> entry.getKey().equals(config.getString("id")));
+                    informListeners("kill", hero.getPlayer(), config -> {
+                        if (config.isSet("group") && !config.getString("group").equals(group.getMobGroup())) return false;
+                        if (config.isSet("id") && !config.getString("id").equals(entry.getKey())) return false;
+                        return true;
+                    });
                 }
             }
         }
