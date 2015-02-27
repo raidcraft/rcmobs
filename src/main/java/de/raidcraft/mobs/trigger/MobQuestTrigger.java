@@ -1,4 +1,4 @@
-package de.raidcraft.mobs.quests;
+package de.raidcraft.mobs.trigger;
 
 import de.raidcraft.api.action.trigger.Trigger;
 import de.raidcraft.mobs.events.RCMobDeathEvent;

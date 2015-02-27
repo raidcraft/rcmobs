@@ -1,4 +1,4 @@
-package de.raidcraft.mobs.quests;
+package de.raidcraft.mobs.actions;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.action.action.Action;

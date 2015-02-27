@@ -6,6 +6,7 @@ import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.api.mobs.Mobs;
+import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.groups.ConfigurableMobGroup;
@@ -13,6 +14,7 @@ import de.raidcraft.mobs.groups.VirtualMobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.LocationUtil;
@@ -28,6 +30,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -212,6 +215,15 @@ public final class MobManager implements Component, MobProvider {
     public boolean isSpawnedMob(LivingEntity entity) {
 
         return plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findUnique() != null;
+    }
+
+    public Mob getMob(UUID uuid) {
+
+        CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(uuid);
+        if (character != null && character instanceof Mob) {
+            return (Mob) character;
+        }
+        return null;
     }
 
     @Nullable
