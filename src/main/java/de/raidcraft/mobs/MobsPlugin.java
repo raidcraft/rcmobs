@@ -16,6 +16,7 @@ import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.actions.GroupRemoveAction;
 import de.raidcraft.mobs.actions.GroupSpawnAction;
+import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobQuestTrigger;
 import de.raidcraft.mobs.actions.MobRemoveAction;
 import de.raidcraft.mobs.actions.MobSpawnAction;
@@ -92,6 +93,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
 
         ActionAPI.register(this)
                 .trigger(new MobQuestTrigger())
+                .trigger(new MobGroupTrigger())
                 .requirement("mob.kill", new MobKillRequirement())
                 .action("mob.spawn", new MobSpawnAction())
                 .action("mob.remove", new MobRemoveAction())
