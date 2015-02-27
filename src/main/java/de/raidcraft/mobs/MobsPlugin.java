@@ -11,20 +11,20 @@ import de.raidcraft.api.config.Setting;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.api.quests.QuestConfigLoader;
 import de.raidcraft.api.quests.Quests;
+import de.raidcraft.mobs.actions.GroupRemoveAction;
+import de.raidcraft.mobs.actions.GroupSpawnAction;
+import de.raidcraft.mobs.actions.MobRemoveAction;
+import de.raidcraft.mobs.actions.MobSpawnAction;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
-import de.raidcraft.mobs.actions.GroupRemoveAction;
-import de.raidcraft.mobs.actions.GroupSpawnAction;
-import de.raidcraft.mobs.trigger.MobGroupTrigger;
-import de.raidcraft.mobs.trigger.MobQuestTrigger;
-import de.raidcraft.mobs.actions.MobRemoveAction;
-import de.raidcraft.mobs.actions.MobSpawnAction;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
+import de.raidcraft.mobs.trigger.MobGroupTrigger;
+import de.raidcraft.mobs.trigger.MobQuestTrigger;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Bukkit;
@@ -117,7 +117,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
                 return Mobs.getFriendlyName(key);
             }
         });
-        Quests.registerQuestLoader(new QuestConfigLoader("mobgroup") {
+        Quests.registerQuestLoader(new QuestConfigLoader("group") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
                 getMobManager().registerMobGroup(id, config);
