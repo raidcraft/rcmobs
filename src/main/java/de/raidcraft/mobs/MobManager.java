@@ -286,7 +286,19 @@ public final class MobManager implements Component, MobProvider {
 
     public CharacterTemplate spawnMob(String name, Location location) throws UnknownMobException {
 
-        return getSpwanableMob(name).spawn(location).get(0);
+        SpawnableMob mob = getSpwanableMob(name);
+        double original_chance = mob.getSpawnChance();
+
+        // set spawn chance to 100%
+        mob.setSpawnChance(1.0);
+
+        // spawn mob
+        CharacterTemplate character = mob.spawn(location).get(0);
+
+        // restore spawn chance
+        mob.setSpawnChance(original_chance);
+
+        return character;
     }
 
     public List<MobSpawnLocation> getSpawnLocations() {
