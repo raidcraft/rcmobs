@@ -16,7 +16,6 @@ import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
-import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
@@ -258,7 +257,6 @@ public class MobListener implements Listener {
             CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
             if (character instanceof Mob) {
                 // lets call our custom death event
-                RaidCraft.callEvent(new RCMobDeathEvent((Mob) character));
                 for (LootTable lootTable : ((Mob) character).getLootTables()) {
                     for (LootTableEntry loot : lootTable.loot()) {
                         event.getDrops().add(loot.getItem());
