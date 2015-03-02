@@ -52,7 +52,7 @@ public abstract class AbstractSpawnable implements Spawnable, Listener {
     }
 
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onEntityDeath(EntityDeathEvent event) {
 
         MobManager component = RaidCraft.getComponent(MobManager.class);

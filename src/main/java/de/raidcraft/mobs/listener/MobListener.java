@@ -244,7 +244,7 @@ public class MobListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
 
         if (event.getEntityType() == EntityType.PLAYER || event.getEntity().hasMetadata("NPC")) {
