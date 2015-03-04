@@ -1,6 +1,7 @@
 package de.raidcraft.mobs.events;
 
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -9,13 +10,15 @@ import org.bukkit.event.HandlerList;
  */
 public class RCMobGroupDeathEvent extends Event {
 
-    private final String id;
+    private final String trackingId;
     private final MobGroup mob;
+    private final CharacterTemplate character;
 
-    public RCMobGroupDeathEvent(String id, MobGroup mob) {
+    public RCMobGroupDeathEvent(String trackingId, MobGroup mob, CharacterTemplate character) {
 
-        this.id = id;
+        this.trackingId = trackingId;
         this.mob = mob;
+        this.character = character;
     }
 
     public MobGroup getMobGroup() {
@@ -23,9 +26,19 @@ public class RCMobGroupDeathEvent extends Event {
         return mob;
     }
 
-    public String getGroupId() {
+    public String getTrackingId() {
 
-        return id;
+        return trackingId;
+    }
+
+    /**
+     * Gets the entity that triggered the mob group death event.
+     *
+     * @return triggering entity
+     */
+    public CharacterTemplate getCharacter() {
+
+        return character;
     }
 
     /*///////////////////////////////////////////////////

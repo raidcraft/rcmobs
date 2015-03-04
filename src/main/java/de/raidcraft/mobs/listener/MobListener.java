@@ -12,15 +12,19 @@ import com.google.common.base.Strings;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
+import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.events.RCEntityDeathEvent;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
@@ -265,6 +269,23 @@ public class MobListener implements Listener {
                 }
             }
             plugin.getDatabase().delete(spawnedMob);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onEntityGroupDeath(RCEntityDeathEvent event) {
+
+        MobManager component = RaidCraft.getComponent(MobManager.class);
+        TSpawnedMob spawnedMob = component.getSpawnedMob(event.getCharacter().getEntity());
+        if (spawnedMob != null) {
+            TSpawnedMobGroup group = spawnedMob.getMobGroupSource();
+            if (group != null) {
+                try {
+                    MobGroup mobGroup = component.getMobGroup(group.getMobGroup());
+                    RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, event.getCharacter()));
+                } catch (UnknownMobException ignored) {
+                }
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import de.raidcraft.mobs.groups.VirtualMobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -230,6 +232,15 @@ public final class MobManager implements Component, MobProvider {
     public TSpawnedMob getSpawnedMob(LivingEntity entity) {
 
         return plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findUnique();
+    }
+
+    public Optional<TSpawnedMobGroup> getSpawnedMobGroup(LivingEntity entity) {
+
+        TSpawnedMob spawnedMob = getSpawnedMob(entity);
+        if (spawnedMob != null) {
+            return Optional.ofNullable(spawnedMob.getMobGroupSource());
+        }
+        return Optional.empty();
     }
 
     public SpawnableMob getSpawnableMob(TSpawnedMob spawnedMob) throws UnknownMobException {
