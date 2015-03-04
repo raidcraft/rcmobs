@@ -269,6 +269,10 @@ public class MobListener implements Listener {
                 }
             }
             plugin.getDatabase().delete(spawnedMob);
+            // delete the mob group if the last mob dies
+            if (spawnedMob.getMobGroupSource() != null && spawnedMob.getMobGroupSource().getSpawnedMobs().size() < 2) {
+                plugin.getDatabase().delete(spawnedMob.getMobGroupSource());
+            }
         }
     }
 
@@ -281,8 +285,11 @@ public class MobListener implements Listener {
             TSpawnedMobGroup group = spawnedMob.getMobGroupSource();
             if (group != null) {
                 try {
-                    MobGroup mobGroup = component.getMobGroup(group.getMobGroup());
-                    RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, event.getCharacter()));
+                    // only trigger the event if the last mob of the group dies
+                    if (group.getSpawnedMobs().size() < 2) {
+                        MobGroup mobGroup = component.getMobGroup(group.getMobGroup());
+                        RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, event.getCharacter()));
+                    }
                 } catch (UnknownMobException ignored) {
                 }
             }
