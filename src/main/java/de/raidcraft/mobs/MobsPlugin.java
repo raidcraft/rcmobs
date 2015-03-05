@@ -156,6 +156,8 @@ public class MobsPlugin extends BasePlugin implements Listener {
         public double spawnTaskInterval = 5.0;
         @Setting("default.reset-range")
         public int resetRange = 50;
+        @Setting("default.spawn-similiar-random-mobs")
+        public boolean spawnSimiliarRandomMobs = false;
         @Setting("default.replace-hostile-mobs")
         public boolean replaceHostileMobs = false;
         @Setting("default.replace-animals")
