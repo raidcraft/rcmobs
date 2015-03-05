@@ -8,7 +8,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.google.common.base.Strings;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
@@ -312,16 +311,9 @@ public class MobListener implements Listener {
                 if (spawnedMob != null) {
                     try {
                         SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(spawnedMob);
-                        double spawnChance = spawnableMob.getSpawnChance();
-                        spawnableMob.setSpawnChance(1.0);
-                        plugin.getDatabase().delete(spawnedMob);
-                        if (!Strings.isNullOrEmpty(spawnedMob.getSourceId())) {
-                            spawnableMob.spawn(spawnedMob.getSourceId(), entity.getLocation());
-                        } else {
-                            spawnableMob.spawn(entity.getLocation());
-                        }
-                        spawnableMob.setSpawnChance(spawnChance);
-                        entity.remove();
+                        // wrap the character so all skill system properties are loaded and cached
+                        RaidCraft.getComponent(CharacterManager.class)
+                                .wrapCharacter((LivingEntity) entity, spawnableMob.getmClass(), spawnableMob.getConfig());
                     } catch (UnknownMobException e) {
                         e.printStackTrace();
                     }
