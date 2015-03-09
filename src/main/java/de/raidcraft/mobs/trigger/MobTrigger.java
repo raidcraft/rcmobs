@@ -32,6 +32,7 @@ public class MobTrigger extends Trigger implements Listener {
                 .map(target -> (Hero) target)
                 .forEach(hero -> informListeners("kill", hero.getPlayer(),
                         config -> (!config.isSet("mob")
+                                || mob.getId() == null
                                 || mob.getId().equalsIgnoreCase(config.getString("mob"))
                             )
                         )
