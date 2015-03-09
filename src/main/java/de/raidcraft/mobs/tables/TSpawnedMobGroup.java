@@ -3,6 +3,7 @@ package de.raidcraft.mobs.tables;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -28,7 +29,7 @@ public class TSpawnedMobGroup {
     private Timestamp spawnTime;
     @ManyToOne(optional = true)
     private TMobGroupSpawnLocation spawnGroupLocationSource;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "mob_group_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 }

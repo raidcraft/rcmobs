@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -34,7 +35,7 @@ public class TMobSpawnLocation {
     private String world;
     private double cooldown;
     private Timestamp lastSpawn;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "spawn_location_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 
