@@ -266,12 +266,14 @@ public class MobListener implements Listener {
                 try {
                     MobGroup mobGroup = plugin.getMobManager().getMobGroup(spawnedMob.getMobGroupSource().getMobGroup());
                     RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, character));
+                    plugin.getDatabase().delete(spawnedMob);
                     plugin.getDatabase().delete(spawnedMob.getMobGroupSource());
                 } catch (UnknownMobException e) {
                     e.printStackTrace();
                 }
+            } else {
+                plugin.getDatabase().delete(spawnedMob);
             }
-            plugin.getDatabase().delete(spawnedMob);
         }
     }
 
