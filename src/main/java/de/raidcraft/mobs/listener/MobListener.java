@@ -261,7 +261,6 @@ public class MobListener implements Listener {
                     }
                 }
             }
-            plugin.getDatabase().delete(spawnedMob);
             // delete the mob group if the last mob dies
             if (spawnedMob.getMobGroupSource() != null && spawnedMob.getMobGroupSource().getSpawnedMobs().size() < 1) {
                 try {
@@ -272,6 +271,7 @@ public class MobListener implements Listener {
                     e.printStackTrace();
                 }
             }
+            plugin.getDatabase().delete(spawnedMob);
         }
     }
 
