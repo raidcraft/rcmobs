@@ -99,9 +99,9 @@ public class MobSpawnLocation implements Spawnable, Listener {
                     spawnedMob.setMob(getDatabaseEntry().getMob());
                     spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
                     spawnedMob.setUuid(mob.getEntity().getUniqueId());
+                    spawnedMob.setSpawnLocationSource(getDatabaseEntry());
+                    db.save(spawnedMob);
                 }
-                spawnedMob.setSpawnLocationSource(getDatabaseEntry());
-                db.save(spawnedMob);
             }
             getDatabaseEntry().setLastSpawn(Timestamp.from(Instant.now()));
             db.save(getDatabaseEntry());
