@@ -4,6 +4,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
+import de.raidcraft.mobs.MobGroupSpawnLocation;
 import de.raidcraft.mobs.MobSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
@@ -93,7 +94,8 @@ public class MobCommands {
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
-            plugin.getMobManager().addSpawnLocation(spawn);
+            MobSpawnLocation mobSpawnLocation = plugin.getMobManager().addSpawnLocation(spawn);
+            mobSpawnLocation.spawn(false);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
@@ -122,7 +124,8 @@ public class MobCommands {
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
-            plugin.getMobManager().addSpawnLocation(spawn);
+            MobGroupSpawnLocation spawnLocation = plugin.getMobManager().addSpawnLocation(spawn);
+            spawnLocation.spawn(false);
         } catch (UnknownMobException e) {
             throw new CommandException(e.getMessage());
         }

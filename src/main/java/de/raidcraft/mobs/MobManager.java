@@ -82,6 +82,23 @@ public final class MobManager implements Component, MobProvider {
                 startIndex += STEP_SIZE;
             }
         }, 20L, time);
+        // and the mob group task
+        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+
+            private static final int STEP_SIZE = 20;
+            private int startIndex = 0;
+
+            @Override
+            public void run() {
+                if(spawnableGroups.size() == 0) return;
+                for(int i = startIndex; i < startIndex+STEP_SIZE; i++) {
+                    if(i >= spawnableGroups.size()) { startIndex = 0; return; }
+
+                    spawnableGroups.get(i).spawn();
+                }
+                startIndex += STEP_SIZE;
+            }
+        }, 20L, time);
     }
 
     private void load(File directory, String path) {
