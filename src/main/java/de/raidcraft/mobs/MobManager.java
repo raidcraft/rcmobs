@@ -145,6 +145,7 @@ public final class MobManager implements Component, MobProvider {
         mobs.clear();
         groups.clear();
         spawnableMobs.clear();
+        spawnableGroups.clear();
         queuedGroups.clear();
         load();
     }
