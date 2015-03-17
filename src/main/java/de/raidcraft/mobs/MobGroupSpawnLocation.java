@@ -98,15 +98,19 @@ public class MobGroupSpawnLocation implements Spawnable, Listener {
         }
         // spawn the mob
         List<CharacterTemplate> newSpawnableMobs = spawn(getLocation());
-        if (newSpawnableMobs != null) {
+        if (newSpawnableMobs != null && !newSpawnableMobs.isEmpty()) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
-            TSpawnedMobGroup spawnedMobGroup = new TSpawnedMobGroup();
-            spawnedMobGroup.setSpawnGroupLocationSource(getDatabaseEntry());
-            db.save(spawnedMobGroup);
-            for (CharacterTemplate mob : newSpawnableMobs) {
-                TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
-                spawnedMob.setMobGroupSource(spawnedMobGroup);
-                db.save(spawnedMob);
+            TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", newSpawnableMobs.get(0).getEntity().getUniqueId()).findUnique();
+            TSpawnedMobGroup mobGroup = spawnedMob.getMobGroupSource();
+            if (mobGroup == null) {
+                mobGroup = new TSpawnedMobGroup();
+                mobGroup.setMobGroup(getSpawnable().getName());
+                mobGroup.setSpawnTime(Timestamp.from(Instant.now()));
+                mobGroup.setSpawnGroupLocationSource(getDatabaseEntry());
+                db.save(mobGroup);
+            } else {
+                mobGroup.setSpawnGroupLocationSource(getDatabaseEntry());
+                db.update(getDatabaseEntry());
             }
             getDatabaseEntry().setLastSpawn(Timestamp.from(Instant.now()));
             db.save(getDatabaseEntry());
