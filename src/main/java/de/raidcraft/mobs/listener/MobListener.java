@@ -314,6 +314,7 @@ public class MobListener implements Listener {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
                 if (spawnedMob != null) {
+                    plugin.getLogger().info("Saving unloaded mob to db: " + spawnedMob.getUuid() + " -> " + entity.getLocation());
                     spawnedMob.setUnloaded(true);
                     Location location = entity.getLocation();
                     spawnedMob.setChunkX(location.getChunk().getX());
