@@ -309,7 +309,7 @@ public class MobListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onChunkUnload(ChunkUnloadEvent event) {
-
+	    plugin.getLogger().info("UnloadChunkEvent triggert for Chunk X:"+event.getChunk().getX()+" Z: "+event.getChunk().getZ()+". Entities in Chunk: "+event.getChunk().getEntities().length+" chunk.toString: "+event.getChunk().toString());
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
