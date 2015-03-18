@@ -48,7 +48,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * @author Silthus
@@ -334,10 +333,10 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
 
-        Stream<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk()).stream().filter(TSpawnedMob::isUnloaded);
-        if (mobs.count() > 0) {
-            plugin.getLogger().info("Loading " + mobs.count() + " inside (loaded: " + event.getChunk().isLoaded() + ") chunk " + event.getChunk());
-            Bukkit.getScheduler().runTaskLater(plugin, () -> mobs.forEach(mob -> {
+        List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
+        if (mobs.size() > 0) {
+            plugin.getLogger().info("Loading " + mobs.size() + " inside (loaded: " + event.getChunk().isLoaded() + ") chunk " + event.getChunk());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
                 try {
                     Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
                     SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
