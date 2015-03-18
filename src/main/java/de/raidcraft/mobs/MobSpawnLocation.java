@@ -10,34 +10,31 @@ import de.raidcraft.util.TimeUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Silthus
  */
 @Data
 @EqualsAndHashCode(of = "id")
-public class MobSpawnLocation implements Spawnable, Listener {
+public class MobSpawnLocation implements Spawnable {
 
     private final int id;
     private final Spawnable spawnable;
-    private final TMobSpawnLocation databaseEntry;
-    private int spawnTreshhold = 0;
 
     protected MobSpawnLocation(TMobSpawnLocation location) throws UnknownMobException {
 
         this.id = location.getId();
         MobManager manager = RaidCraft.getComponent(MobManager.class);
         this.spawnable = manager.getSpwanableMob(location.getMob());
-        this.databaseEntry = location;
+    }
+
+    public TMobSpawnLocation getDatabaseEntry() {
+
+        return RaidCraft.getDatabase(MobsPlugin.class).find(TMobSpawnLocation.class, getId());
     }
 
     public Location getLocation() {
@@ -55,20 +52,9 @@ public class MobSpawnLocation implements Spawnable, Listener {
         return TimeUtil.secondsToMillis(getDatabaseEntry().getCooldown());
     }
 
-    public int getSpawnedMobCount() {
+    public boolean isSpawned() {
 
-        return getDatabaseEntry().getSpawnedMobs().size();
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntityDeath(EntityDeathEvent event) {
-
-        Optional<TSpawnedMob> spawnedMob = getDatabaseEntry().getSpawnedMobs().stream()
-                .filter(mob -> mob.getUuid().equals(event.getEntity().getUniqueId()))
-                .findAny();
-        if (spawnedMob.isPresent()) {
-            RaidCraft.getDatabase(MobsPlugin.class).delete(spawnedMob.get());
-        }
+        return !getDatabaseEntry().getSpawnedMobs().isEmpty();
     }
 
     public void spawn() {
@@ -81,33 +67,34 @@ public class MobSpawnLocation implements Spawnable, Listener {
         if (!getLocation().getChunk().isLoaded()) {
             return;
         }
-        // dont spawn stuff if it is still on cooldown
-        if (getLastSpawn() != null && checkCooldown && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
+        if (isSpawned()) {
             return;
         }
-        if (getSpawnedMobCount() > getSpawnTreshhold()) {
+        // dont spawn stuff if it is still on cooldown
+        if (getLastSpawn() != null && checkCooldown && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
             return;
         }
         // spawn the mob
         List<CharacterTemplate> newSpawnableMobs = spawn(getLocation());
         if (newSpawnableMobs != null) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
+            TMobSpawnLocation mobSpawnLocation = getDatabaseEntry();
             for (CharacterTemplate mob : newSpawnableMobs) {
                 TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
                 if (spawnedMob == null) {
                     spawnedMob = new TSpawnedMob();
-                    spawnedMob.setMob(getDatabaseEntry().getMob());
+                    spawnedMob.setMob(mobSpawnLocation.getMob());
                     spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
                     spawnedMob.setUuid(mob.getEntity().getUniqueId());
-                    spawnedMob.setSpawnLocationSource(getDatabaseEntry());
+                    spawnedMob.setSpawnLocationSource(mobSpawnLocation);
                     db.save(spawnedMob);
                 } else {
-                    spawnedMob.setSpawnLocationSource(getDatabaseEntry());
+                    spawnedMob.setSpawnLocationSource(mobSpawnLocation);
                     db.update(spawnedMob);
                 }
             }
-            getDatabaseEntry().setLastSpawn(Timestamp.from(Instant.now()));
-            db.update(getDatabaseEntry());
+            mobSpawnLocation.setLastSpawn(Timestamp.from(Instant.now()));
+            db.update(mobSpawnLocation);
         }
     }
 

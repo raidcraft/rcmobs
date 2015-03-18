@@ -12,33 +12,31 @@ import de.raidcraft.util.TimeUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Silthus
  */
 @Data
 @EqualsAndHashCode(of = "id")
-public class MobGroupSpawnLocation implements Spawnable, Listener {
+public class MobGroupSpawnLocation implements Spawnable {
 
     private final int id;
     private final MobGroup spawnable;
-    private final TMobGroupSpawnLocation databaseEntry;
 
     protected MobGroupSpawnLocation(TMobGroupSpawnLocation location) throws UnknownMobException {
 
         this.id = location.getId();
         MobManager manager = RaidCraft.getComponent(MobManager.class);
         this.spawnable = manager.getMobGroup(location.getSpawnGroup());
-        this.databaseEntry = location;
+    }
+
+    public TMobGroupSpawnLocation getDatabaseEntry() {
+
+        return RaidCraft.getDatabase(MobsPlugin.class).find(TMobGroupSpawnLocation.class, getId());
     }
 
     public Location getLocation() {
@@ -64,19 +62,6 @@ public class MobGroupSpawnLocation implements Spawnable, Listener {
     public int getSpawnTreshhold() {
 
         return getDatabaseEntry().getRespawnTreshhold();
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntityDeath(EntityDeathEvent event) {
-
-        getDatabaseEntry().getSpawnedMobGroups().forEach(group -> {
-            Optional<TSpawnedMob> spawnedMob = group.getSpawnedMobs().stream()
-                    .filter(mob -> mob.getUuid().equals(event.getEntity().getUniqueId()))
-                    .findAny();
-            if (spawnedMob.isPresent()) {
-                RaidCraft.getDatabase(MobsPlugin.class).delete(spawnedMob.get());
-            }
-        });
     }
 
     public void spawn() {

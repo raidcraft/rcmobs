@@ -29,6 +29,7 @@ import org.bukkit.entity.LivingEntity;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,8 +49,8 @@ public final class MobManager implements Component, MobProvider {
     private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
     private final Map<String, MobGroup> virtualGroups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
-    private final List<MobSpawnLocation> spawnableMobs = new ArrayList<>();
-    private final List<MobGroupSpawnLocation> spawnableGroups = new ArrayList<>();
+    private MobSpawnLocation[] spawnableMobs = new MobSpawnLocation[0];
+    private MobGroupSpawnLocation[] spawnableGroups = new MobGroupSpawnLocation[0];
     private int loadedMobs = 0;
     private int loadedMobGroups = 0;
     private int loadedSpawnLocations = 0;
@@ -66,37 +67,21 @@ public final class MobManager implements Component, MobProvider {
 
         // start the spawn task for the fixed spawn locations
         long time = TimeUtil.secondsToTicks(plugin.getConfiguration().spawnTaskInterval);
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
-            private static final int STEP_SIZE = 20;
-            private int startIndex = 0;
-
-            @Override
-            public void run() {
-                if(spawnableMobs.size() == 0) return;
-                for(int i = startIndex; i < startIndex+STEP_SIZE; i++) {
-                    if(i >= spawnableMobs.size()) { startIndex = 0; return; }
-
-                    spawnableMobs.get(i).spawn();
+            if (spawnableMobs.length > 0) {
+                for (MobSpawnLocation mob : spawnableMobs) {
+                    mob.spawn(true);
                 }
-                startIndex += STEP_SIZE;
             }
-        }, 20L, time);
+        }, 10L, time);
         // and the mob group task
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
-            private static final int STEP_SIZE = 20;
-            private int startIndex = 0;
-
-            @Override
-            public void run() {
-                if(spawnableGroups.size() == 0) return;
-                for(int i = startIndex; i < startIndex+STEP_SIZE; i++) {
-                    if(i >= spawnableGroups.size()) { startIndex = 0; return; }
-
-                    spawnableGroups.get(i).spawn();
+            if (spawnableGroups.length > 0) {
+                for (MobGroupSpawnLocation group : spawnableGroups) {
+                    group.spawn(true);
                 }
-                startIndex += STEP_SIZE;
             }
         }, 20L, time);
     }
@@ -144,8 +129,8 @@ public final class MobManager implements Component, MobProvider {
 
         mobs.clear();
         groups.clear();
-        spawnableMobs.clear();
-        spawnableGroups.clear();
+        spawnableMobs = new MobSpawnLocation[0];
+        spawnableGroups = new MobGroupSpawnLocation[0];
         queuedGroups.clear();
         load();
     }
@@ -188,30 +173,46 @@ public final class MobManager implements Component, MobProvider {
 
     private void loadSpawnLocations() {
 
+        List<MobSpawnLocation> mobSpawnLocations = new ArrayList<>();
         // lets load single spawn locations first
-        for (TMobSpawnLocation location : plugin.getDatabase().find(TMobSpawnLocation.class).findList()) {
+        List<TMobSpawnLocation> mobSpawnLocationList = plugin.getDatabase().find(TMobSpawnLocation.class).findList();
+        for (TMobSpawnLocation location : mobSpawnLocationList) {
             if (plugin.getServer().getWorld(location.getWorld()) == null) {
                 continue;
             }
-            addSpawnLocation(location);
-            loadedSpawnLocations++;
+            try {
+                mobSpawnLocations.add(new MobSpawnLocation(location));
+                loadedSpawnLocations++;
+            } catch (UnknownMobException e) {
+                e.printStackTrace();
+            }
         }
+        spawnableMobs = mobSpawnLocations.toArray(new MobSpawnLocation[mobSpawnLocations.size()]);
+
+        List<MobGroupSpawnLocation> mobGroupSpawnLocations = new ArrayList<>();
         // and now load the group spawn locations
-        for (TMobGroupSpawnLocation location : plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList()) {
+        List<TMobGroupSpawnLocation> mobGroupSpawnLocationList = plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList();
+        for (TMobGroupSpawnLocation location : mobGroupSpawnLocationList) {
             if (plugin.getServer().getWorld(location.getWorld()) == null) {
                 continue;
             }
-            addSpawnLocation(location);
-            loadedSpawnLocations++;
+            try {
+                mobGroupSpawnLocations.add(new MobGroupSpawnLocation(location));
+                loadedSpawnLocations++;
+            } catch (UnknownMobException e) {
+                e.printStackTrace();
+            }
         }
+        spawnableGroups = mobGroupSpawnLocations.toArray(new MobGroupSpawnLocation[mobGroupSpawnLocations.size()]);
     }
 
     public MobSpawnLocation addSpawnLocation(TMobSpawnLocation location) {
 
         try {
             MobSpawnLocation mob = new MobSpawnLocation(location);
-            plugin.registerEvents(mob);
-            spawnableMobs.add(mob);
+            List<MobSpawnLocation> locations = Arrays.asList(spawnableMobs);
+            locations.add(mob);
+            spawnableMobs = locations.toArray(new MobSpawnLocation[locations.size()]);
             return mob;
         } catch (UnknownMobException e) {
             e.printStackTrace();
@@ -223,8 +224,9 @@ public final class MobManager implements Component, MobProvider {
 
         try {
             MobGroupSpawnLocation group = new MobGroupSpawnLocation(location);
-            plugin.registerEvents(group);
-            spawnableGroups.add(group);
+            List<MobGroupSpawnLocation> locations = Arrays.asList(spawnableGroups);
+            locations.add(group);
+            spawnableGroups = locations.toArray(new MobGroupSpawnLocation[locations.size()]);
             return group;
         } catch (UnknownMobException e) {
             e.printStackTrace();
@@ -330,25 +332,45 @@ public final class MobManager implements Component, MobProvider {
         return character;
     }
 
-    public List<MobSpawnLocation> getSpawnLocations() {
+    public void removeSpawnLocation(MobSpawnLocation location) {
 
-        return spawnableMobs;
+        List<MobSpawnLocation> newMobs = new ArrayList<>();
+        for (MobSpawnLocation spawnableMob : spawnableMobs) {
+            if (!spawnableMob.equals(location)) {
+                newMobs.add(spawnableMob);
+            }
+        }
+        spawnableMobs = newMobs.toArray(new MobSpawnLocation[newMobs.size()]);
     }
 
-    public void addSpawnLocation(MobSpawnLocation location) {
+    public void removeSpawnLocation(MobGroupSpawnLocation location) {
 
-        spawnableMobs.add(location);
+        List<MobGroupSpawnLocation> newMobs = new ArrayList<>();
+        for (MobGroupSpawnLocation spawnableGroup : spawnableGroups) {
+            if (!spawnableGroup.equals(location)) {
+                newMobs.add(spawnableGroup);
+            }
+        }
+        spawnableGroups = newMobs.toArray(new MobGroupSpawnLocation[newMobs.size()]);
     }
 
-    public boolean removeSpawnLocation(MobSpawnLocation location) {
-
-        return spawnableMobs.remove(location);
-    }
-
-    public MobSpawnLocation getClosestSpawnLocation(Location location, int distance) {
+    public MobSpawnLocation getClosestMobSpawnLocation(Location location, int distance) {
 
         MobSpawnLocation closest = null;
-        for (MobSpawnLocation spawnLocation : getSpawnLocations()) {
+        for (MobSpawnLocation spawnLocation : spawnableMobs) {
+            int blockDistance = LocationUtil.getBlockDistance(location, spawnLocation.getLocation());
+            if (blockDistance < distance) {
+                closest = spawnLocation;
+                distance = blockDistance;
+            }
+        }
+        return closest;
+    }
+
+    public MobGroupSpawnLocation getClosestGroupSpawnLocation(Location location, int distance) {
+
+        MobGroupSpawnLocation closest = null;
+        for (MobGroupSpawnLocation spawnLocation : spawnableGroups) {
             int blockDistance = LocationUtil.getBlockDistance(location, spawnLocation.getLocation());
             if (blockDistance < distance) {
                 closest = spawnLocation;

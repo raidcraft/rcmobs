@@ -140,7 +140,7 @@ public class MobCommands {
     public void deleteSpawnPoint(CommandContext args, CommandSender sender) throws CommandException {
 
         int radius = args.getFlagInteger('r', 30);
-        MobSpawnLocation spawn = plugin.getMobManager().getClosestSpawnLocation(((Player) sender).getLocation(), radius);
+        MobSpawnLocation spawn = plugin.getMobManager().getClosestMobSpawnLocation(((Player) sender).getLocation(), radius);
         if (spawn == null) {
             throw new CommandException("Keinen Spawnpunkt im Radius von " + radius + " Metern gefunden.");
         }

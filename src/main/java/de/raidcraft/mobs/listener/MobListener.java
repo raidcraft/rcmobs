@@ -196,7 +196,7 @@ public class MobListener implements Listener {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL
                 || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE) {
             // check if there are custom mobs around and stop the spawning of the entity
-            if (plugin.getMobManager().getClosestSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
+            if (plugin.getMobManager().getClosestMobSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
                 event.setCancelled(true);
             } else {
                 // lets replace all natural mobs with our own
