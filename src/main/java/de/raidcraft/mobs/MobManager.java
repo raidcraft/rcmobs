@@ -211,7 +211,7 @@ public final class MobManager implements Component, MobProvider {
 
         try {
             MobSpawnLocation mob = new MobSpawnLocation(location);
-            List<MobSpawnLocation> locations = Arrays.asList(spawnableMobs);
+            List<MobSpawnLocation> locations = new ArrayList<>(Arrays.asList(spawnableMobs));
             locations.add(mob);
             spawnableMobs = locations.toArray(new MobSpawnLocation[locations.size()]);
             return mob;
@@ -225,7 +225,7 @@ public final class MobManager implements Component, MobProvider {
 
         try {
             MobGroupSpawnLocation group = new MobGroupSpawnLocation(location);
-            List<MobGroupSpawnLocation> locations = Arrays.asList(spawnableGroups);
+            List<MobGroupSpawnLocation> locations = new ArrayList<>(Arrays.asList(spawnableGroups));
             locations.add(group);
             spawnableGroups = locations.toArray(new MobGroupSpawnLocation[locations.size()]);
             return group;
