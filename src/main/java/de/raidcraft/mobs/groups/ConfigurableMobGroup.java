@@ -154,7 +154,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
             if (spawnedMob != null) {
                 spawnedMob.setMobGroupSource(spawnedMobGroup);
-                db.save(spawnedMob);
+                db.update(spawnedMob);
             }
         }
         return spawnedMobs;
