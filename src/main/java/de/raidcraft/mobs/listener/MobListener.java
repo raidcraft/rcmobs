@@ -48,6 +48,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author Silthus
@@ -333,22 +334,26 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
 
-        plugin.getMobManager().getSpawnedMobs(event.getChunk()).stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
-            try {
-                Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
-                SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                List<CharacterTemplate> spawn = spawnableMob.spawn(location);
-                if (spawn.size() > 0) {
-                    mob.setUuid(spawn.get(0).getUniqueId());
-                    mob.setSpawnTime(Timestamp.from(Instant.now()));
-                    mob.setUnloaded(false);
-                    plugin.getDatabase().update(mob);
-                } else {
+        Stream<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk()).stream().filter(TSpawnedMob::isUnloaded);
+        if (mobs.count() > 0) {
+            plugin.getLogger().info("Loading " + mobs.count() + " inside (loaded: " + event.getChunk().isLoaded() + ") chunk " + event.getChunk());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> mobs.forEach(mob -> {
+                try {
+                    Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
+                    SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                    List<CharacterTemplate> spawn = spawnableMob.spawn(location);
+                    if (spawn.size() > 0) {
+                        mob.setUuid(spawn.get(0).getUniqueId());
+                        mob.setSpawnTime(Timestamp.from(Instant.now()));
+                        mob.setUnloaded(false);
+                        plugin.getDatabase().update(mob);
+                    } else {
+                        mob.delete();
+                    }
+                } catch (UnknownMobException e) {
                     mob.delete();
                 }
-            } catch (UnknownMobException e) {
-                mob.delete();
-            }
-        });
+            }), 1L);
+        }
     }
 }
