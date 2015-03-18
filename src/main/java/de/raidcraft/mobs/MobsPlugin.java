@@ -63,7 +63,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
             if (characterManager == null) return;
             for (World world : Bukkit.getWorlds()) {
                 world.getLivingEntities().stream()
-                        .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB")).forEach(entity -> {
+                        .filter(getMobManager()::isSpawnedMob).forEach(entity -> {
                     CharacterTemplate character = characterManager.getCharacter(entity);
                     if (character instanceof ConfigurableCreature) {
                         ((ConfigurableCreature) character).checkSpawnPoint();

@@ -21,6 +21,7 @@ import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -378,6 +379,15 @@ public final class MobManager implements Component, MobProvider {
             }
         }
         return closest;
+    }
+
+    public List<TSpawnedMob> getSpawnedMobs(Chunk chunk) {
+
+        return plugin.getDatabase().find(TSpawnedMob.class).where()
+                .eq("world", chunk.getWorld().getName())
+                .eq("chunk_x", chunk.getX())
+                .eq("chunk_z", chunk.getZ())
+                .findList();
     }
 
     @Override

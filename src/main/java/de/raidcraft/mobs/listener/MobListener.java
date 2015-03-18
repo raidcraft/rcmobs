@@ -25,7 +25,9 @@ import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -39,7 +41,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -271,13 +276,12 @@ public class MobListener implements Listener {
                 try {
                     MobGroup mobGroup = plugin.getMobManager().getMobGroup(spawnedMob.getMobGroupSource().getMobGroup());
                     RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, character));
-                    plugin.getDatabase().delete(spawnedMob);
-                    plugin.getDatabase().delete(spawnedMob.getMobGroupSource());
+                    spawnedMob.delete();
                 } catch (UnknownMobException e) {
                     e.printStackTrace();
                 }
             } else {
-                plugin.getDatabase().delete(spawnedMob);
+                spawnedMob.delete();
             }
         }
     }
@@ -303,24 +307,47 @@ public class MobListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onChunkLoad(ChunkLoadEvent event) {
+    @EventHandler(ignoreCancelled = true)
+    public void onChunkUnload(ChunkUnloadEvent event) {
 
-        // respawn all custom entities when a chunk reloads
         for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof LivingEntity) {
+            if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
                 if (spawnedMob != null) {
-                    try {
-                        SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(spawnedMob);
-                        // wrap the character so all skill system properties are loaded and cached
-                        RaidCraft.getComponent(CharacterManager.class)
-                                .wrapCharacter((LivingEntity) entity, spawnableMob.getmClass(), spawnableMob.getConfig());
-                    } catch (UnknownMobException e) {
-                        e.printStackTrace();
-                    }
+                    spawnedMob.setUnloaded(true);
+                    Location location = entity.getLocation();
+                    spawnedMob.setChunkX(location.getChunk().getX());
+                    spawnedMob.setChunkZ(location.getChunk().getZ());
+                    spawnedMob.setWorld(location.getWorld().getName());
+                    spawnedMob.setX(location.getBlockX());
+                    spawnedMob.setY(location.getBlockY());
+                    spawnedMob.setZ(location.getBlockZ());
+                    plugin.getDatabase().update(spawnedMob);
+                    entity.remove();
                 }
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChunkLoad(ChunkLoadEvent event) {
+
+        plugin.getMobManager().getSpawnedMobs(event.getChunk()).stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
+            try {
+                Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
+                SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                List<CharacterTemplate> spawn = spawnableMob.spawn(location);
+                if (spawn.size() > 0) {
+                    mob.setUuid(spawn.get(0).getUniqueId());
+                    mob.setSpawnTime(Timestamp.from(Instant.now()));
+                    mob.setUnloaded(false);
+                    plugin.getDatabase().update(mob);
+                } else {
+                    mob.delete();
+                }
+            } catch (UnknownMobException e) {
+                mob.delete();
+            }
+        });
     }
 }

@@ -1,5 +1,7 @@
 package de.raidcraft.mobs.tables;
 
+import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.MobsPlugin;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,4 +34,9 @@ public class TSpawnedMobGroup {
     @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "mob_group_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
+
+    public void delete() {
+
+        RaidCraft.getDatabase(MobsPlugin.class).delete(this);
+    }
 }
