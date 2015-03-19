@@ -103,4 +103,22 @@ public class MobSpawnLocation implements Spawnable {
 
         return getSpawnable().spawn(location);
     }
+
+    public void delete() {
+
+        MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+        plugin.getDatabase().delete(getDatabaseEntry());
+        getDatabaseEntry().getSpawnedMobs().forEach(TSpawnedMob::delete);
+    }
+
+    @Override
+    public String toString() {
+
+        return "MobSpawnLocation{" +
+                "spawnable=" + spawnable +
+                "cooldown=" + getCooldown() +
+                "location=" + getLocation() +
+                "lastSpawn=" + getLastSpawn() +
+                '}';
+    }
 }

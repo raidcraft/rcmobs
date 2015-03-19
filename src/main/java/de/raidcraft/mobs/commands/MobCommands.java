@@ -12,11 +12,14 @@ import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
+import de.raidcraft.util.PaginatedResult;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * @author Silthus
@@ -134,37 +137,53 @@ public class MobCommands {
     @Command(
             aliases = {"deletespawn", "ds", "removespawn", "rs", "delete", "remove"},
             desc = "Removes the nearest spawnpoint",
-            flags = "r:"
+            flags = "r:i:p:"
     )
     @CommandPermissions("rcmobs.deletespawn")
     public void deleteSpawnPoint(CommandContext args, CommandSender sender) throws CommandException {
 
         int radius = args.getFlagInteger('r', 30);
-        MobSpawnLocation spawn = plugin.getMobManager().getClosestMobSpawnLocation(((Player) sender).getLocation(), radius);
-        if (spawn == null) {
-            throw new CommandException("Keinen Spawnpunkt im Radius von " + radius + " Metern gefunden.");
-        }
-        TMobSpawnLocation mobSpawn = plugin.getDatabase().find(TMobSpawnLocation.class).where()
-                .eq("x", spawn.getLocation().getBlockX())
-                .eq("y", spawn.getLocation().getBlockY())
-                .eq("z", spawn.getLocation().getBlockZ()).findUnique();
-        if (mobSpawn != null) {
-            plugin.getDatabase().delete(mobSpawn);
-            plugin.getMobManager().removeSpawnLocation(spawn);
+        int id = args.getFlagInteger('i', -1);
+        if (id > 0) {
+            plugin.getMobManager().getMobSpawnLocation(id).delete();
             sender.sendMessage(ChatColor.GREEN + "Spawnpunkt wurde gelöscht!");
-            return;
+        } else {
+            List<MobSpawnLocation> locations = plugin.getMobManager().getMobSpawnLocations(((Player) sender).getLocation(), radius);
+            sender.sendMessage(ChatColor.RED + "Rufe /rcm ds -i <id> auf um den Spawn zu löschen.");
+            new PaginatedResult<MobSpawnLocation>("ID - Location.toString()") {
+                @Override
+                public String format(MobSpawnLocation mobSpawnLocation) {
+
+                    return ChatColor.AQUA + "" + ChatColor.BOLD + "" + mobSpawnLocation.getId() + ": " + ChatColor.RESET + ChatColor.GRAY + mobSpawnLocation;
+                }
+            }.display(sender, locations, args.getFlagInteger('p', 1));
         }
-        TMobGroupSpawnLocation mobGroup = plugin.getDatabase().find(TMobGroupSpawnLocation.class).where()
-                .eq("x", spawn.getLocation().getBlockX())
-                .eq("y", spawn.getLocation().getBlockY())
-                .eq("z", spawn.getLocation().getBlockZ()).findUnique();
-        if (mobGroup != null) {
-            plugin.getDatabase().delete(mobGroup);
-            plugin.getMobManager().removeSpawnLocation(spawn);
+    }
+
+    @Command(
+            aliases = {"deletegroupspawn", "dgs", "removegroupspawn", "rgs", "deletegroup", "removegroup"},
+            desc = "Removes the nearest group spawnpoint",
+            flags = "r:i:p:"
+    )
+    @CommandPermissions("rcmobs.deletespawn")
+    public void deleteGroupSpawnPoint(CommandContext args, CommandSender sender) throws CommandException {
+
+        int radius = args.getFlagInteger('r', 30);
+        int id = args.getFlagInteger('i', -1);
+        if (id > 0) {
+            plugin.getMobManager().getGroupSpawnLocation(id).delete();
             sender.sendMessage(ChatColor.GREEN + "Spawnpunkt wurde gelöscht!");
-            return;
+        } else {
+            List<MobGroupSpawnLocation> locations = plugin.getMobManager().getGroupSpawnLocations(((Player) sender).getLocation(), radius);
+            sender.sendMessage(ChatColor.RED + "Rufe /rcm ds -i <id> auf um den Spawn zu löschen.");
+            new PaginatedResult<MobGroupSpawnLocation>("ID - Location.toString()") {
+                @Override
+                public String format(MobGroupSpawnLocation mobSpawnLocation) {
+
+                    return ChatColor.AQUA + "" + ChatColor.BOLD + "" + mobSpawnLocation.getId() + ": " + ChatColor.RESET + ChatColor.GRAY + mobSpawnLocation;
+                }
+            }.display(sender, locations, args.getFlagInteger('p', 1));
         }
-        throw new CommandException("Keine Einträge in der Datenbank gefunden!");
     }
 
     @Command(

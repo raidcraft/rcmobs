@@ -116,12 +116,6 @@ public class SpawnableMob extends AbstractSpawnable {
     }
 
     @Override
-    public String toString() {
-
-        return mobName;
-    }
-
-    @Override
     public boolean equals(Object o) {
 
         if (this == o) return true;
@@ -136,5 +130,18 @@ public class SpawnableMob extends AbstractSpawnable {
     public int hashCode() {
 
         return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+
+        return "SpawnableMob{" +
+                "id='" + id + '\'' +
+                ", mobName='" + mobName + '\'' +
+                ", mClass=" + mClass +
+                ", type=" + type +
+                ", spawnNaturally=" + spawnNaturally +
+                ", spawnChance=" + spawnChance +
+                '}';
     }
 }

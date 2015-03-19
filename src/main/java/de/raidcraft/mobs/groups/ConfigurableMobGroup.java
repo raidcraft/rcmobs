@@ -184,4 +184,18 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
 
         return name.hashCode();
     }
+
+    @Override
+    public String toString() {
+
+        return "ConfigurableMobGroup{" +
+                "name='" + name + '\'' +
+                ", minInterval=" + minInterval +
+                ", maxInterval=" + maxInterval +
+                ", minSpawnAmount=" + minSpawnAmount +
+                ", maxSpawnAmount=" + maxSpawnAmount +
+                ", respawnTreshhold=" + respawnTreshhold +
+                ", mobs=" + mobs +
+                '}';
+    }
 }

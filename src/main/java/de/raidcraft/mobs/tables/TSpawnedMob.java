@@ -4,6 +4,8 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobsPlugin;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,6 +45,9 @@ public class TSpawnedMob {
 
     public void delete() {
 
+        for (World world : Bukkit.getWorlds()) {
+            world.getEntities().stream().filter(e -> e.getUniqueId().equals(getUuid())).forEach(org.bukkit.entity.Entity::remove);
+        }
         RaidCraft.getDatabase(MobsPlugin.class).delete(this);
         if (getMobGroupSource() != null && getMobGroupSource().getSpawnedMobs().size() <= 1) {
             getMobGroupSource().delete();

@@ -122,4 +122,25 @@ public class MobGroupSpawnLocation implements Spawnable {
 
         return getSpawnable().spawn(location);
     }
+
+    public void delete() {
+
+        MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+        plugin.getDatabase().delete(getDatabaseEntry());
+        plugin.getMobManager().removeSpawnLocation(this);
+        getDatabaseEntry().getSpawnedMobGroups().forEach(TSpawnedMobGroup::delete);
+    }
+
+    @Override
+    public String toString() {
+
+        return "MobGroupSpawnLocation{" +
+                "spawnable=" + spawnable +
+                "cooldown=" + getCooldown() +
+                "treshhold=" + getSpawnTreshhold() +
+                "spawnedMobs=" + getSpawnedMobCount() +
+                "location=" + getLocation() +
+                "lastSpawn=" + getLastSpawn() +
+                '}';
+    }
 }

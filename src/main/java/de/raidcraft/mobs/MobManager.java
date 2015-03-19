@@ -381,6 +381,50 @@ public final class MobManager implements Component, MobProvider {
         return closest;
     }
 
+    public List<MobSpawnLocation> getMobSpawnLocations(Location location, int radius) {
+
+        List<MobSpawnLocation> locations = new ArrayList<>();
+        for (MobSpawnLocation spawnLocation : spawnableMobs) {
+            int blockDistance = LocationUtil.getBlockDistance(location, spawnLocation.getLocation());
+            if (blockDistance < radius) {
+                locations.add(spawnLocation);
+            }
+        }
+        return locations;
+    }
+
+    public List<MobGroupSpawnLocation> getGroupSpawnLocations(Location location, int radius) {
+
+        List<MobGroupSpawnLocation> locations = new ArrayList<>();
+        for (MobGroupSpawnLocation spawnLocation : spawnableGroups) {
+            int blockDistance = LocationUtil.getBlockDistance(location, spawnLocation.getLocation());
+            if (blockDistance < radius) {
+                locations.add(spawnLocation);
+            }
+        }
+        return locations;
+    }
+
+    public MobSpawnLocation getMobSpawnLocation(int id) {
+
+        for (MobSpawnLocation spawnableMob : spawnableMobs) {
+            if (spawnableMob.getId() == id) {
+                return spawnableMob;
+            }
+        }
+        return null;
+    }
+
+    public MobGroupSpawnLocation getGroupSpawnLocation(int id) {
+
+        for (MobGroupSpawnLocation groupSpawnLocation : spawnableGroups) {
+            if (groupSpawnLocation.getId() == id) {
+                return groupSpawnLocation;
+            }
+        }
+        return null;
+    }
+
     public List<TSpawnedMob> getSpawnedMobs(Chunk chunk) {
 
         return plugin.getDatabase().find(TSpawnedMob.class).where()

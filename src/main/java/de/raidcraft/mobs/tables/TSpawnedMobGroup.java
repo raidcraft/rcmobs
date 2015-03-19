@@ -38,5 +38,6 @@ public class TSpawnedMobGroup {
     public void delete() {
 
         RaidCraft.getDatabase(MobsPlugin.class).delete(this);
+        getSpawnedMobs().forEach(TSpawnedMob::delete);
     }
 }
