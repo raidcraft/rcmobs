@@ -22,7 +22,6 @@ import java.util.UUID;
 public class TSpawnedMob {
 
     @Id
-    private int id;
     private UUID uuid;
     private String sourceId;
     private String mob;
