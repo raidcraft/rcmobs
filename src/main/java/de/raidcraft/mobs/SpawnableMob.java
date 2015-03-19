@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author Silthus
@@ -82,12 +81,11 @@ public class SpawnableMob extends AbstractSpawnable {
     }
 
     @Override
-    public List<CharacterTemplate> spawn(Location location) {
+    public List<CharacterTemplate> spawn(Location location, boolean force) {
 
-        Logger logger = RaidCraft.getComponent(MobsPlugin.class).getLogger();
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         // spawn is not forced so we calculate the spawn chance
-        if (getSpawnChance() < 1.0) {
+        if (!force && getSpawnChance() < 1.0) {
             if (Math.random() > getSpawnChance()) {
                 return new ArrayList<>();
             }
@@ -101,7 +99,7 @@ public class SpawnableMob extends AbstractSpawnable {
         EbeanServer database = RaidCraft.getDatabase(MobsPlugin.class);
         TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(mob.getEntity());
         if (spawnedMob == null) {
-	        spawnedMob = new TSpawnedMob();
+            spawnedMob = new TSpawnedMob();
             spawnedMob.setMob(getId());
             spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
             spawnedMob.setUuid(mob.getEntity().getUniqueId());
@@ -109,6 +107,12 @@ public class SpawnableMob extends AbstractSpawnable {
         }
         mobs.add(mob);
         return mobs;
+    }
+
+    @Override
+    public List<CharacterTemplate> spawn(Location location) {
+
+        return spawn(location, false);
     }
 
     @Override

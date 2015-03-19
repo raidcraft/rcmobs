@@ -75,7 +75,7 @@ public class MobSpawnLocation implements Spawnable {
             return;
         }
         // spawn the mob
-        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation());
+        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), !checkCooldown);
         if (newSpawnableMobs != null) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
             TMobSpawnLocation mobSpawnLocation = getDatabaseEntry();

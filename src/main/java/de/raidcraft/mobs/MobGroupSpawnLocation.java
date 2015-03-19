@@ -82,10 +82,11 @@ public class MobGroupSpawnLocation implements Spawnable {
             return;
         }
         // spawn the mob
-        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation());
+        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), !checkCooldown);
         if (newSpawnableMobs != null && !newSpawnableMobs.isEmpty()) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
-            TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(newSpawnableMobs.get(0).getEntity());
+            MobManager component = RaidCraft.getComponent(MobManager.class);
+            TSpawnedMob spawnedMob = component.getSpawnedMob(newSpawnableMobs.get(0).getEntity());
             if (spawnedMob != null) {
                 TSpawnedMobGroup mobGroup = spawnedMob.getMobGroupSource();
                 if (mobGroup == null) {
@@ -100,6 +101,13 @@ public class MobGroupSpawnLocation implements Spawnable {
                 }
                 getDatabaseEntry().setLastSpawn(Timestamp.from(Instant.now()));
                 db.update(getDatabaseEntry());
+                for (CharacterTemplate mob : newSpawnableMobs) {
+                    TSpawnedMob tSpawnedMob = component.getSpawnedMob(mob.getEntity());
+                    if (tSpawnedMob != null) {
+                        tSpawnedMob.setMobGroupSource(mobGroup);
+                        db.update(tSpawnedMob);
+                    }
+                }
             }
         }
     }

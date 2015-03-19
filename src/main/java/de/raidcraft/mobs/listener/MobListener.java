@@ -338,12 +338,7 @@ public class MobListener implements Listener {
                 try {
                     Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
                     SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                    double spawnChance = spawnableMob.getSpawnChance();
-                    // always respawn mob
-                    spawnableMob.setSpawnChance(1.0);
-                    List<CharacterTemplate> spawn = spawnableMob.spawn(location);
-                    // reset spawn chance
-                    spawnableMob.setSpawnChance(spawnChance);
+                    List<CharacterTemplate> spawn = spawnableMob.spawn(location, true);
                     if (spawn.size() > 0) {
                         TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(spawn.get(0).getEntity());
                         if (spawnedMob != null) {
