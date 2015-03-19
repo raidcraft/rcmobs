@@ -188,8 +188,10 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntitySpawn(CreatureSpawnEvent event) {
 
-        if (event.getEntity().getType() == EntityType.HORSE && event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM
-                && plugin.getConfiguration().denyHorseSpawning) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            return;
+        }
+        if (event.getEntity().getType() == EntityType.HORSE && plugin.getConfiguration().denyHorseSpawning) {
             event.setCancelled(true);
             return;
         }
@@ -343,6 +345,7 @@ public class MobListener implements Listener {
                             spawnedMob.setMobGroupSource(mob.getMobGroupSource());
                             spawnedMob.setSpawnLocationSource(mob.getSpawnLocationSource());
                             plugin.getDatabase().update(spawnedMob);
+                            plugin.getLogger().info("Respawned " + spawnedMob.getMob() + "(" + spawnedMob.getId() + ") - before " + mob.getId());
                         }
                     }
                 } catch (UnknownMobException ignored) {
