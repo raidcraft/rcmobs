@@ -76,12 +76,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
     @Override
     public void disable() {
 
-        // on shutdown butcher all of our custom mobs
-        for (World world : Bukkit.getWorlds()) {
-            world.getLivingEntities().stream()
-                    .filter(entity -> entity.hasMetadata("RC_CUSTOM_MOB"))
-                    .forEach(org.bukkit.entity.LivingEntity::remove);
-        }
     }
 
     public void reload() {
