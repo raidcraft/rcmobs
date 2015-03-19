@@ -43,8 +43,6 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -309,12 +307,11 @@ public class MobListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onChunkUnload(ChunkUnloadEvent event) {
-	    //plugin.getLogger().info("UnloadChunkEvent triggert for Chunk X:"+event.getChunk().getX()+" Z: "+event.getChunk().getZ()+". Entities in Chunk: "+event.getChunk().getEntities().length+" chunk.toString: "+event.getChunk().toString());
+
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
                 if (spawnedMob != null) {
-                    plugin.getLogger().info("Saving unloaded mob to db: " + spawnedMob.getUuid() + " -> " + entity.getLocation());
                     spawnedMob.setUnloaded(true);
                     Location location = entity.getLocation();
                     spawnedMob.setChunkX(location.getChunk().getX());
@@ -335,24 +332,23 @@ public class MobListener implements Listener {
 
         List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
         if (mobs.size() > 0) {
-            plugin.getLogger().info("Loading " + mobs.size() + " inside (loaded: " + event.getChunk().isLoaded() + ") chunk " + event.getChunk());
-            Bukkit.getScheduler().runTaskLater(plugin, () -> mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
+            mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
                 try {
                     Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
                     SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
                     List<CharacterTemplate> spawn = spawnableMob.spawn(location);
                     if (spawn.size() > 0) {
-                        mob.setUuid(spawn.get(0).getUniqueId());
-                        mob.setSpawnTime(Timestamp.from(Instant.now()));
-                        mob.setUnloaded(false);
-                        plugin.getDatabase().update(mob);
-                    } else {
-                        mob.delete();
+                        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(spawn.get(0).getEntity());
+                        if (spawnedMob != null) {
+                            spawnedMob.setMobGroupSource(mob.getMobGroupSource());
+                            spawnedMob.setSpawnLocationSource(mob.getSpawnLocationSource());
+                            plugin.getDatabase().update(spawnedMob);
+                        }
                     }
-                } catch (UnknownMobException e) {
-                    mob.delete();
+                } catch (UnknownMobException ignored) {
                 }
-            }), 1L);
+                mob.delete();
+            });
         }
     }
 }
