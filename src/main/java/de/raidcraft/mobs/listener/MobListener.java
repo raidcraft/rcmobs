@@ -213,7 +213,7 @@ public class MobListener implements Listener {
                 if (plugin.getConfiguration().spawnSimiliarRandomMobs) {
                     // first we want to check all nearby entities for custom mobs so we can spawn more of the same type
                     for (LivingEntity entity : BukkitUtil.getNearbyEntities(event.getEntity(), plugin.getConfiguration().naturalAdaptRadius)) {
-                        TSpawnedMob spawnedMob = plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findUnique();
+                        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
                         if (spawnedMob != null) {
                             try {
                                 SpawnableMob mob = plugin.getMobManager().getSpwanableMob(spawnedMob.getMob());

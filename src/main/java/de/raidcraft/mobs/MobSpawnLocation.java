@@ -79,8 +79,10 @@ public class MobSpawnLocation implements Spawnable {
         if (newSpawnableMobs != null) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
             TMobSpawnLocation mobSpawnLocation = getDatabaseEntry();
+            mobSpawnLocation.setLastSpawn(Timestamp.from(Instant.now()));
+            db.update(mobSpawnLocation);
             for (CharacterTemplate mob : newSpawnableMobs) {
-                TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
+                TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(mob.getEntity());
                 if (spawnedMob == null) {
                     spawnedMob = new TSpawnedMob();
                     spawnedMob.setMob(mobSpawnLocation.getMob());
@@ -93,8 +95,6 @@ public class MobSpawnLocation implements Spawnable {
                     db.update(spawnedMob);
                 }
             }
-            mobSpawnLocation.setLastSpawn(Timestamp.from(Instant.now()));
-            db.update(mobSpawnLocation);
         }
     }
 

@@ -237,7 +237,7 @@ public final class MobManager implements Component, MobProvider {
 
     public boolean isSpawnedMob(LivingEntity entity) {
 
-        return plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findUnique() != null;
+        return getSpawnedMob(entity) != null;
     }
 
     public Mob getMob(UUID uuid) {

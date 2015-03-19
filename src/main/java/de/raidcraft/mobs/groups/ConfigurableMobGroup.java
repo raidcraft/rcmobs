@@ -151,7 +151,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         db.save(spawnedMobGroup);
         for (CharacterTemplate mob : spawnedMobs) {
             mob.joinParty(characterTemplate.getParty());
-            TSpawnedMob spawnedMob = db.find(TSpawnedMob.class).where().eq("uuid", mob.getEntity().getUniqueId()).findUnique();
+            TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(mob.getEntity());
             if (spawnedMob != null) {
                 spawnedMob.setMobGroupSource(spawnedMobGroup);
                 db.update(spawnedMob);
