@@ -93,11 +93,12 @@ public class MobGroupSpawnLocation implements Spawnable {
             TSpawnedMob spawnedMob = component.getSpawnedMob(newSpawnableMobs.get(0).getEntity());
             if (spawnedMob != null) {
                 TSpawnedMobGroup mobGroup = spawnedMob.getMobGroupSource();
+                TMobGroupSpawnLocation entry = getDatabaseEntry();
                 if (mobGroup == null) {
                     mobGroup = new TSpawnedMobGroup();
                     mobGroup.setMobGroup(getSpawnable().getName());
                     mobGroup.setSpawnTime(Timestamp.from(Instant.now()));
-                    mobGroup.setSpawnGroupLocationSource(getDatabaseEntry());
+                    mobGroup.setSpawnGroupLocationSource(entry);
                     db.save(mobGroup);
                     for (CharacterTemplate mob : newSpawnableMobs) {
                         TSpawnedMob tSpawnedMob = component.getSpawnedMob(mob.getEntity());
@@ -107,11 +108,11 @@ public class MobGroupSpawnLocation implements Spawnable {
                         }
                     }
                 } else {
-                    mobGroup.setSpawnGroupLocationSource(getDatabaseEntry());
-                    db.update(getDatabaseEntry());
+                    mobGroup.setSpawnGroupLocationSource(entry);
+                    db.update(mobGroup);
                 }
-                getDatabaseEntry().setLastSpawn(Timestamp.from(Instant.now()));
-                db.update(getDatabaseEntry());
+                entry.setLastSpawn(Timestamp.from(Instant.now()));
+                db.update(entry);
             }
         }
     }
