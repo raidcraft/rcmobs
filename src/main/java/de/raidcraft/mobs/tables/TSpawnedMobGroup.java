@@ -35,9 +35,9 @@ public class TSpawnedMobGroup {
     @JoinColumn(name = "mob_group_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 
-    public void delete() {
+    public static void delete(TSpawnedMobGroup group) {
 
-        RaidCraft.getDatabase(MobsPlugin.class).delete(this);
-        getSpawnedMobs().forEach(TSpawnedMob::delete);
+        RaidCraft.getDatabase(MobsPlugin.class).delete(group);
+        group.getSpawnedMobs().forEach(TSpawnedMob::delete);
     }
 }

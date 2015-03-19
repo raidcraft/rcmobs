@@ -43,14 +43,14 @@ public class TSpawnedMob {
     private int chunkX;
     private int chunkZ;
 
-    public void delete() {
+    public static void delete(TSpawnedMob mob) {
 
         for (World world : Bukkit.getWorlds()) {
-            world.getEntities().stream().filter(e -> e.getUniqueId().equals(getUuid())).forEach(org.bukkit.entity.Entity::remove);
+            world.getEntities().stream().filter(e -> e.getUniqueId().equals(mob.getUuid())).forEach(org.bukkit.entity.Entity::remove);
         }
-        RaidCraft.getDatabase(MobsPlugin.class).delete(this);
-        if (getMobGroupSource() != null && getMobGroupSource().getSpawnedMobs().size() <= 1) {
-            getMobGroupSource().delete();
+        RaidCraft.getDatabase(MobsPlugin.class).delete(mob);
+        if (mob.getMobGroupSource() != null && mob.getMobGroupSource().getSpawnedMobs().size() <= 1) {
+            TSpawnedMobGroup.delete(mob.getMobGroupSource());
         }
     }
 }
