@@ -25,7 +25,9 @@ import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +47,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         configuration = configure(new LocalConfiguration(this));
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
-        registerEvents(new MobListener(this));
+
         registerEvents(this);
 
         registerActionAPI();
@@ -60,6 +62,14 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public void reload() {
 
         this.mobManager.reload();
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onSkillsEnable(PluginEnableEvent event) {
+
+        if (event.getPlugin().getName().equals("RCSkills")) {
+            registerEvents(new MobListener(this));
+        }
     }
 
     private void registerActionAPI() {
