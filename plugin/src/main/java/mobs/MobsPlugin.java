@@ -10,6 +10,8 @@ import de.raidcraft.api.config.Setting;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.api.quests.QuestConfigLoader;
 import de.raidcraft.api.quests.Quests;
+import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.ReflectionUtil;
 import mobs.actions.GroupRemoveAction;
 import mobs.actions.GroupSpawnAction;
 import mobs.actions.MobRemoveAction;
@@ -26,6 +28,7 @@ import mobs.trigger.MobTrigger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +53,9 @@ public class MobsPlugin extends BasePlugin {
 
         registerActionAPI();
         registerQuestConfigLoader();
+
+        // register our custom NMS entity
+        EntityUtil.registerEntity(EntityType.SKELETON, ReflectionUtil.getNmsClass("de.raidcraft.mobs.entites.nms", "RCSkeleton"));
     }
 
     @Override

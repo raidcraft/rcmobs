@@ -11,7 +11,9 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.LocationUtil;
+import de.raidcraft.util.ReflectionUtil;
 import de.raidcraft.util.TimeUtil;
+import mobs.api.CustomNmsEntity;
 import mobs.api.Mob;
 import mobs.api.MobGroup;
 import mobs.api.Spawnable;
@@ -31,6 +33,8 @@ import org.bukkit.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -161,12 +165,14 @@ public final class MobManager implements Component, MobProvider {
 
     private SpawnableMob registerAndReturnMob(String mobId, ConfigurationSection config) {
 
-        EntityType type;
-        try {
-            type = EntityType.valueOf(config.getString("type").toUpperCase());
-        } catch (Exception e) {
-            plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + config.getName());
-            return null;
+        EntityType type = null;
+        if (!config.isSet("custom-type")) {
+            try {
+                type = EntityType.valueOf(config.getString("type").toUpperCase());
+            } catch (Exception e) {
+                plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + config.getName());
+                return null;
+            }
         }
         SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
         mobs.put(mobId, mob);
@@ -464,5 +470,18 @@ public final class MobManager implements Component, MobProvider {
             return mobs.get(id).getMobName();
         }
         return "";
+    }
+
+    public CustomNmsEntity getCustonNmsEntity(World world, String name) {
+
+        try {
+            Class<?> clazz = ReflectionUtil.getNmsClass("de.raidcraft.mobs.entities.nms", name);
+            Constructor<?> constructor = clazz.getDeclaredConstructor(World.class);
+            constructor.setAccessible(true);
+            return (CustomNmsEntity) constructor.newInstance(world);
+        } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

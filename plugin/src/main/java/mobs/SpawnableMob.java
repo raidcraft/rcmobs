@@ -6,6 +6,7 @@ import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import mobs.api.AbstractSpawnable;
+import mobs.api.CustomNmsEntity;
 import mobs.api.Mob;
 import mobs.creatures.ConfigurableCreature;
 import mobs.tables.TSpawnedMob;
@@ -27,6 +28,7 @@ public class SpawnableMob extends AbstractSpawnable {
     private final String mobName;
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
     private final EntityType type;
+    private final String customEntityTypeName;
     private final boolean spawnNaturally;
     private final ConfigurationSection config;
     private double spawnChance = 1.0;
@@ -36,8 +38,14 @@ public class SpawnableMob extends AbstractSpawnable {
         this.id = id;
         this.mobName = mobName;
         this.type = type;
+        this.customEntityTypeName = type == null ? config.getString("custom-type", "RCSkeleton") : null;
         this.spawnNaturally = config.getBoolean("spawn-naturally");
         this.config = config;
+    }
+
+    public SpawnableMob(String id, String mobName, ConfigurationSection config) {
+
+        this(id, mobName, null, config);
     }
 
     public String getId() {
@@ -91,7 +99,13 @@ public class SpawnableMob extends AbstractSpawnable {
             }
         }
         ArrayList<CharacterTemplate> mobs = new ArrayList<>();
-        Mob mob = manager.spawnCharacter(type, location, mClass, config);
+        Mob mob = null;
+        if (type != null) {
+            mob = manager.spawnCharacter(type, location, mClass, config);
+        } else if (customEntityTypeName != null) {
+            CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
+            mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
+        }
         if (mob == null) {
             return mobs;
         }
