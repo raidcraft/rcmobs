@@ -23,11 +23,10 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginEnableEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,7 @@ public class MobsPlugin extends BasePlugin implements Listener {
         this.mobManager = new MobManager(this);
 
         registerEvents(this);
+        Bukkit.getScheduler().runTaskLater(this, () -> registerEvents(new MobListener(this)), 5L);
 
         registerActionAPI();
         registerQuestConfigLoader();
@@ -62,14 +62,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
     public void reload() {
 
         this.mobManager.reload();
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onSkillsEnable(PluginEnableEvent event) {
-
-        if (event.getPlugin().getName().equals("RCSkills")) {
-            registerEvents(new MobListener(this));
-        }
     }
 
     private void registerActionAPI() {
