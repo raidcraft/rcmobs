@@ -63,69 +63,72 @@ public class MobListener implements Listener {
         this.plugin = plugin;
         this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
 
-        final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
-        ProtocolLibrary.getProtocolManager().addPacketListener(
-                new PacketAdapter(plugin,
-                        PacketType.Play.Server.NAMED_SOUND_EFFECT,
-                        PacketType.Play.Server.SPAWN_ENTITY,
-                        PacketType.Play.Server.ENTITY_METADATA) {
-                    @Override
-                    public void onPacketSending(PacketEvent event) {
+        // wait for the skills plugin to load
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
+            ProtocolLibrary.getProtocolManager().addPacketListener(
+                    new PacketAdapter(plugin,
+                            PacketType.Play.Server.NAMED_SOUND_EFFECT,
+                            PacketType.Play.Server.SPAWN_ENTITY,
+                            PacketType.Play.Server.ENTITY_METADATA) {
+                        @Override
+                        public void onPacketSending(PacketEvent event) {
 
-                        PacketContainer packet = event.getPacket();
+                            PacketContainer packet = event.getPacket();
 
-                        // handle the custom mob hurt effects
-                        if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-                            WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect(event.getPacket());
-                            if (false) {
-                                // supress skeleton sounds since they are our custom mobs
-                                event.setCancelled(true);
+                            // handle the custom mob hurt effects
+                            if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+                                WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect(event.getPacket());
+                                if (false) {
+                                    // supress skeleton sounds since they are our custom mobs
+                                    event.setCancelled(true);
+                                }
                             }
-                        }
 
-                        // You may also want to check event.getPacketID()
-                        final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
-                        if (!(entity instanceof LivingEntity)
-                                || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) entity)) {
-                            return;
-                        }
-                        CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
-                        ChatColor mobColor = EntityUtil.getConColor(
-                                characterManager.getHero(event.getPlayer()).getPlayerLevel(),
-                                character.getAttachedLevel().getLevel());
-                        String name;
-                        if (character.isInCombat()) {
-                            name = EntityUtil.drawHealthBar(
-                                    character.getHealth(),
-                                    character.getMaxHealth(),
-                                    mobColor,
-                                    entity.hasMetadata("ELITE"),
-                                    entity.hasMetadata("RARE"));
-                        } else {
-                            name = EntityUtil.drawMobName(
-                                    character.getName(),
-                                    character.getAttachedLevel().getLevel(),
-                                    mobColor,
-                                    entity.hasMetadata("ELITE"),
-                                    entity.hasMetadata("RARE"));
-                        }
-
-                        if (name != null) {
-                            // Clone the packet!
-                            event.setPacket(packet = packet.deepClone());
-
-                            // This comes down to a difference in what the packets store in memory
-                            if (event.getPacketID() == Packets.Server.ENTITY_METADATA) {
-                                WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
-
-                                processDataWatcher(watcher, name);
-                                packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+                            // You may also want to check event.getPacketID()
+                            final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
+                            if (!(entity instanceof LivingEntity)
+                                    || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) entity)) {
+                                return;
+                            }
+                            CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
+                            ChatColor mobColor = EntityUtil.getConColor(
+                                    characterManager.getHero(event.getPlayer()).getPlayerLevel(),
+                                    character.getAttachedLevel().getLevel());
+                            String name;
+                            if (character.isInCombat()) {
+                                name = EntityUtil.drawHealthBar(
+                                        character.getHealth(),
+                                        character.getMaxHealth(),
+                                        mobColor,
+                                        entity.hasMetadata("ELITE"),
+                                        entity.hasMetadata("RARE"));
                             } else {
-                                processDataWatcher(packet.getDataWatcherModifier().read(0), name);
+                                name = EntityUtil.drawMobName(
+                                        character.getName(),
+                                        character.getAttachedLevel().getLevel(),
+                                        mobColor,
+                                        entity.hasMetadata("ELITE"),
+                                        entity.hasMetadata("RARE"));
+                            }
+
+                            if (name != null) {
+                                // Clone the packet!
+                                event.setPacket(packet = packet.deepClone());
+
+                                // This comes down to a difference in what the packets store in memory
+                                if (event.getPacketID() == Packets.Server.ENTITY_METADATA) {
+                                    WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
+
+                                    processDataWatcher(watcher, name);
+                                    packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+                                } else {
+                                    processDataWatcher(packet.getDataWatcherModifier().read(0), name);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+        }, 10L);
     }
 
     private void processDataWatcher(WrappedDataWatcher watcher, String name) {
