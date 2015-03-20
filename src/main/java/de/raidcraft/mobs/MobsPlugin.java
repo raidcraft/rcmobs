@@ -3,7 +3,6 @@ package de.raidcraft.mobs;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
-import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.config.ConfigurationBase;
@@ -16,7 +15,6 @@ import de.raidcraft.mobs.actions.GroupSpawnAction;
 import de.raidcraft.mobs.actions.MobRemoveAction;
 import de.raidcraft.mobs.actions.MobSpawnAction;
 import de.raidcraft.mobs.commands.MobCommands;
-import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -25,10 +23,6 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
-import de.raidcraft.skills.CharacterManager;
-import de.raidcraft.skills.api.character.CharacterTemplate;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
@@ -51,26 +45,11 @@ public class MobsPlugin extends BasePlugin implements Listener {
         configuration = configure(new LocalConfiguration(this));
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
+        registerEvents(new MobListener(this));
         registerEvents(this);
-        Bukkit.getScheduler().runTaskLater(this, () -> new MobListener(this), 5L);
 
         registerActionAPI();
         registerQuestConfigLoader();
-
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
-
-            CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
-            if (characterManager == null) return;
-            for (World world : Bukkit.getWorlds()) {
-                world.getLivingEntities().stream()
-                        .filter(getMobManager()::isSpawnedMob).forEach(entity -> {
-                    CharacterTemplate character = characterManager.getCharacter(entity);
-                    if (character instanceof ConfigurableCreature) {
-                        ((ConfigurableCreature) character).checkSpawnPoint();
-                    }
-                });
-            }
-        }, 100L, 100L);
     }
 
     @Override

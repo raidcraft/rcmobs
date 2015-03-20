@@ -19,7 +19,6 @@ import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
-import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -223,15 +222,6 @@ public class ConfigurableCreature extends AbstractMob {
     public boolean isWaterMob() {
 
         return water;
-    }
-
-    public void checkSpawnPoint() {
-
-        if (LocationUtil.getBlockDistance(getEntity().getLocation(), spawnLocation) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
-            reset();
-        } else if (!isInCombat()) {
-            EntityUtil.walkToLocation(getEntity(), spawnLocation, 1.15F);
-        }
     }
 
     @Override

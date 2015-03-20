@@ -11,6 +11,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
+import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
@@ -60,7 +61,6 @@ public class MobListener implements Listener {
     public MobListener(MobsPlugin plugin) {
 
         this.plugin = plugin;
-        plugin.registerEvents(this);
         this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
 
         final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
@@ -85,7 +85,8 @@ public class MobListener implements Listener {
 
                         // You may also want to check event.getPacketID()
                         final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
-                        if (!(entity instanceof LivingEntity) || !entity.hasMetadata("RC_CUSTOM_MOB")) {
+                        if (!(entity instanceof LivingEntity)
+                                || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) entity)) {
                             return;
                         }
                         CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
@@ -137,7 +138,7 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetLivingEntityEvent event) {
 
-        if (!(event.getEntity() instanceof LivingEntity)) {
+        if (!(event.getEntity() instanceof LivingEntity) || !plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) {
             return;
         }
         CharacterTemplate character = characterManager.getCharacter((LivingEntity) event.getEntity());
