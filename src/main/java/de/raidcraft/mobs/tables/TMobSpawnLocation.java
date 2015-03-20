@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ public class TMobSpawnLocation {
     private int z;
     private String world;
     private double cooldown;
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp lastSpawn;
     @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "spawn_location_source_id")

@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ public class TMobGroupSpawnLocation {
     private String world;
     private double cooldown;
     private int respawnTreshhold;
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp lastSpawn;
     @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "spawn_group_location_source_id")
