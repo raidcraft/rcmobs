@@ -44,11 +44,13 @@
         </repository>
     </repositories>
 
-    <dependency>
-        <groupId>de.raidcraft</groupId>
-        <artifactId>raidcraft-api</artifactId>
-        <version>1.6.3-SNAPSHOT</version>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>de.raidcraft</groupId>
+            <artifactId>raidcraft-api</artifactId>
+            <version>1.6.3-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
