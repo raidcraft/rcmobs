@@ -18,11 +18,13 @@ import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
+import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -85,6 +87,27 @@ public final class MobManager implements Component, MobProvider {
                 }
             }
         }, 20L, time);
+        // walk mobs to their spawnpoint
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            CharacterManager manager = RaidCraft.getComponent(CharacterManager.class);
+            if (manager == null) return;
+            for (World world : Bukkit.getWorlds()) {
+                for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class)) {
+                    if (!isSpawnedMob(entity)) continue;
+                    TSpawnedMob spawnedMob = getSpawnedMob(entity);
+                    if (spawnedMob == null || spawnedMob.isUnloaded()) continue;
+                    Mob mob = getMob(entity.getUniqueId());
+                    if (mob == null) continue;
+                    if (spawnedMob.getSpawnLocationSource() != null || spawnedMob.getMobGroupSource() != null) {
+                        if (LocationUtil.getBlockDistance(entity.getLocation(), mob.getSpawnLocation()) > RaidCraft.getComponent(MobsPlugin.class).getConfiguration().resetRange) {
+                            mob.reset();
+                        } else if (!mob.isInCombat()) {
+                            EntityUtil.walkToLocation(entity, mob.getSpawnLocation(), 1.15F);
+                        }
+                    }
+                }
+            }
+        }, 100L, 100L);
     }
 
     private void load(File directory, String path) {

@@ -4,6 +4,7 @@ import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.SkilledCharacter;
 import de.raidcraft.skills.api.exceptions.CombatException;
+import org.bukkit.Location;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ public interface Mob extends SkilledCharacter<Mob> {
     public String getId();
 
     public void setId(String id);
+
+    public Location getSpawnLocation();
 
     public boolean isRare();
 

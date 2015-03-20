@@ -26,7 +26,6 @@ import de.raidcraft.mobs.trigger.MobTrigger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ import java.util.List;
  * @author Silthus
  */
 // TODO: why implements Listener?
-public class MobsPlugin extends BasePlugin implements Listener {
+public class MobsPlugin extends BasePlugin {
 
     private MobManager mobManager;
     private LocalConfiguration configuration;
@@ -47,7 +46,6 @@ public class MobsPlugin extends BasePlugin implements Listener {
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
 
-        registerEvents(this);
         Bukkit.getScheduler().runTaskLater(this, () -> registerEvents(new MobListener(this)), 5L);
 
         registerActionAPI();

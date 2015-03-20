@@ -163,6 +163,12 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
+    public Location getSpawnLocation() {
+
+        return spawnLocation;
+    }
+
+    @Override
     public void setHealth(double health) {
 
         // lets play the hurt sound if the new health is below our current
