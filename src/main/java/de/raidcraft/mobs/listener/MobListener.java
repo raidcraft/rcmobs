@@ -333,28 +333,25 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
 
-        MobManager mobManager = plugin.getMobManager();
-        for (Entity entity : event.getChunk().getEntities()) {
-            if (entity instanceof LivingEntity) {
-                TSpawnedMob mob = mobManager.getSpawnedMob((LivingEntity) entity);
-                if (mob != null && mob.isUnloaded()) {
-                    try {
-                        Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
-                        SpawnableMob spawnableMob = mobManager.getSpawnableMob(mob);
-                        List<CharacterTemplate> spawn = spawnableMob.spawn(location, true);
-                        if (spawn.size() > 0) {
-                            TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(spawn.get(0).getEntity());
-                            if (spawnedMob != null) {
-                                spawnedMob.setMobGroupSource(mob.getMobGroupSource());
-                                spawnedMob.setSpawnLocationSource(mob.getSpawnLocationSource());
-                                plugin.getDatabase().update(spawnedMob);
-                            }
+        List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
+        if (mobs.size() > 0) {
+            mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
+                try {
+                    Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
+                    SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                    List<CharacterTemplate> spawn = spawnableMob.spawn(location, true);
+                    if (spawn.size() > 0) {
+                        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(spawn.get(0).getEntity());
+                        if (spawnedMob != null) {
+                            spawnedMob.setMobGroupSource(mob.getMobGroupSource());
+                            spawnedMob.setSpawnLocationSource(mob.getSpawnLocationSource());
+                            plugin.getDatabase().update(spawnedMob);
                         }
-                    } catch (UnknownMobException ignored) {
                     }
-                    mob.delete();
+                } catch (UnknownMobException ignored) {
                 }
-            }
+                mob.delete();
+            });
         }
     }
 }
