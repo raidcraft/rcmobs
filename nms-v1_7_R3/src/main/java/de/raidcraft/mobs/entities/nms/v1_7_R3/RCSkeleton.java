@@ -1,8 +1,8 @@
 package de.raidcraft.mobs.entities.nms.v1_7_R3;
 
 
+import de.raidcraft.api.mobs.CustomNmsEntity;
 import de.raidcraft.util.ReflectionUtil;
-import mobs.api.CustomNmsEntity;
 import net.minecraft.server.v1_7_R3.EntityHuman;
 import net.minecraft.server.v1_7_R3.EntitySkeleton;
 import net.minecraft.server.v1_7_R3.PathfinderGoalFloat;

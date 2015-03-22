@@ -2,11 +2,11 @@ package mobs;
 
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.mobs.CustomNmsEntity;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import mobs.api.AbstractSpawnable;
-import mobs.api.CustomNmsEntity;
 import mobs.api.Mob;
 import mobs.creatures.ConfigurableCreature;
 import mobs.tables.TSpawnedMob;
