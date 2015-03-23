@@ -1,4 +1,4 @@
-main: MobsPlugin
+main: mobs.MobsPlugin
 name: RCMobs
 version: ${project.version}#${build.number}
 description: API for creating custom mobs and boss fights.
