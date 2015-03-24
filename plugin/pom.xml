@@ -23,7 +23,7 @@
         <dependency>
             <groupId>de.raidcraft</groupId>
             <artifactId>loot</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>
         <!-- we need to include all nms versions -->
         <dependency>

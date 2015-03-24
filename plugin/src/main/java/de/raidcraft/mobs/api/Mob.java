@@ -1,12 +1,13 @@
 package de.raidcraft.mobs.api;
 
-import de.raidcraft.loot.api.table.LootTable;
+import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.SkilledCharacter;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import org.bukkit.Location;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Silthus
@@ -27,7 +28,7 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     public boolean isWaterMob();
 
-    public List<LootTable> getLootTables();
+    public Optional<RDSTable> getLootTable();
 
     public CharacterTemplate getHighestThreat() throws CombatException;
 

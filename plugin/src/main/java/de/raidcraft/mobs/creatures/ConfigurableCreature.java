@@ -4,10 +4,14 @@ import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
 import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
+import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.loot.LootPlugin;
 import de.raidcraft.loot.LootTableManager;
-import de.raidcraft.loot.api.table.LootTable;
-import de.raidcraft.loot.exceptions.LootTableNotExistsException;
+import de.raidcraft.mobs.MobsPlugin;
+import de.raidcraft.mobs.api.AbstractMob;
+import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.effects.AbilityUser;
+import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
@@ -15,11 +19,6 @@ import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
-import de.raidcraft.mobs.MobsPlugin;
-import de.raidcraft.mobs.api.AbstractMob;
-import de.raidcraft.mobs.api.Mob;
-import de.raidcraft.mobs.effects.AbilityUser;
-import de.raidcraft.mobs.util.CustomMobUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,8 +28,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Silthus
@@ -44,12 +42,12 @@ public class ConfigurableCreature extends AbstractMob {
     private final boolean rare;
     private final boolean spawnNaturally;
     private final boolean water;
-    private final List<LootTable> lootTables = new ArrayList<>();
     private final Location spawnLocation;
     private final String hurtSound;
     private final float hurtSoundPitch;
     private final String deathSound;
     private final float deathSoundPitch;
+    private Optional<RDSTable> lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
@@ -82,18 +80,8 @@ public class ConfigurableCreature extends AbstractMob {
         int maxHealth = config.getInt("max-health", minHealth);
 
         LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
-        if (tableManager != null) {
-            for (String table : config.getStringList("loot-tables")) {
-                try {
-                    LootTable lootTable = tableManager.getTable(table);
-                    if (lootTable == null) {
-                        lootTable = tableManager.getLevelDependantLootTable(table, getAttachedLevel().getLevel());
-                    }
-                    lootTables.add(lootTable);
-                } catch (LootTableNotExistsException e) {
-                    RaidCraft.LOGGER.warning("Loading " + getName() + ": " + e.getMessage());
-                }
-            }
+        if (tableManager != null && config.isSet("loot-table")) {
+            lootTable = Optional.ofNullable(tableManager.getLevelDependantLootTable(config.getString("loot-table"), getAttachedLevel().getLevel()));
         }
 
         if (config.getBoolean("baby")) {
@@ -241,9 +229,9 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public List<LootTable> getLootTables() {
+    public Optional<RDSTable> getLootTable() {
 
-        return new ArrayList<>(lootTables);
+        return lootTable;
     }
 
     @Override

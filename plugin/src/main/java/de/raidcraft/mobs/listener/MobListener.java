@@ -9,15 +9,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.loot.api.table.LootTable;
-import de.raidcraft.loot.api.table.LootTableEntry;
-import de.raidcraft.skills.CharacterManager;
-import de.raidcraft.skills.SkillsPlugin;
-import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.skills.api.exceptions.CombatException;
-import de.raidcraft.util.BukkitUtil;
-import de.raidcraft.util.EntityUtil;
-import de.raidcraft.util.MathUtil;
+import de.raidcraft.api.random.RDSObject;
+import de.raidcraft.api.random.RDSTable;
+import de.raidcraft.api.random.Spawnable;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
@@ -26,6 +20,13 @@ import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.skills.CharacterManager;
+import de.raidcraft.skills.SkillsPlugin;
+import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.skills.api.exceptions.CombatException;
+import de.raidcraft.util.BukkitUtil;
+import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.MathUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -47,6 +48,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Silthus
@@ -266,9 +268,12 @@ public class MobListener implements Listener {
             CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
             if (character instanceof Mob) {
                 // lets call our custom death event
-                for (LootTable lootTable : ((Mob) character).getLootTables()) {
-                    for (LootTableEntry loot : lootTable.loot()) {
-                        event.getDrops().add(loot.getItem());
+                Optional<RDSTable> lootTable = ((Mob) character).getLootTable();
+                if (lootTable.isPresent()) {
+                    for (RDSObject rdsObject : lootTable.get().getResult()) {
+                        if (rdsObject instanceof Spawnable) {
+                            ((Spawnable) rdsObject).spawn(event.getEntity().getLocation());
+                        }
                     }
                 }
             }
