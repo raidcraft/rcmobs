@@ -139,6 +139,8 @@ public class MobsPlugin extends BasePlugin {
         public boolean replaceHostileMobs = false;
         @Setting("default.replace-animals")
         public boolean replaceAnimals = false;
+        @Setting("default.loot-table")
+        public String defaultLoottable;
         @Setting("default.natural-spawning-adapt-radius")
         public int naturalAdaptRadius = 25;
         @Setting("default.replaced-mobs")

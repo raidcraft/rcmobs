@@ -80,8 +80,10 @@ public class ConfigurableCreature extends AbstractMob {
         int maxHealth = config.getInt("max-health", minHealth);
 
         LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
-        if (tableManager != null && config.isSet("loot-table")) {
-            lootTable = Optional.ofNullable(tableManager.getLevelDependantLootTable(config.getString("loot-table"), getAttachedLevel().getLevel()));
+        if (tableManager != null) {
+            lootTable = Optional.ofNullable(tableManager.getLevelDependantLootTable(
+                    config.getString("loot-table", RaidCraft.getComponent(MobsPlugin.class).getConfiguration().defaultLoottable),
+                    getAttachedLevel().getLevel()));
         }
 
         if (config.getBoolean("baby")) {

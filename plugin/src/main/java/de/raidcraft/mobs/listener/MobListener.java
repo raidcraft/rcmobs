@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSObject;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.api.random.Spawnable;
@@ -42,13 +43,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Silthus
@@ -59,6 +64,7 @@ public class MobListener implements Listener {
 
     private final MobsPlugin plugin;
     private final CharacterManager characterManager;
+    private final Map<UUID, Dropable> droppedLoot = new HashMap<>();
 
     public MobListener(MobsPlugin plugin) {
 
@@ -269,10 +275,14 @@ public class MobListener implements Listener {
             if (character instanceof Mob) {
                 // lets call our custom death event
                 Optional<RDSTable> lootTable = ((Mob) character).getLootTable();
+                Location location = event.getEntity().getLocation();
                 if (lootTable.isPresent()) {
                     for (RDSObject rdsObject : lootTable.get().getResult()) {
-                        if (rdsObject instanceof Spawnable) {
-                            ((Spawnable) rdsObject).spawn(event.getEntity().getLocation());
+                        if (rdsObject instanceof Dropable) {
+                            droppedLoot.put(location.getWorld()
+                                    .dropItemNaturally(location, ((Dropable) rdsObject).getItemStack()).getUniqueId(), (Dropable) rdsObject);
+                        } else if (rdsObject instanceof Spawnable) {
+                            ((Spawnable) rdsObject).spawn(location);
                         }
                     }
                 }
@@ -289,6 +299,17 @@ public class MobListener implements Listener {
             } else {
                 spawnedMob.delete();
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onLoot(PlayerPickupItemEvent event) {
+
+        Dropable remove = droppedLoot.remove(event.getItem().getUniqueId());
+        if (remove != null) {
+            remove.pickup(event.getPlayer());
+            event.getItem().remove();
+            event.setCancelled(true);
         }
     }
 
