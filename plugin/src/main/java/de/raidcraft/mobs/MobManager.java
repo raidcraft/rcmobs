@@ -305,8 +305,10 @@ public final class MobManager implements Component, MobProvider {
         if (mobs.containsKey(name)) {
             return mobs.get(name);
         }
-        List<SpawnableMob> spawnableMobs = mobs.keySet().stream()
-                .filter(mobName -> mobName.toLowerCase().contains(name.toLowerCase()))
+        List<SpawnableMob> spawnableMobs = mobs.entrySet().stream()
+                .filter(entry -> entry.getKey().toLowerCase().endsWith(name)
+                        || entry.getValue().getMobName().equalsIgnoreCase(name)
+                        || entry.getValue().getMobName().toLowerCase().contains(name))
                 .map(mobs::get)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
@@ -334,8 +336,11 @@ public final class MobManager implements Component, MobProvider {
         MobGroup group = groups.get(name);
         if (group == null) {
             // try to loop and find a more unprecise match
-            List<String> mobGroups = groups.keySet().stream()
-                    .filter(g -> g.toLowerCase().contains(name.toLowerCase()))
+            List<String> mobGroups = groups.entrySet().stream()
+                    .filter(entry -> entry.getKey().toLowerCase().endsWith(name)
+                            || entry.getValue().getName().equalsIgnoreCase(name)
+                            || entry.getValue().getName().toLowerCase().contains(name))
+                    .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
             if (mobGroups.size() < 1) {
                 throw new UnknownMobException("No mob group with the name " + name + " found!");
@@ -350,18 +355,8 @@ public final class MobManager implements Component, MobProvider {
     public CharacterTemplate spawnMob(String name, Location location) throws UnknownMobException {
 
         SpawnableMob mob = getSpwanableMob(name);
-        double original_chance = mob.getSpawnChance();
-
-        // set spawn chance to 100%
-        mob.setSpawnChance(1.0);
-
         // spawn mob
-        CharacterTemplate character = mob.spawn(location).get(0);
-
-        // restore spawn chance
-        mob.setSpawnChance(original_chance);
-
-        return character;
+        return mob.spawn(location, true).get(0);
     }
 
     public void removeSpawnLocation(MobSpawnLocation location) {
