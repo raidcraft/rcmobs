@@ -123,7 +123,7 @@ public final class MobManager implements Component, MobProvider {
         ArrayList<Spawnable> createdMobs = new ArrayList<>();
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                load(file, path + file.getName() + "-");
+                load(file, path + file.getName() + ".");
             }
             if (!file.getName().endsWith(".yml")) {
                 continue;
@@ -306,7 +306,7 @@ public final class MobManager implements Component, MobProvider {
             return mobs.get(name);
         }
         List<SpawnableMob> spawnableMobs = mobs.keySet().stream()
-                .filter(mobName -> mobName.contains(name))
+                .filter(mobName -> mobName.toLowerCase().contains(name.toLowerCase()))
                 .map(mobs::get)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
@@ -335,7 +335,7 @@ public final class MobManager implements Component, MobProvider {
         if (group == null) {
             // try to loop and find a more unprecise match
             List<String> mobGroups = groups.keySet().stream()
-                    .filter(g -> g.toLowerCase().endsWith(name.toLowerCase()))
+                    .filter(g -> g.toLowerCase().contains(name.toLowerCase()))
                     .collect(Collectors.toList());
             if (mobGroups.size() < 1) {
                 throw new UnknownMobException("No mob group with the name " + name + " found!");
