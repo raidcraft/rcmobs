@@ -10,6 +10,7 @@ import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
+import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
@@ -68,7 +69,7 @@ public final class MobManager implements Component, MobProvider {
         RaidCraft.registerComponent(MobManager.class, this);
         Mobs.enable(this);
 
-        baseDir = new File(plugin.getDataFolder(), "de/raidcraft/mobs");
+        baseDir = new File(plugin.getDataFolder(), "mobs");
         baseDir.mkdirs();
         load();
 
@@ -127,8 +128,9 @@ public final class MobManager implements Component, MobProvider {
             if (!file.getName().endsWith(".yml")) {
                 continue;
             }
-            SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file), false);
+            ConfigurationSection config = plugin.configure(new SimpleConfiguration<>(plugin, file));
             if (file.getName().endsWith(FILE_GROUP_SUFFIX)) {
+                config = ConfigUtil.replacePathReferences(config, path);
                 queuedGroups.put(path + file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
                 continue;
             }
