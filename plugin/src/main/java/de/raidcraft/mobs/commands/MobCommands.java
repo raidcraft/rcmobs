@@ -69,8 +69,8 @@ public class MobCommands {
     public void spawnGroup(CommandContext args, CommandSender sender) throws CommandException {
 
         try {
-            MobGroup group = plugin.getMobManager().getMobGroup(args.getString(0));
-            group.spawn(((Player) sender).getLocation());
+            MobGroup group = plugin.getMobManager().getMobGroup(args.getJoinedStrings(0));
+            group.spawn(((Player) sender).getLocation(), true);
         } catch (UnknownMobException e) {
             throw new CommandException(e);
         }
