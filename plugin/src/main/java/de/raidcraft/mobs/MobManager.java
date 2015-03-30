@@ -10,6 +10,7 @@ import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
+import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
@@ -68,7 +69,7 @@ public final class MobManager implements Component, MobProvider {
         RaidCraft.registerComponent(MobManager.class, this);
         Mobs.enable(this);
 
-        baseDir = new File(plugin.getDataFolder(), "de/raidcraft/mobs");
+        baseDir = new File(plugin.getDataFolder(), "mobs");
         baseDir.mkdirs();
         load();
 
@@ -122,13 +123,14 @@ public final class MobManager implements Component, MobProvider {
         ArrayList<Spawnable> createdMobs = new ArrayList<>();
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                load(file, path + file.getName() + "-");
+                load(file, path + file.getName() + ".");
             }
             if (!file.getName().endsWith(".yml")) {
                 continue;
             }
-            SimpleConfiguration<MobsPlugin> config = plugin.configure(new SimpleConfiguration<>(plugin, file), false);
+            ConfigurationSection config = plugin.configure(new SimpleConfiguration<>(plugin, file));
             if (file.getName().endsWith(FILE_GROUP_SUFFIX)) {
+                config = ConfigUtil.replacePathReferences(config, path);
                 queuedGroups.put(path + file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
                 continue;
             }
@@ -304,7 +306,7 @@ public final class MobManager implements Component, MobProvider {
             return mobs.get(name);
         }
         List<SpawnableMob> spawnableMobs = mobs.keySet().stream()
-                .filter(mobName -> mobName.contains(name))
+                .filter(mobName -> mobName.toLowerCase().contains(name.toLowerCase()))
                 .map(mobs::get)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
@@ -333,7 +335,7 @@ public final class MobManager implements Component, MobProvider {
         if (group == null) {
             // try to loop and find a more unprecise match
             List<String> mobGroups = groups.keySet().stream()
-                    .filter(g -> g.toLowerCase().endsWith(name.toLowerCase()))
+                    .filter(g -> g.toLowerCase().contains(name.toLowerCase()))
                     .collect(Collectors.toList());
             if (mobGroups.size() < 1) {
                 throw new UnknownMobException("No mob group with the name " + name + " found!");
