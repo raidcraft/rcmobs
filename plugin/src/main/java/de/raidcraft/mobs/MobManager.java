@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 public final class MobManager implements Component, MobProvider {
 
-    private static final String FILE_GROUP_SUFFIX = ".group.yml";
+    public static final String FILE_GROUP_SUFFIX = ".group.yml";
 
     private final MobsPlugin plugin;
     private final File baseDir;
