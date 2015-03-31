@@ -309,6 +309,7 @@ public final class MobManager implements Component, MobProvider {
                 .filter(entry -> entry.getKey().toLowerCase().endsWith(name)
                         || entry.getValue().getMobName().equalsIgnoreCase(name)
                         || entry.getValue().getMobName().toLowerCase().contains(name))
+                .filter(entry -> entry != null)
                 .map(mobs::get)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
