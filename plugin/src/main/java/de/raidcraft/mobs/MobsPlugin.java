@@ -21,6 +21,7 @@ import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobPlayerKillLog;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.mobs.tables.TPlayerMobKillLog;
+import de.raidcraft.mobs.tables.TPlayerPlayerKillLog;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
@@ -114,6 +115,7 @@ public class MobsPlugin extends BasePlugin {
         tables.add(TSpawnedMobGroup.class);
         tables.add(TPlayerMobKillLog.class);
         tables.add(TMobPlayerKillLog.class);
+        tables.add(TPlayerPlayerKillLog.class);
         return tables;
     }
 
