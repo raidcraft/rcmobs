@@ -30,7 +30,6 @@
     <modules>
         <module>plugin</module>
         <module>nms-v1_7_R3</module>
-        <module>nms-v1_7_R4</module>
     </modules>
 
     <scm>
