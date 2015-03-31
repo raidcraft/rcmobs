@@ -22,6 +22,7 @@ import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
 import de.raidcraft.mobs.tables.TMobPlayerKillLog;
 import de.raidcraft.mobs.tables.TPlayerMobKillLog;
+import de.raidcraft.mobs.tables.TPlayerPlayerKillLog;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
@@ -50,6 +51,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -315,7 +318,14 @@ public class MobListener implements Listener {
         EntityDamageEvent lastDamage = event.getEntity().getLastDamageCause();
         if (lastDamage instanceof EntityDamageByEntityEvent) {
             Entity damager = ((EntityDamageByEntityEvent) lastDamage).getDamager();
-            if (damager instanceof LivingEntity) {
+            if (damager instanceof Player) {
+                TPlayerPlayerKillLog log = new TPlayerPlayerKillLog();
+                log.setKiller(damager.getUniqueId());
+                log.setVictim(event.getEntity().getUniqueId());
+                log.setTimestamp(Timestamp.from(Instant.now()));
+                log.setWorld(event.getEntity().getWorld().getName());
+                plugin.getDatabase().save(log);
+            } else if (damager instanceof LivingEntity) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) damager);
                 if (spawnedMob == null) return;
                 TMobPlayerKillLog log = plugin.getDatabase().find(TMobPlayerKillLog.class).where()
