@@ -4,8 +4,9 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import de.raidcraft.util.PaginatedResult;
+import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.mobs.MobGroupSpawnLocation;
+import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobSpawnLocation;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
@@ -13,12 +14,16 @@ import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
+import de.raidcraft.util.PaginatedResult;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -183,6 +188,47 @@ public class MobCommands {
                     return ChatColor.AQUA + "" + ChatColor.BOLD + "" + mobSpawnLocation.getId() + ": " + ChatColor.RESET + ChatColor.GRAY + mobSpawnLocation;
                 }
             }.display(sender, locations, args.getFlagInteger('p', 1));
+        }
+    }
+
+    @Command(
+            aliases = {"convert"},
+            desc = "Converts all mob names in groups"
+    )
+    @CommandPermissions("rcmobs.convert")
+    public void convert(CommandContext args, CommandSender sender) {
+
+        File mobsFolder = new File(plugin.getDataFolder(), "mobs");
+        convertPath(mobsFolder, "");
+    }
+
+
+    private void convertPath(File directory, String path) {
+
+        if (directory == null || directory.listFiles() == null) {
+            return;
+        }
+        String oldPath = path.replace(".", "-");
+        for (File file : directory.listFiles()) {
+            if (file.isDirectory()) {
+                convertPath(file, path + file.getName() + ".");
+            }
+            if (!file.getName().endsWith(".yml")) {
+                continue;
+            }
+            if (file.getName().endsWith(MobManager.FILE_GROUP_SUFFIX)) {
+                SimpleConfiguration config = plugin.configure(new SimpleConfiguration<>(plugin, file));
+                try {
+                    Files.copy(file.toPath(), new File(file, ".old").toPath());
+                    config.getSafeConfigSection("mobs").getKeys(false).stream()
+                            .filter(mob -> mob.startsWith(oldPath))
+                            .forEach(mob -> config.set(mob.replace(oldPath, path), config.getSafeConfigSection(mob)));
+                    config.save();
+                    plugin.getLogger().info("Converted " + file.getAbsolutePath() + " into new mob format...");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
