@@ -3,8 +3,6 @@ package de.raidcraft.mobs.groups;
 import com.avaje.ebean.EbeanServer;
 import com.sk89q.worldedit.blocks.BlockType;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.util.MathUtil;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
@@ -14,6 +12,8 @@ import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
+import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.util.MathUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -45,11 +45,11 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         minSpawnAmount = config.getInt("min-amount", 1);
         maxSpawnAmount = config.getInt("max-amount", minSpawnAmount);
         respawnTreshhold = config.getInt("respawn-treshhold", minSpawnAmount - 1);
-        if (config.getConfigurationSection("de/raidcraft/mobs") != null) {
+        if (config.getConfigurationSection("mobs") != null) {
             for (String key : config.getConfigurationSection("de/raidcraft/mobs").getKeys(false)) {
                 try {
                     SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(key);
-                    ConfigurationSection section = config.getConfigurationSection("de/raidcraft/mobs").getConfigurationSection(key);
+                    ConfigurationSection section = config.getConfigurationSection("mobs").getConfigurationSection(key);
                     mob.setSpawnChance(section.getDouble("chance", 1.0));
                     mobs.add(mob);
                 } catch (UnknownMobException e) {
