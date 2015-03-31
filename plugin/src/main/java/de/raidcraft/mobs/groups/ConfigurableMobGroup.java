@@ -46,7 +46,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         maxSpawnAmount = config.getInt("max-amount", minSpawnAmount);
         respawnTreshhold = config.getInt("respawn-treshhold", minSpawnAmount - 1);
         if (config.getConfigurationSection("mobs") != null) {
-            for (String key : config.getConfigurationSection("de/raidcraft/mobs").getKeys(false)) {
+            for (String key : config.getConfigurationSection("mobs").getKeys(false)) {
                 try {
                     SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(key);
                     ConfigurationSection section = config.getConfigurationSection("mobs").getConfigurationSection(key);
