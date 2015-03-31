@@ -7,14 +7,6 @@ import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.api.mobs.CustomNmsEntity;
 import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.api.mobs.Mobs;
-import de.raidcraft.skills.CharacterManager;
-import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.util.CaseInsensitiveMap;
-import de.raidcraft.util.ConfigUtil;
-import de.raidcraft.util.EntityUtil;
-import de.raidcraft.util.LocationUtil;
-import de.raidcraft.util.ReflectionUtil;
-import de.raidcraft.util.TimeUtil;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
@@ -24,6 +16,13 @@ import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
+import de.raidcraft.skills.CharacterManager;
+import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.util.CaseInsensitiveMap;
+import de.raidcraft.util.ConfigUtil;
+import de.raidcraft.util.LocationUtil;
+import de.raidcraft.util.ReflectionUtil;
+import de.raidcraft.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -93,6 +92,7 @@ public final class MobManager implements Component, MobProvider {
             }
         }, 20L, time);
         // walk mobs to their spawnpoint
+        /*
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             CharacterManager manager = RaidCraft.getComponent(CharacterManager.class);
             if (manager == null) return;
@@ -112,7 +112,7 @@ public final class MobManager implements Component, MobProvider {
                     }
                 }
             }
-        }, 100L, 100L);
+        }, 100L, 100L);*/
     }
 
     private void load(File directory, String path) {

@@ -22,8 +22,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -218,16 +216,11 @@ public class MobCommands {
             }
             if (file.getName().endsWith(MobManager.FILE_GROUP_SUFFIX)) {
                 SimpleConfiguration config = plugin.configure(new SimpleConfiguration<>(plugin, file));
-                try {
-                    Files.copy(file.toPath(), new File(file, ".old").toPath());
-                    config.getSafeConfigSection("mobs").getKeys(false).stream()
-                            .filter(mob -> mob.startsWith(oldPath))
-                            .forEach(mob -> config.set(mob.replace(oldPath, path), config.getSafeConfigSection(mob)));
-                    config.save();
-                    plugin.getLogger().info("Converted " + file.getAbsolutePath() + " into new mob format...");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                config.getSafeConfigSection("mobs").getKeys(false).stream()
+                        .filter(mob -> mob.startsWith(oldPath))
+                        .forEach(mob -> config.set(mob.replace(oldPath, path), config.getSafeConfigSection(mob)));
+                config.save();
+                plugin.getLogger().info("Converted " + file.getAbsolutePath() + " into new mob format...");
             }
         }
     }
