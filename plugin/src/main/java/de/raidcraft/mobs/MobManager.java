@@ -19,7 +19,6 @@ import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.CaseInsensitiveMap;
-import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
 import de.raidcraft.util.TimeUtil;
@@ -123,14 +122,13 @@ public final class MobManager implements Component, MobProvider {
         ArrayList<Spawnable> createdMobs = new ArrayList<>();
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                load(file, path + file.getName() + ".");
+                load(file, path + file.getName() + "-");
             }
             if (!file.getName().endsWith(".yml")) {
                 continue;
             }
             ConfigurationSection config = plugin.configure(new SimpleConfiguration<>(plugin, file));
             if (file.getName().endsWith(FILE_GROUP_SUFFIX)) {
-                config = ConfigUtil.replacePathReferences(config, path);
                 queuedGroups.put(path + file.getName().replace(FILE_GROUP_SUFFIX, ""), config);
                 continue;
             }
