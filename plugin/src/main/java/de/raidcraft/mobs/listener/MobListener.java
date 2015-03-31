@@ -11,6 +11,8 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
+import de.raidcraft.loot.api.table.LootTable;
+import de.raidcraft.loot.api.table.LootTableEntry;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
@@ -18,6 +20,8 @@ import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
+import de.raidcraft.mobs.tables.TMobPlayerKillLog;
+import de.raidcraft.mobs.tables.TPlayerMobKillLog;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
@@ -32,6 +36,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,6 +46,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
@@ -274,6 +280,20 @@ public class MobListener implements Listener {
                             .forEach(rdsObject -> event.getDrops().add(((Dropable) rdsObject).getItemStack()));
                 }
             }
+            // track the mob kill if it was killed by a player
+            Player killer = event.getEntity().getKiller();
+            if (killer != null) {
+                TPlayerMobKillLog log = plugin.getDatabase().find(TPlayerMobKillLog.class).where()
+                        .eq("uuid", killer.getUniqueId())
+                        .eq("mob", spawnedMob.getMob()).findUnique();
+                if (log == null) {
+                    log = new TPlayerMobKillLog();
+                    log.setUuid(killer.getUniqueId());
+                    log.setMob(spawnedMob.getMob());
+                }
+                log.setKillCount(log.getKillCount() + 1);
+                plugin.getDatabase().save(log);
+            }
             // delete the mob group if the last mob dies
             if (spawnedMob.getMobGroupSource() != null && spawnedMob.getMobGroupSource().getSpawnedMobs().size() <= 1) {
                 try {
@@ -285,6 +305,29 @@ public class MobListener implements Listener {
                 }
             } else {
                 spawnedMob.delete();
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+
+        EntityDamageEvent lastDamage = event.getEntity().getLastDamageCause();
+        if (lastDamage instanceof EntityDamageByEntityEvent) {
+            Entity damager = ((EntityDamageByEntityEvent) lastDamage).getDamager();
+            if (damager instanceof LivingEntity) {
+                TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) damager);
+                if (spawnedMob == null) return;
+                TMobPlayerKillLog log = plugin.getDatabase().find(TMobPlayerKillLog.class).where()
+                        .eq("uuid", event.getEntity().getUniqueId())
+                        .eq("mob", spawnedMob.getMob()).findUnique();
+                if (log == null) {
+                    log = new TMobPlayerKillLog();
+                    log.setUuid(event.getEntity().getUniqueId());
+                    log.setMob(spawnedMob.getMob());
+                }
+                log.setKillCount(log.getKillCount() + 1);
+                plugin.getDatabase().save(log);
             }
         }
     }
