@@ -384,9 +384,13 @@ public class MobListener implements Listener {
                 }
             }
         }
-        plugin.getDatabase().save(unloadedMobs);
-        plugin.getLogger().info("Unloaded " + unloadedMobs.size()
-                + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
+        if (unloadedMobs.size() > 0) {
+            plugin.getDatabase().save(unloadedMobs);
+            if (plugin.getConfiguration().debugMobSpawning) {
+                plugin.getLogger().info("Unloaded " + unloadedMobs.size()
+                        + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -406,8 +410,12 @@ public class MobListener implements Listener {
                 }
             });
         }
-        plugin.getDatabase().save(respawnedMobs);
-        plugin.getLogger().info("Respawned " + respawnedMobs.size() + "/" + mobs.size()
-                + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
+        if (respawnedMobs.size() > 0) {
+            plugin.getDatabase().save(respawnedMobs);
+            if (plugin.getConfiguration().debugMobSpawning) {
+                plugin.getLogger().info("Respawned " + respawnedMobs.size() + "/" + mobs.size()
+                        + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
+            }
+        }
     }
 }
