@@ -26,6 +26,7 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     private final int id;
     private final MobGroup spawnable;
+    private TMobGroupSpawnLocation dbEntry;
 
     protected MobGroupSpawnLocation(TMobGroupSpawnLocation location) throws UnknownMobException {
 
@@ -36,7 +37,10 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     public TMobGroupSpawnLocation getDatabaseEntry() {
 
-        return RaidCraft.getDatabase(MobsPlugin.class).find(TMobGroupSpawnLocation.class, getId());
+        if (dbEntry == null) {
+            dbEntry = RaidCraft.getDatabase(MobsPlugin.class).find(TMobGroupSpawnLocation.class, getId());
+        }
+        return dbEntry;
     }
 
     public Location getLocation() {
