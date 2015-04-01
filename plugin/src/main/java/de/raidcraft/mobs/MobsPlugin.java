@@ -31,6 +31,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -173,9 +175,17 @@ public class MobsPlugin extends BasePlugin {
         @Setting("respawn-task.mob-group-batch-count")
         public int respawnTaskMobGroupBatchCount = 5;
 
+        private final HashSet<String> replacedMobsSet;
+
         public LocalConfiguration(MobsPlugin plugin) {
 
             super(plugin, "config.yml");
+            replacedMobsSet = new HashSet<>(Arrays.asList(replacedMobs));
+        }
+
+        public HashSet<String> getReplacedMobs() {
+
+            return replacedMobsSet;
         }
     }
 
