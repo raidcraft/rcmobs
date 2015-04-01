@@ -140,7 +140,7 @@ public class MobsPlugin extends BasePlugin {
         @Setting("default.replace-animals")
         public boolean replaceAnimals = false;
         @Setting("default.loot-table")
-        public String defaultLoottable;
+        public String defaultLoottable = "mobs.default-loottable";
         @Setting("default.natural-spawning-adapt-radius")
         public int naturalAdaptRadius = 25;
         @Setting("default.replaced-mobs")
@@ -171,7 +171,7 @@ public class MobsPlugin extends BasePlugin {
     public class BaseCommands {
 
         @Command(
-                aliases = {"rcm", "de/raidcraft/mobs", "mob"},
+                aliases = {"rcm", "mobs", "mob"},
                 desc = "Base command for the mobs plugin."
         )
         @NestedCommand(MobCommands.class)
