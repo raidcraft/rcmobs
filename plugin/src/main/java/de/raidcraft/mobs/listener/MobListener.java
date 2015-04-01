@@ -1,6 +1,5 @@
 package de.raidcraft.mobs.listener;
 
-import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -53,7 +52,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,13 +82,14 @@ public class MobListener implements Listener {
                         PacketContainer packet = event.getPacket();
 
                         // handle the custom mob hurt effects
+                        /*
                         if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
                             WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect(event.getPacket());
                             if (false) {
                                 // supress skeleton sounds since they are our custom mobs
                                 event.setCancelled(true);
                             }
-                        }
+                        }*/
 
                         // You may also want to check event.getPacketID()
                         final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
@@ -173,6 +172,7 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void checkPathfinding(EntityDamageByEntityEvent event) {
 
+        /*
         if (!event.getEntity().hasMetadata("RC_CUSTOM_MOB")
                 || !(event.getEntity() instanceof LivingEntity)
                 || !(event.getDamager() instanceof LivingEntity)) {
@@ -181,7 +181,7 @@ public class MobListener implements Listener {
         CharacterTemplate mob = characterManager.getCharacter((LivingEntity) event.getEntity());
         CharacterTemplate attacker = characterManager.getCharacter((LivingEntity) event.getDamager());
         // TODO: debug this shit
-/*        // lets check if our entity can reach the attacker
+        // lets check if our entity can reach the attacker
         try {
             AStar aStar = new AStar(mob.getEntity().getLocation(), attacker.getEntity().getLocation(), 50);
             aStar.iterate();
@@ -205,59 +205,64 @@ public class MobListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (!Arrays.asList(plugin.getConfiguration().replacedMobs).contains(event.getEntity().getType().name())) {
+        if (!plugin.getConfiguration().getReplacedMobs().contains(event.getEntity().getType().name())) {
             return;
         }
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL
                 || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE) {
             // check if there are custom mobs around and stop the spawning of the entity
-            if (plugin.getMobManager().getClosestMobSpawnLocation(event.getLocation(), plugin.getConfiguration().defaultSpawnDenyRadius) != null) {
+            if (!plugin.getMobManager().isAllowedNaturalSpawn(event.getLocation())) {
                 event.setCancelled(true);
-            } else {
-                // lets replace all natural mobs with our own
-                List<MobGroup> virtualGroups = plugin.getMobManager().getVirtualGroups();
-                if (virtualGroups.isEmpty()) {
-                    return;
-                }
-                List<SpawnableMob> nearbyMobs = new ArrayList<>();
-                if (plugin.getConfiguration().spawnSimiliarRandomMobs) {
-                    // first we want to check all nearby entities for custom mobs so we can spawn more of the same type
-                    for (LivingEntity entity : BukkitUtil.getNearbyEntities(event.getEntity(), plugin.getConfiguration().naturalAdaptRadius)) {
-                        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
-                        if (spawnedMob != null) {
-                            try {
-                                SpawnableMob mob = plugin.getMobManager().getSpwanableMob(spawnedMob.getMob());
-                                nearbyMobs.add(mob);
-                            } catch (UnknownMobException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-                // if there are no mobs nearby we grap a random group and spawn some mobs
-                if (!nearbyMobs.isEmpty()) {
-                    // now we need to filter our all of the groups that are not matching nearby mobs
-                    for (MobGroup group : new ArrayList<>(virtualGroups)) {
-                        boolean inGroup = false;
-                        for (SpawnableMob mob : nearbyMobs) {
-                            if (group.isInGroup(mob)) {
-                                inGroup = true;
-                                break;
-                            }
-                        }
-                        if (!inGroup) {
-                            virtualGroups.remove(group);
-                        }
-                    }
-                }
-                event.setCancelled(true);
-                if (virtualGroups.isEmpty()) {
-                    return;
-                }
-                // okay now we have some groups, lets grap a random one and spawn stuff
-                MobGroup mobGroup = virtualGroups.get(MathUtil.RANDOM.nextInt(virtualGroups.size()));
-                mobGroup.spawn(event.getLocation());
+                return;
             }
+            // lets replace all natural mobs with our own
+            MobGroup[] virtualGroups = plugin.getMobManager().getVirtualGroups();
+            if (virtualGroups.length < 1) {
+                return;
+            }
+            List<SpawnableMob> nearbyMobs = new ArrayList<>();
+            if (plugin.getConfiguration().spawnSimiliarRandomMobs) {
+                // first we want to check all nearby entities for custom mobs so we can spawn more of the same type
+                for (LivingEntity entity : BukkitUtil.getNearbyEntities(event.getEntity(), plugin.getConfiguration().naturalAdaptRadius)) {
+                    TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
+                    if (spawnedMob != null) {
+                        try {
+                            SpawnableMob mob = plugin.getMobManager().getSpwanableMob(spawnedMob.getMob());
+                            nearbyMobs.add(mob);
+                        } catch (UnknownMobException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            // if there are no mobs nearby we grap a random group and spawn some mobs
+            if (!nearbyMobs.isEmpty()) {
+                // now we need to filter our all of the groups that are not matching nearby mobs
+                for (int i = 0; i < virtualGroups.length; i++) {
+                    boolean inGroup = false;
+                    for (SpawnableMob mob : nearbyMobs) {
+                        if (virtualGroups[i].isInGroup(mob)) {
+                            inGroup = true;
+                            break;
+                        }
+                    }
+                    if (!inGroup) {
+                        virtualGroups[i] = null;
+                    }
+                }
+            }
+            // filter out all of our null values
+            List<MobGroup> groups = new ArrayList<>();
+            for (MobGroup group : virtualGroups) {
+                if (group != null) groups.add(group);
+            }
+            event.setCancelled(true);
+            if (groups.isEmpty()) {
+                return;
+            }
+            // okay now we have some groups, lets grap a random one and spawn stuff
+            MobGroup mobGroup = groups.get(MathUtil.RANDOM.nextInt(groups.size()));
+            mobGroup.spawn(event.getLocation());
         }
     }
 

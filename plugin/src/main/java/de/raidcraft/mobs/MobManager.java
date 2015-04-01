@@ -52,11 +52,12 @@ public final class MobManager implements Component, MobProvider {
     private final File baseDir;
     private final Map<String, SpawnableMob> mobs = new CaseInsensitiveMap<>();
     private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
-    private final Map<String, MobGroup> virtualGroups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
     private RespawnTask respawnTask;
     private MobSpawnLocation[] spawnableMobs = new MobSpawnLocation[0];
     private MobGroupSpawnLocation[] spawnableGroups = new MobGroupSpawnLocation[0];
+    private MobGroup[] virtualGroups = new MobGroup[0];
+    private List<MobGroup> loadedVirtualGroups = new ArrayList<>();
     private int loadedMobs = 0;
     private int loadedMobGroups = 0;
     private int loadedSpawnLocations = 0;
@@ -127,7 +128,7 @@ public final class MobManager implements Component, MobProvider {
             if (spawnable != null && spawnable.isSpawningNaturally()) createdMobs.add(spawnable);
         }
         // lets create a virtual group from the current path and all created mobs
-        virtualGroups.put(path, new VirtualMobGroup(path, createdMobs));
+        loadedVirtualGroups.add(new VirtualMobGroup(path, createdMobs));
     }
 
     private void load() {
@@ -140,7 +141,10 @@ public final class MobManager implements Component, MobProvider {
         loadGroups();
         plugin.getLogger().info("Loaded " + loadedMobGroups + " mob groups!");
         loadSpawnLocations();
-        plugin.getLogger().info("Loaded " + loadedSpawnLocations + " spawn locations");
+        plugin.getLogger().info("Loaded " + loadedSpawnLocations + " spawn locations!");
+        virtualGroups = loadedVirtualGroups.toArray(new MobGroup[loadedVirtualGroups.size()]);
+        plugin.getLogger().info("Loaded " + loadedVirtualGroups.size() + " virtual random groups!");
+        loadedVirtualGroups.clear();
     }
 
     protected void reload() {
@@ -318,9 +322,9 @@ public final class MobManager implements Component, MobProvider {
         return new ArrayList<>(mobs.values());
     }
 
-    public List<MobGroup> getVirtualGroups() {
+    public MobGroup[] getVirtualGroups() {
 
-        return new ArrayList<>(virtualGroups.values());
+        return virtualGroups;
     }
 
     public MobGroup getMobGroup(String name) throws UnknownMobException {
@@ -472,5 +476,11 @@ public final class MobManager implements Component, MobProvider {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean isAllowedNaturalSpawn(Location location) {
+
+        return getMobSpawnLocations(location, plugin.getConfiguration().defaultSpawnDenyRadius).isEmpty()
+                && getGroupSpawnLocations(location, plugin.getConfiguration().defaultSpawnDenyRadius).isEmpty();
     }
 }
