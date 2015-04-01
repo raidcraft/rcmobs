@@ -88,6 +88,35 @@ public class SpawnableMob extends AbstractSpawnable {
         this.spawnChance = spawnChance;
     }
 
+    /**
+     * Will respawn the given database mob from its unloaded state.
+     * To save performance all respawned entities should be saved to database in one query.
+     * If the entity in the database is not {@link de.raidcraft.mobs.tables.TSpawnedMob#isUnloaded()} the mob will not be spawned.
+     *
+     * @param dbMob to respawn
+     * @param saveToDatabase true if entity should be saved directly
+     * @return true if mob was spawned, false if mob was not unloaded
+     */
+    public boolean respawn(TSpawnedMob dbMob, boolean saveToDatabase) {
+
+        if (!dbMob.isUnloaded()) return false;
+        CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
+        Mob mob = null;
+        Location location = dbMob.getLocation();
+        if (type != null) {
+            mob = manager.spawnCharacter(type, location, mClass, config);
+        } else if (customEntityTypeName != null) {
+            CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
+            mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
+        }
+        if (mob == null) return false;
+        dbMob.setUuid(mob.getUniqueId());
+        dbMob.setSpawnTime(Timestamp.from(Instant.now()));
+        dbMob.setUnloaded(false);
+        if (saveToDatabase) RaidCraft.getDatabase(MobsPlugin.class).update(dbMob);
+        return true;
+    }
+
     @Override
     public List<CharacterTemplate> spawn(Location location, boolean force) {
 

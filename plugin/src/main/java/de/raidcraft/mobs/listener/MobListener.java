@@ -31,7 +31,6 @@ import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -366,6 +365,7 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onChunkUnload(ChunkUnloadEvent event) {
 
+        List<TSpawnedMob> unloadedMobs = new ArrayList<>();
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
@@ -378,35 +378,35 @@ public class MobListener implements Listener {
                     spawnedMob.setX(location.getBlockX());
                     spawnedMob.setY(location.getBlockY());
                     spawnedMob.setZ(location.getBlockZ());
-                    plugin.getDatabase().update(spawnedMob);
+                    unloadedMobs.add(spawnedMob);
                     entity.remove();
                 }
             }
         }
+        plugin.getDatabase().save(unloadedMobs);
+        plugin.getLogger().info("Unloaded " + unloadedMobs.size()
+                + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
 
         List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
+        List<TSpawnedMob> respawnedMobs = new ArrayList<>();
         if (mobs.size() > 0) {
             mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
                 try {
-                    Location location = new Location(Bukkit.getWorld(mob.getWorld()), (double) mob.getX(), (double) mob.getY(), (double) mob.getZ());
                     SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                    List<CharacterTemplate> spawn = spawnableMob.spawn(location, true);
-                    if (spawn.size() > 0) {
-                        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(spawn.get(0).getEntity());
-                        if (spawnedMob != null) {
-                            spawnedMob.setMobGroupSource(mob.getMobGroupSource());
-                            spawnedMob.setSpawnLocationSource(mob.getSpawnLocationSource());
-                            plugin.getDatabase().update(spawnedMob);
-                        }
+                    if (spawnableMob.respawn(mob, false)) {
+                        respawnedMobs.add(mob);
                     }
-                } catch (UnknownMobException ignored) {
+                } catch (UnknownMobException e) {
+                    e.printStackTrace();
                 }
-                mob.delete();
             });
         }
+        plugin.getDatabase().save(respawnedMobs);
+        plugin.getLogger().info("Respawned " + respawnedMobs.size() + "/" + mobs.size()
+                + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
     }
 }

@@ -4,6 +4,8 @@ import de.raidcraft.RaidCraft;
 import lombok.Getter;
 import lombok.Setter;
 import de.raidcraft.mobs.MobsPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,6 +45,11 @@ public class TSpawnedMob {
     private int z;
     private int chunkX;
     private int chunkZ;
+
+    public Location getLocation() {
+
+        return new Location(Bukkit.getWorld(getWorld()), (double) getX(), (double) getY(), (double) getZ());
+    }
 
     public void delete() {
 

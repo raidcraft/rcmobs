@@ -168,6 +168,13 @@ public class MobsPlugin extends BasePlugin {
                 "IRON_GOLEM"
         };
 
+        @Setting("respawn-task.interval")
+        public double respawnTaskInterval = 5.0;
+        @Setting("respawn-task.mob-batch-count")
+        public int respawnTaskMobBatchCount = 10;
+        @Setting("respawn-task.mob-group-batch-count")
+        public int respawnTaskMobGroupBatchCount = 5;
+
         public LocalConfiguration(MobsPlugin plugin) {
 
             super(plugin, "config.yml");
