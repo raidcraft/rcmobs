@@ -2,13 +2,13 @@ package de.raidcraft.mobs;
 
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.api.Spawnable;
+import de.raidcraft.mobs.tables.TMobSpawnLocation;
+import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.TimeUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import de.raidcraft.mobs.api.Spawnable;
-import de.raidcraft.mobs.tables.TMobSpawnLocation;
-import de.raidcraft.mobs.tables.TSpawnedMob;
 import org.bukkit.Location;
 
 import java.sql.Timestamp;

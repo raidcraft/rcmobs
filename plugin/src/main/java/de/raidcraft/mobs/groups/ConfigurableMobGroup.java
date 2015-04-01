@@ -69,10 +69,10 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     public double getSpawnInterval() {
 
         //get the range, casting to long to avoid overflow problems
-        long range = (long)maxInterval - (long)minInterval + 1;
+        long range = (long) maxInterval - (long) minInterval + 1;
         // compute a fraction of the range, 0 <= frac < range
-        long fraction = (long)(range * MathUtil.RANDOM.nextDouble());
-        int randomNumber =  (int)(fraction + minInterval);
+        long fraction = (long) (range * MathUtil.RANDOM.nextDouble());
+        int randomNumber = (int) (fraction + minInterval);
         return randomNumber;
     }
 
@@ -121,8 +121,8 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             // some workarounds to prevent endless loops
             Location newLocation = getRandomLocation(location, amount);
             boolean found = false;
-            for(int k = 0; k < 100; k++) {
-                if(newLocation.getBlock().getType() == Material.AIR
+            for (int k = 0; k < 100; k++) {
+                if (newLocation.getBlock().getType() == Material.AIR
                         || newLocation.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR
                         || BlockType.canPassThrough(newLocation.getBlock().getType().getId())
                         || BlockType.canPassThrough(newLocation.getBlock().getRelative(BlockFace.UP).getType().getId())) {
@@ -131,7 +131,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
                 }
                 newLocation = getRandomLocation(location, amount);
             }
-            if(!found) {
+            if (!found) {
                 continue;
             }
 

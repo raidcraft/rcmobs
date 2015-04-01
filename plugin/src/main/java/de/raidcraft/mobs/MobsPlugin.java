@@ -102,6 +102,7 @@ public class MobsPlugin extends BasePlugin {
         Quests.registerQuestLoader(new QuestConfigLoader("group") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
+
                 getMobManager().registerMobGroup(id, config);
             }
         });
