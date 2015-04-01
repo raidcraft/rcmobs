@@ -1,9 +1,9 @@
 package de.raidcraft.mobs.api;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
 

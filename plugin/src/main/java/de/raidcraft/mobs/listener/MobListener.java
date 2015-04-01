@@ -8,6 +8,8 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.random.Dropable;
+import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.loot.api.table.LootTable;
 import de.raidcraft.loot.api.table.LootTableEntry;
 import de.raidcraft.mobs.MobManager;
@@ -51,6 +53,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Silthus
@@ -277,10 +280,11 @@ public class MobListener implements Listener {
             CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
             if (character instanceof Mob) {
                 // lets call our custom death event
-                for (LootTable lootTable : ((Mob) character).getLootTables()) {
-                    for (LootTableEntry loot : lootTable.loot()) {
-                        event.getDrops().add(loot.getItem());
-                    }
+                Optional<RDSTable> lootTable = ((Mob) character).getLootTable();
+                if (lootTable.isPresent()) {
+                    lootTable.get().getResult().stream()
+                            .filter(rdsObject -> rdsObject instanceof Dropable)
+                            .forEach(rdsObject -> event.getDrops().add(((Dropable) rdsObject).getItemStack()));
                 }
             }
             // track the mob kill if it was killed by a player

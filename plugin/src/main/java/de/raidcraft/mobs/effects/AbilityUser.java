@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.effects;
 
+import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.combat.action.AbilityAction;
@@ -8,7 +9,6 @@ import de.raidcraft.skills.api.effect.types.PeriodicEffect;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.persistance.EffectData;
 import de.raidcraft.util.MathUtil;
-import de.raidcraft.mobs.api.Mob;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;

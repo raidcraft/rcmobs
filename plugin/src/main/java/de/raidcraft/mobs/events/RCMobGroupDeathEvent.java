@@ -1,7 +1,7 @@
 package de.raidcraft.mobs.events;
 
-import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

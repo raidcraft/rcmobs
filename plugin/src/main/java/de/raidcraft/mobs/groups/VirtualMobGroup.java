@@ -1,10 +1,10 @@
 package de.raidcraft.mobs.groups;
 
-import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.util.MathUtil;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
+import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.util.MathUtil;
 import org.bukkit.Location;
 
 import java.util.ArrayList;

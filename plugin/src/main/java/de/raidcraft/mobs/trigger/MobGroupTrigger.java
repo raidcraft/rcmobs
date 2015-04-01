@@ -2,11 +2,11 @@ package de.raidcraft.mobs.trigger;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.action.trigger.Trigger;
-import de.raidcraft.skills.api.hero.Hero;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
+import de.raidcraft.skills.api.hero.Hero;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -38,11 +38,12 @@ public class MobGroupTrigger extends Trigger implements Listener {
                     .filter(target -> target instanceof Hero)
                     .map(target -> (Hero) target)
                     .forEach(hero -> informListeners("kill", hero.getPlayer(),
-                            config -> {
-                                if (config.isSet("group") && !config.getString("group").equals(spawnedMobGroup.get().getMobGroup())) return false;
-                                if (config.isSet("id") && !config.getString("id").equals(event.getTrackingId())) return false;
-                                return true;
-                            })
+                                    config -> {
+                                        if (config.isSet("group") && !config.getString("group").equals(spawnedMobGroup.get().getMobGroup()))
+                                            return false;
+                                        if (config.isSet("id") && !config.getString("id").equals(event.getTrackingId())) return false;
+                                        return true;
+                                    })
                     );
         }
     }

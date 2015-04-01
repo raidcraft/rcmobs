@@ -1,9 +1,9 @@
 package de.raidcraft.mobs.trigger;
 
 import de.raidcraft.api.action.trigger.Trigger;
+import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.api.events.RCEntityDeathEvent;
 import de.raidcraft.skills.api.hero.Hero;
-import de.raidcraft.mobs.api.Mob;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -31,10 +31,10 @@ public class MobTrigger extends Trigger implements Listener {
                 .filter(target -> target instanceof Hero)
                 .map(target -> (Hero) target)
                 .forEach(hero -> informListeners("kill", hero.getPlayer(),
-                        config -> (!config.isSet("mob")
-                                || mob.getId() == null
-                                || mob.getId().equalsIgnoreCase(config.getString("mob"))
-                            )
+                                config -> (!config.isSet("mob")
+                                        || mob.getId() == null
+                                        || mob.getId().equalsIgnoreCase(config.getString("mob"))
+                                )
                         )
                 );
     }

@@ -1,9 +1,9 @@
 package de.raidcraft.mobs.tables;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.MobsPlugin;
 import lombok.Getter;
 import lombok.Setter;
-import de.raidcraft.mobs.MobsPlugin;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

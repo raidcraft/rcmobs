@@ -3,13 +3,13 @@ package de.raidcraft.mobs;
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.mobs.CustomNmsEntity;
-import de.raidcraft.skills.CharacterManager;
-import de.raidcraft.skills.SkillsPlugin;
-import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.skills.CharacterManager;
+import de.raidcraft.skills.SkillsPlugin;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -93,8 +93,9 @@ public class SpawnableMob extends AbstractSpawnable {
      * To save performance all respawned entities should be saved to database in one query.
      * If the entity in the database is not {@link de.raidcraft.mobs.tables.TSpawnedMob#isUnloaded()} the mob will not be spawned.
      *
-     * @param dbMob to respawn
+     * @param dbMob          to respawn
      * @param saveToDatabase true if entity should be saved directly
+     *
      * @return true if mob was spawned, false if mob was not unloaded
      */
     public boolean respawn(TSpawnedMob dbMob, boolean saveToDatabase) {

@@ -1,8 +1,11 @@
 package de.raidcraft.mobs.tables;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.MobsPlugin;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import de.raidcraft.mobs.MobsPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
