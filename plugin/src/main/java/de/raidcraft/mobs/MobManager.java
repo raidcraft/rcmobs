@@ -22,7 +22,6 @@ import de.raidcraft.util.CaseInsensitiveMap;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
 import de.raidcraft.util.TimeUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -55,6 +54,7 @@ public final class MobManager implements Component, MobProvider {
     private final Map<String, MobGroup> groups = new CaseInsensitiveMap<>();
     private final Map<String, MobGroup> virtualGroups = new CaseInsensitiveMap<>();
     private final Map<String, ConfigurationSection> queuedGroups = new CaseInsensitiveMap<>();
+    private RespawnTask respawnTask;
     private MobSpawnLocation[] spawnableMobs = new MobSpawnLocation[0];
     private MobGroupSpawnLocation[] spawnableGroups = new MobGroupSpawnLocation[0];
     private int loadedMobs = 0;
@@ -70,26 +70,7 @@ public final class MobManager implements Component, MobProvider {
         baseDir = new File(plugin.getDataFolder(), "mobs");
         baseDir.mkdirs();
         load();
-
-        // start the spawn task for the fixed spawn locations
-        long time = TimeUtil.secondsToTicks(plugin.getConfiguration().spawnTaskInterval);
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-
-            if (spawnableMobs.length > 0) {
-                for (MobSpawnLocation mob : spawnableMobs) {
-                    mob.spawn(true);
-                }
-            }
-        }, 10L, time);
-        // and the mob group task
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-
-            if (spawnableGroups.length > 0) {
-                for (MobGroupSpawnLocation group : spawnableGroups) {
-                    group.spawn(true);
-                }
-            }
-        }, 20L, time);
+        startRespawnTask();
         // walk mobs to their spawnpoint
         /*
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
@@ -112,6 +93,15 @@ public final class MobManager implements Component, MobProvider {
                 }
             }
         }, 100L, 100L);*/
+    }
+
+    private void startRespawnTask() {
+
+        if (respawnTask != null) respawnTask.cancel();
+        // start the spawn task for the fixed spawn locations
+        long time = TimeUtil.secondsToTicks(plugin.getConfiguration().spawnTaskInterval);
+        this.respawnTask = new RespawnTask(plugin, spawnableMobs, spawnableGroups);
+        respawnTask.runTaskTimer(plugin, time, time);
     }
 
     private void load(File directory, String path) {
@@ -155,12 +145,15 @@ public final class MobManager implements Component, MobProvider {
 
     protected void reload() {
 
+        respawnTask.cancel();
+        respawnTask = null;
         mobs.clear();
         groups.clear();
         spawnableMobs = new MobSpawnLocation[0];
         spawnableGroups = new MobGroupSpawnLocation[0];
         queuedGroups.clear();
         load();
+        startRespawnTask();
     }
 
     private SpawnableMob registerAndReturnMob(String mobId, ConfigurationSection config) {
