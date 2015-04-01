@@ -10,10 +10,10 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.loot.api.table.LootTable;
-import de.raidcraft.loot.api.table.LootTableEntry;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
+import de.raidcraft.mobs.QueuedRespawn;
+import de.raidcraft.mobs.RespawnTask;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
@@ -403,10 +403,14 @@ public class MobListener implements Listener {
         List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
         List<TSpawnedMob> respawnedMobs = new ArrayList<>();
         if (mobs.size() > 0) {
+            RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
             mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
                 try {
                     SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                    if (spawnableMob.respawn(mob, false)) {
+                    if (respawnTask != null) {
+                        respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
+                    } else {
+                        spawnableMob.respawn(mob, false);
                         respawnedMobs.add(mob);
                     }
                 } catch (UnknownMobException e) {

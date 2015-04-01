@@ -2,6 +2,9 @@ package de.raidcraft.mobs;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author mdoering
  */
@@ -9,6 +12,7 @@ public class RespawnTask extends BukkitRunnable {
 
     private final MobSpawnLocation[] mobSpawnLocations;
     private final MobGroupSpawnLocation[] mobGroupSpawnLocations;
+    private final Set<QueuedRespawn> respawnQueue = new HashSet<>();
     // how many mobs and groups should be updated per run
     private final int mobBatchCount;
     private final int mobGroupBatchCount;
@@ -23,6 +27,11 @@ public class RespawnTask extends BukkitRunnable {
         this.mobGroupSpawnLocations = mobGroupSpawnLocations;
         this.mobBatchCount = plugin.getConfiguration().respawnTaskMobBatchCount;
         this.mobGroupBatchCount = plugin.getConfiguration().respawnTaskMobGroupBatchCount;
+    }
+
+    public void addToRespawnQueue(QueuedRespawn respawn) {
+
+        respawnQueue.add(respawn);
     }
 
     @Override
@@ -48,5 +57,7 @@ public class RespawnTask extends BukkitRunnable {
                 if (mobGroupIndex == startIndex) break;
             }
         }
+        respawnQueue.forEach(de.raidcraft.mobs.QueuedRespawn::respawn);
+        respawnQueue.clear();
     }
 }

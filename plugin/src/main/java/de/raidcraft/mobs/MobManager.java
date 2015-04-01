@@ -23,12 +23,6 @@ import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
 import de.raidcraft.util.TimeUtil;
-import de.raidcraft.skills.CharacterManager;
-import de.raidcraft.skills.api.character.CharacterTemplate;
-import de.raidcraft.util.CaseInsensitiveMap;
-import de.raidcraft.util.LocationUtil;
-import de.raidcraft.util.ReflectionUtil;
-import de.raidcraft.util.TimeUtil;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -103,6 +97,11 @@ public final class MobManager implements Component, MobProvider {
         }, 100L, 100L);*/
     }
 
+    public RespawnTask getRespawnTask() {
+
+        return respawnTask;
+    }
+
     private void startRespawnTask() {
 
         if (respawnTask != null) respawnTask.cancel();
@@ -120,6 +119,7 @@ public final class MobManager implements Component, MobProvider {
         ArrayList<Spawnable> createdMobs = new ArrayList<>();
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
+                // DO NOT USE . here it will fuck up the YML
                 load(file, path + file.getName() + "-");
             }
             if (!file.getName().endsWith(".yml")) {

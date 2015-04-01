@@ -101,9 +101,10 @@ public class SpawnableMob extends AbstractSpawnable {
     public boolean respawn(TSpawnedMob dbMob, boolean saveToDatabase) {
 
         if (!dbMob.isUnloaded()) return false;
+        Location location = dbMob.getLocation();
+        if (!location.getChunk().isLoaded()) return false;
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         Mob mob = null;
-        Location location = dbMob.getLocation();
         if (type != null) {
             mob = manager.spawnCharacter(type, location, mClass, config);
         } else if (customEntityTypeName != null) {
