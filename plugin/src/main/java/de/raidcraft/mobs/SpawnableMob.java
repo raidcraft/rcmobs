@@ -5,6 +5,8 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.mobs.CustomNmsEntity;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.SpawnReason;
+import de.raidcraft.mobs.api.events.RCEntitySpawnEvent;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.CharacterManager;
@@ -99,6 +101,11 @@ public class SpawnableMob extends AbstractSpawnable {
     public boolean respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
 
         if (!dbEntry.getLocation().getWorld().isChunkLoaded(dbEntry.getChunkX(), dbEntry.getChunkZ())) return false;
+
+        RCEntitySpawnEvent event = new RCEntitySpawnEvent(this, SpawnReason.RESPAWN);
+        RaidCraft.callEvent(event);
+        if (event.isCancelled()) return false;
+
         Mob mob = RaidCraft.getComponent(CharacterManager.class).wrapCharacter(entity, mClass, config);
         if (mob == null) return false;
         dbEntry.setUnloaded(false);
@@ -123,6 +130,11 @@ public class SpawnableMob extends AbstractSpawnable {
         if (!dbMob.isUnloaded()) return false;
         Location location = dbMob.getLocation();
         if (!dbMob.getLocation().getWorld().isChunkLoaded(dbMob.getChunkX(), dbMob.getChunkZ())) return false;
+
+        RCEntitySpawnEvent event = new RCEntitySpawnEvent(this, SpawnReason.RESPAWN);
+        RaidCraft.callEvent(event);
+        if (event.isCancelled()) return false;
+
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         Mob mob = null;
         if (type != null) {
@@ -140,16 +152,21 @@ public class SpawnableMob extends AbstractSpawnable {
     }
 
     @Override
-    public List<CharacterTemplate> spawn(Location location, boolean force) {
+    public List<CharacterTemplate> spawn(Location location, SpawnReason reason) {
+
+        ArrayList<CharacterTemplate> mobs = new ArrayList<>();
+
+        RCEntitySpawnEvent event = new RCEntitySpawnEvent(this, reason);
+        RaidCraft.callEvent(event);
+        if (event.isCancelled()) return mobs;
 
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         // spawn is not forced so we calculate the spawn chance
-        if (!force && getSpawnChance() < 1.0) {
+        if (!reason.isForcingSpawn() && getSpawnChance() < 1.0) {
             if (Math.random() > getSpawnChance()) {
                 return new ArrayList<>();
             }
         }
-        ArrayList<CharacterTemplate> mobs = new ArrayList<>();
         Mob mob = null;
         if (type != null) {
             mob = manager.spawnCharacter(type, location, mClass, config);
@@ -177,7 +194,7 @@ public class SpawnableMob extends AbstractSpawnable {
     @Override
     public List<CharacterTemplate> spawn(Location location) {
 
-        return spawn(location, false);
+        return spawn(location, SpawnReason.UNKNOWN);
     }
 
     @Override

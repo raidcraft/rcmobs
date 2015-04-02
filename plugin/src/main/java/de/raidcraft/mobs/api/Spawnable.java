@@ -12,7 +12,7 @@ public interface Spawnable {
 
     public List<CharacterTemplate> spawn(Location location);
 
-    public default List<CharacterTemplate> spawn(Location location, boolean force) {
+    public default List<CharacterTemplate> spawn(Location location, SpawnReason reason) {
 
         return spawn(location);
     }

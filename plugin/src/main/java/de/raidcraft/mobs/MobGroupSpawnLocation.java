@@ -3,6 +3,7 @@ package de.raidcraft.mobs;
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TSpawnedMob;
@@ -89,7 +90,7 @@ public class MobGroupSpawnLocation implements Spawnable {
             return;
         }
         // spawn the mob
-        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), !checkCooldown);
+        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), SpawnReason.GROUP);
         if (newSpawnableMobs != null && !newSpawnableMobs.isEmpty()) {
             EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
             MobManager component = RaidCraft.getComponent(MobManager.class);

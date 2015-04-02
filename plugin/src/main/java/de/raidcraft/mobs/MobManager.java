@@ -391,13 +391,6 @@ public final class MobManager implements Component, MobProvider {
         return group;
     }
 
-    public CharacterTemplate spawnMob(String name, Location location) throws UnknownMobException {
-
-        SpawnableMob mob = getSpwanableMob(name);
-        // spawn mob
-        return mob.spawn(location, true).get(0);
-    }
-
     public void removeSpawnLocation(MobSpawnLocation location) {
 
         List<MobSpawnLocation> newMobs = new ArrayList<>();

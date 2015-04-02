@@ -12,6 +12,7 @@ import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
 import de.raidcraft.util.PaginatedResult;
@@ -57,7 +58,10 @@ public class MobCommands {
 
         try {
             String mobName = args.getJoinedStrings(0);
-            plugin.getMobManager().spawnMob(mobName, ((Player) sender).getLocation());
+            SpawnableMob spwanableMob = plugin.getMobManager().getSpwanableMob(mobName);
+            if (spwanableMob != null) {
+                spwanableMob.spawn(((Player) sender).getLocation(), SpawnReason.COMMAND);
+            }
         } catch (UnknownMobException e) {
             throw new CommandException(e);
         }
@@ -73,7 +77,7 @@ public class MobCommands {
 
         try {
             MobGroup group = plugin.getMobManager().getMobGroup(args.getJoinedStrings(0));
-            group.spawn(((Player) sender).getLocation(), true);
+            group.spawn(((Player) sender).getLocation(), SpawnReason.COMMAND);
         } catch (UnknownMobException e) {
             throw new CommandException(e);
         }
