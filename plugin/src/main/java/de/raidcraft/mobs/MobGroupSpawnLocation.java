@@ -28,11 +28,10 @@ public class MobGroupSpawnLocation implements Spawnable {
     private final MobGroup spawnable;
     private TMobGroupSpawnLocation dbEntry;
 
-    protected MobGroupSpawnLocation(TMobGroupSpawnLocation location) throws UnknownMobException {
+    protected MobGroupSpawnLocation(TMobGroupSpawnLocation location, MobGroup spawnable) {
 
         this.id = location.getId();
-        MobManager manager = RaidCraft.getComponent(MobManager.class);
-        this.spawnable = manager.getMobGroup(location.getSpawnGroup());
+        this.spawnable = spawnable;
     }
 
     public TMobGroupSpawnLocation getDatabaseEntry() {

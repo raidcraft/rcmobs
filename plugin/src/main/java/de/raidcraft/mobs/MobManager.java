@@ -216,8 +216,14 @@ public final class MobManager implements Component, MobProvider {
                 continue;
             }
             try {
-                mobSpawnLocations.add(new MobSpawnLocation(location));
-                loadedSpawnLocations++;
+                SpawnableMob mob = getSpwanableMob(location.getMob());
+                if (mob != null) {
+                    mobSpawnLocations.add(new MobSpawnLocation(location, mob));
+                    loadedSpawnLocations++;
+                } else {
+                    plugin.getLogger().warning("No mob " + location.getMob()
+                            + " for spawn location " + location.getBukkitLocation() + " found!");
+                }
             } catch (UnknownMobException e) {
                 e.printStackTrace();
             }
@@ -232,8 +238,14 @@ public final class MobManager implements Component, MobProvider {
                 continue;
             }
             try {
-                mobGroupSpawnLocations.add(new MobGroupSpawnLocation(location));
-                loadedSpawnLocations++;
+                MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
+                if (mobGroup != null) {
+                    mobGroupSpawnLocations.add(new MobGroupSpawnLocation(location, mobGroup));
+                    loadedSpawnLocations++;
+                } else {
+                    plugin.getLogger().warning("No mob group " + location.getSpawnGroup()
+                            + " for spawn location " + location.getBukkitLocation() + " found!");
+                }
             } catch (UnknownMobException e) {
                 e.printStackTrace();
             }
@@ -244,29 +256,41 @@ public final class MobManager implements Component, MobProvider {
     public MobSpawnLocation addSpawnLocation(TMobSpawnLocation location) {
 
         try {
-            MobSpawnLocation mob = new MobSpawnLocation(location);
-            List<MobSpawnLocation> locations = new ArrayList<>(Arrays.asList(spawnableMobs));
-            locations.add(mob);
-            spawnableMobs = locations.toArray(new MobSpawnLocation[locations.size()]);
-            return mob;
+            SpawnableMob spwanableMob = getSpwanableMob(location.getMob());
+            if (spwanableMob != null) {
+                MobSpawnLocation mob = new MobSpawnLocation(location, spwanableMob);
+                List<MobSpawnLocation> locations = new ArrayList<>(Arrays.asList(spawnableMobs));
+                locations.add(mob);
+                spawnableMobs = locations.toArray(new MobSpawnLocation[locations.size()]);
+                return mob;
+            } else {
+                plugin.getLogger().warning("No mob " + location.getMob()
+                        + " for spawn location " + location.getBukkitLocation() + " found!");
+            }
         } catch (UnknownMobException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public MobGroupSpawnLocation addSpawnLocation(TMobGroupSpawnLocation location) {
 
         try {
-            MobGroupSpawnLocation group = new MobGroupSpawnLocation(location);
-            List<MobGroupSpawnLocation> locations = new ArrayList<>(Arrays.asList(spawnableGroups));
-            locations.add(group);
-            spawnableGroups = locations.toArray(new MobGroupSpawnLocation[locations.size()]);
-            return group;
+            MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
+            if (mobGroup != null) {
+                MobGroupSpawnLocation group = new MobGroupSpawnLocation(location, mobGroup);
+                List<MobGroupSpawnLocation> locations = new ArrayList<>(Arrays.asList(spawnableGroups));
+                locations.add(group);
+                spawnableGroups = locations.toArray(new MobGroupSpawnLocation[locations.size()]);
+                return group;
+            } else {
+                plugin.getLogger().warning("No mob group " + location.getSpawnGroup()
+                        + " for spawn location " + location.getBukkitLocation() + " found!");
+            }
         } catch (UnknownMobException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public boolean isSpawnedMob(LivingEntity entity) {
