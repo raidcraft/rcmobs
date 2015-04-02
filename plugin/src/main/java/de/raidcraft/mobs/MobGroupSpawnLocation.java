@@ -78,7 +78,7 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     public void spawn(boolean checkCooldown) {
 
-        if (!getLocation().getChunk().isLoaded()) {
+        if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
             return;
         }
         // dont spawn stuff if it is still on cooldown

@@ -97,6 +97,8 @@ public class MobCommands {
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
             spawn.setZ(location.getBlockZ());
+            spawn.setChunkX(location.getChunk().getX());
+            spawn.setChunkZ(location.getChunk().getZ());
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);
@@ -126,6 +128,8 @@ public class MobCommands {
             spawn.setX(location.getBlockX());
             spawn.setY(location.getBlockY());
             spawn.setZ(location.getBlockZ());
+            spawn.setChunkX(location.getChunk().getX());
+            spawn.setChunkZ(location.getChunk().getZ());
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
             plugin.getDatabase().save(spawn);

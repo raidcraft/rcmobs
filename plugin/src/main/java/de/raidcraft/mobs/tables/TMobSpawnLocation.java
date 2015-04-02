@@ -34,6 +34,8 @@ public class TMobSpawnLocation {
     private int x;
     private int y;
     private int z;
+    private int chunkX;
+    private int chunkZ;
     private String world;
     private double cooldown;
     @Temporal(TemporalType.TIMESTAMP)

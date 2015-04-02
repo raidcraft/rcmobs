@@ -68,7 +68,7 @@ public class MobSpawnLocation implements Spawnable {
 
     public void spawn(boolean checkCooldown) {
 
-        if (!getLocation().getChunk().isLoaded()) {
+        if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
             return;
         }
         if (isSpawned()) {

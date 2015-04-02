@@ -98,7 +98,7 @@ public class SpawnableMob extends AbstractSpawnable {
      */
     public boolean respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
 
-        if (!entity.getLocation().getChunk().isLoaded()) return false;
+        if (!dbEntry.getLocation().getWorld().isChunkLoaded(dbEntry.getChunkX(), dbEntry.getChunkZ())) return false;
         Mob mob = RaidCraft.getComponent(CharacterManager.class).wrapCharacter(entity, mClass, config);
         if (mob == null) return false;
         dbEntry.setUnloaded(false);
@@ -122,7 +122,7 @@ public class SpawnableMob extends AbstractSpawnable {
 
         if (!dbMob.isUnloaded()) return false;
         Location location = dbMob.getLocation();
-        if (!location.getChunk().isLoaded()) return false;
+        if (!dbMob.getLocation().getWorld().isChunkLoaded(dbMob.getChunkX(), dbMob.getChunkZ())) return false;
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         Mob mob = null;
         if (type != null) {
