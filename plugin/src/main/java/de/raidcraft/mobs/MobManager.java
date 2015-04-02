@@ -218,6 +218,12 @@ public final class MobManager implements Component, MobProvider {
             try {
                 SpawnableMob mob = getSpwanableMob(location.getMob());
                 if (mob != null) {
+                    if (location.getChunkX() == 0 || location.getChunkZ() == 0) {
+                        Location bukkitLocation = location.getBukkitLocation();
+                        location.setChunkX(bukkitLocation.getChunk().getX());
+                        location.setChunkZ(bukkitLocation.getChunk().getZ());
+                        plugin.getDatabase().update(location);
+                    }
                     mobSpawnLocations.add(new MobSpawnLocation(location, mob));
                     loadedSpawnLocations++;
                 } else {
@@ -240,6 +246,12 @@ public final class MobManager implements Component, MobProvider {
             try {
                 MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
                 if (mobGroup != null) {
+                    if (location.getChunkX() == 0 || location.getChunkZ() == 0) {
+                        Location bukkitLocation = location.getBukkitLocation();
+                        location.setChunkX(bukkitLocation.getChunk().getX());
+                        location.setChunkZ(bukkitLocation.getChunk().getZ());
+                        plugin.getDatabase().update(location);
+                    }
                     mobGroupSpawnLocations.add(new MobGroupSpawnLocation(location, mobGroup));
                     loadedSpawnLocations++;
                 } else {
