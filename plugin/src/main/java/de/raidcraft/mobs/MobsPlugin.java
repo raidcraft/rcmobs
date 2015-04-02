@@ -173,6 +173,8 @@ public class MobsPlugin extends BasePlugin {
                 "IRON_GOLEM"
         };
 
+        @Setting("respawn-task.remove-entity-on-chunk-unload")
+        public boolean respawnTaskRemoveEntityOnChunkUnload = false;
         @Setting("respawn-task.interval")
         public double respawnTaskInterval = 5.0;
         @Setting("respawn-task.mob-batch-count")

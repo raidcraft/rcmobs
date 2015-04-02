@@ -13,6 +13,7 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -86,6 +87,23 @@ public class SpawnableMob extends AbstractSpawnable {
     public void setSpawnChance(double spawnChance) {
 
         this.spawnChance = spawnChance;
+    }
+
+    /**
+     * Wraps the given living entity into a managed {@link de.raidcraft.skills.api.character.CharacterTemplate}
+     * allowing it to use skills, custom health, etc.
+     *
+     * @param entity to respawn/wrap
+     * @return wrapped entity
+     */
+    public Mob respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
+
+        Mob mob = RaidCraft.getComponent(CharacterManager.class).wrapCharacter(entity, mClass, config);
+        dbEntry.setUnloaded(false);
+        if (saveToDatabase) {
+            RaidCraft.getDatabase(MobsPlugin.class).save(dbEntry);
+        }
+        return mob;
     }
 
     /**

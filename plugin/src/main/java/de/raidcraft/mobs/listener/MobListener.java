@@ -384,7 +384,7 @@ public class MobListener implements Listener {
                     spawnedMob.setY(location.getBlockY());
                     spawnedMob.setZ(location.getBlockZ());
                     unloadedMobs.add(spawnedMob);
-                    entity.remove();
+                    if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
                 }
             }
         }
@@ -400,28 +400,45 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
 
-        List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
         List<TSpawnedMob> respawnedMobs = new ArrayList<>();
-        if (mobs.size() > 0) {
-            RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
-            mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
-                try {
-                    SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                    if (respawnTask != null) {
-                        respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
-                    } else {
-                        spawnableMob.respawn(mob, false);
-                        respawnedMobs.add(mob);
+        if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) {
+            List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
+            if (mobs.size() > 0) {
+                RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
+                mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
+                    try {
+                        SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                        if (respawnTask != null) {
+                            respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
+                        } else {
+                            spawnableMob.respawn(mob, false);
+                            respawnedMobs.add(mob);
+                        }
+                    } catch (UnknownMobException e) {
+                        e.printStackTrace();
                     }
-                } catch (UnknownMobException e) {
-                    e.printStackTrace();
+                });
+            }
+        } else {
+            for (Entity entity : event.getChunk().getEntities()) {
+                if (entity instanceof LivingEntity) {
+                    TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
+                    if (spawnedMob != null) {
+                        try {
+                            SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(spawnedMob);
+                            spawnableMob.respawn(spawnedMob, (LivingEntity) entity, false);
+                            respawnedMobs.add(spawnedMob);
+                        } catch (UnknownMobException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-            });
+            }
         }
         if (respawnedMobs.size() > 0) {
             plugin.getDatabase().save(respawnedMobs);
             if (plugin.getConfiguration().debugMobSpawning) {
-                plugin.getLogger().info("Respawned " + respawnedMobs.size() + "/" + mobs.size()
+                plugin.getLogger().info("Respawned " + respawnedMobs.size()
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
             }
         }
