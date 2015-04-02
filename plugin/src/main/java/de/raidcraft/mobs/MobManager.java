@@ -348,14 +348,14 @@ public final class MobManager implements Component, MobProvider {
                 .filter(entry -> entry.getKey().toLowerCase().endsWith(name)
                         || entry.getValue().getMobName().equalsIgnoreCase(name)
                         || entry.getValue().getMobName().toLowerCase().contains(name))
-                .map(mobs::get)
+                .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
             throw new UnknownMobException("Keine Kreatur mit dem Namen " + name + " gefunden!");
         }
         if (spawnableMobs.size() > 1) {
             throw new UnknownMobException("Mehrere Kreaturen mit dem Namen " + name + " gefunden: " +
-                    StringUtil.joinString(spawnableMobs.stream().map(SpawnableMob::getMobName).collect(Collectors.toList()), ", ", 0));
+                    StringUtil.joinString(spawnableMobs, ", ", 0));
         }
         return spawnableMobs.get(0);
     }
