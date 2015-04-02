@@ -10,6 +10,7 @@ import java.util.Set;
  */
 public class RespawnTask extends BukkitRunnable {
 
+    private final MobsPlugin plugin;
     private final MobSpawnLocation[] mobSpawnLocations;
     private final MobGroupSpawnLocation[] mobGroupSpawnLocations;
     private final Set<QueuedRespawn> respawnQueue = new HashSet<>();
@@ -23,6 +24,7 @@ public class RespawnTask extends BukkitRunnable {
 
     public RespawnTask(MobsPlugin plugin, MobSpawnLocation[] mobSpawnLocations, MobGroupSpawnLocation[] mobGroupSpawnLocations) {
 
+        this.plugin = plugin;
         this.mobSpawnLocations = mobSpawnLocations;
         this.mobGroupSpawnLocations = mobGroupSpawnLocations;
         this.mobBatchCount = plugin.getConfiguration().respawnTaskMobBatchCount;
@@ -39,6 +41,7 @@ public class RespawnTask extends BukkitRunnable {
 
         int startIndex = mobIndex;
         if (mobSpawnLocations.length > 0 && mobBatchCount > 0) {
+            long startTime = System.nanoTime();
             for (int i = 0; i < mobBatchCount; i++) {
                 mobSpawnLocations[mobIndex].spawn(true);
                 mobIndex++;
@@ -46,15 +49,26 @@ public class RespawnTask extends BukkitRunnable {
                 // do not try to respawn the same mob twice in one run
                 if (mobIndex == startIndex) break;
             }
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+            if (plugin.getConfiguration().debugFixedSpawnLocations) {
+                plugin.getLogger().info("... checked " + mobBatchCount + " mob spawn locations in " + (duration / 1000000L) + "ms");
+            }
         }
         startIndex = mobGroupIndex;
         if (mobGroupSpawnLocations.length > 0 && mobGroupBatchCount > 0) {
+            long startTime = System.nanoTime();
             for (int i = 0; i < mobGroupBatchCount; i++) {
                 mobGroupSpawnLocations[mobGroupIndex].spawn(true);
                 mobGroupIndex++;
                 if (mobGroupIndex >= mobGroupSpawnLocations.length) mobGroupIndex = 0;
                 // do not try to respawn the same mob twice in one run
                 if (mobGroupIndex == startIndex) break;
+            }
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+            if (plugin.getConfiguration().debugFixedSpawnLocations) {
+                plugin.getLogger().info("... checked " + mobGroupBatchCount + " mob group locations in " + (duration / 1000000L) + "ms");
             }
         }
         respawnQueue.forEach(de.raidcraft.mobs.QueuedRespawn::respawn);

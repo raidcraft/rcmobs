@@ -134,8 +134,10 @@ public class MobsPlugin extends BasePlugin {
 
     public static class LocalConfiguration extends ConfigurationBase<MobsPlugin> {
 
-        @Setting("debug-mob-spawning")
-        public boolean debugMobSpawning = true;
+        @Setting("debug.mob-spawning")
+        public boolean debugMobSpawning = false;
+        @Setting("debug.fixed-spawn-locations")
+        public boolean debugFixedSpawnLocations = false;
         @Setting("default.deny-horse-spawning")
         public boolean denyHorseSpawning = false;
         @Setting("default.spawn-deny-radius")
