@@ -426,8 +426,9 @@ public class MobListener implements Listener {
                     if (spawnedMob != null) {
                         try {
                             SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(spawnedMob);
-                            spawnableMob.respawn(spawnedMob, (LivingEntity) entity, false);
-                            respawnedMobs.add(spawnedMob);
+                            if (spawnableMob.respawn(spawnedMob, (LivingEntity) entity, false)) {
+                                respawnedMobs.add(spawnedMob);
+                            }
                         } catch (UnknownMobException e) {
                             e.printStackTrace();
                         }

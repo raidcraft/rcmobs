@@ -96,14 +96,16 @@ public class SpawnableMob extends AbstractSpawnable {
      * @param entity to respawn/wrap
      * @return wrapped entity
      */
-    public Mob respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
+    public boolean respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
 
+        if (!entity.getLocation().getChunk().isLoaded()) return false;
         Mob mob = RaidCraft.getComponent(CharacterManager.class).wrapCharacter(entity, mClass, config);
+        if (mob == null) return false;
         dbEntry.setUnloaded(false);
         if (saveToDatabase) {
             RaidCraft.getDatabase(MobsPlugin.class).save(dbEntry);
         }
-        return mob;
+        return true;
     }
 
     /**
