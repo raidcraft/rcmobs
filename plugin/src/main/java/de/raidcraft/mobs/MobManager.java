@@ -312,7 +312,6 @@ public final class MobManager implements Component, MobProvider {
                 .filter(entry -> entry.getKey().toLowerCase().endsWith(name)
                         || entry.getValue().getMobName().equalsIgnoreCase(name)
                         || entry.getValue().getMobName().toLowerCase().contains(name))
-                .filter(entry -> entry != null)
                 .map(mobs::get)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
@@ -320,7 +319,7 @@ public final class MobManager implements Component, MobProvider {
         }
         if (spawnableMobs.size() > 1) {
             throw new UnknownMobException("Mehrere Kreaturen mit dem Namen " + name + " gefunden: " +
-                    StringUtil.joinString(spawnableMobs, ", ", 0));
+                    StringUtil.joinString(spawnableMobs.stream().map(SpawnableMob::getMobName).collect(Collectors.toList()), ", ", 0));
         }
         return spawnableMobs.get(0);
     }
