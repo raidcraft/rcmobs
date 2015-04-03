@@ -108,6 +108,7 @@ public class SpawnableMob extends AbstractSpawnable {
 
         Mob mob = RaidCraft.getComponent(CharacterManager.class).wrapCharacter(entity, mClass, config);
         if (mob == null) return false;
+        mob.setId(dbEntry.getMob());
         dbEntry.setUnloaded(false);
         if (saveToDatabase) {
             RaidCraft.getDatabase(MobsPlugin.class).save(dbEntry);
@@ -144,6 +145,7 @@ public class SpawnableMob extends AbstractSpawnable {
             mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
         }
         if (mob == null) return false;
+        mob.setId(dbMob.getMob());
         dbMob.setUuid(mob.getUniqueId());
         dbMob.setSpawnTime(Timestamp.from(Instant.now()));
         dbMob.setUnloaded(false);
