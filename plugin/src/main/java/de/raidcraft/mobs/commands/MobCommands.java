@@ -117,9 +117,9 @@ public class MobCommands {
     @Command(
             aliases = {"setmobgroup", "smg", "setgroup", "setg"},
             desc = "Sets the spawnpoint of a mob group",
-            min = 2,
-            max = 2,
-            usage = "<mobgroup> <cooldown>"
+            min = 1,
+            max = 3,
+            usage = "<mobgroup> [cooldown] [treshhold]"
     )
     @CommandPermissions("rcmobs.setgroupspawn")
     public void setMobSpawnGroup(CommandContext args, CommandSender sender) throws CommandException {
@@ -135,7 +135,8 @@ public class MobCommands {
             spawn.setChunkX(location.getChunk().getX());
             spawn.setChunkZ(location.getChunk().getZ());
             spawn.setWorld(location.getWorld().getName());
-            spawn.setCooldown(args.getDouble(1));
+            spawn.setCooldown(args.getDouble(1, mobGroup.getSpawnInterval()));
+            spawn.setRespawnTreshhold(args.getInteger(2, mobGroup.getRespawnTreshhold()));
             plugin.getDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
             MobGroupSpawnLocation spawnLocation = plugin.getMobManager().addSpawnLocation(spawn);
