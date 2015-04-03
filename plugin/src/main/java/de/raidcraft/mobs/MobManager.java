@@ -344,11 +344,11 @@ public final class MobManager implements Component, MobProvider {
         if (mobs.containsKey(name)) {
             return mobs.get(name);
         }
-        List<SpawnableMob> spawnableMobs = mobs.entrySet().stream()
+        List<String> spawnableMobs = mobs.entrySet().stream()
                 .filter(entry -> entry.getKey().toLowerCase().endsWith(name)
                         || entry.getValue().getMobName().equalsIgnoreCase(name)
                         || entry.getValue().getMobName().toLowerCase().contains(name))
-                .map(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         if (spawnableMobs.isEmpty()) {
             throw new UnknownMobException("Keine Kreatur mit dem Namen " + name + " gefunden!");
@@ -357,7 +357,7 @@ public final class MobManager implements Component, MobProvider {
             throw new UnknownMobException("Mehrere Kreaturen mit dem Namen " + name + " gefunden: " +
                     StringUtil.joinString(spawnableMobs, ", ", 0));
         }
-        return spawnableMobs.get(0);
+        return mobs.get(spawnableMobs.get(0));
     }
 
     public List<SpawnableMob> getSpawnableMobs() {
