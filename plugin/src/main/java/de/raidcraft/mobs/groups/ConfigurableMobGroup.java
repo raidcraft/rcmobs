@@ -13,8 +13,6 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.MathUtil;
-import de.raidcraft.util.pathfinding.AStar;
-import de.raidcraft.util.pathfinding.PathingResult;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -163,20 +161,10 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
 
     private Location getRandomLocation(Location location, int amount) {
 
-        Location loc = location.clone().add(
+        return location.clone().add(
                 MathUtil.RANDOM.nextInt(amount * 2) - amount,
                 0,
                 MathUtil.RANDOM.nextInt(amount * 2) - amount);
-        try {
-            AStar aStar = new AStar(location, loc, amount * 5);
-            aStar.iterate();
-            if (aStar.getPathingResult() == PathingResult.SUCCESS) {
-                return loc;
-            }
-        } catch (AStar.InvalidPathException e) {
-            return location;
-        }
-        return getRandomLocation(location, amount);
     }
 
     @Override
