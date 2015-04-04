@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Silthus
@@ -217,8 +218,8 @@ public class MobListener implements Listener {
                 return;
             }
             // lets replace all natural mobs with our own
-            MobGroup[] virtualGroups = plugin.getMobManager().getVirtualGroups();
-            if (virtualGroups.length < 1) {
+            List<MobGroup> virtualGroups = plugin.getMobManager().getVirtualGroups();
+            if (virtualGroups.isEmpty()) {
                 return;
             }
             List<SpawnableMob> nearbyMobs = new ArrayList<>();
@@ -239,30 +240,27 @@ public class MobListener implements Listener {
             // if there are no mobs nearby we grap a random group and spawn some mobs
             if (!nearbyMobs.isEmpty()) {
                 // now we need to filter our all of the groups that are not matching nearby mobs
-                for (int i = 0; i < virtualGroups.length; i++) {
+                for (int i = 0; i < virtualGroups.size(); i++) {
                     boolean inGroup = false;
                     for (SpawnableMob mob : nearbyMobs) {
-                        if (virtualGroups[i].isInGroup(mob)) {
+                        if (virtualGroups.get(i).isInGroup(mob)) {
                             inGroup = true;
                             break;
                         }
                     }
                     if (!inGroup) {
-                        virtualGroups[i] = null;
+                        virtualGroups.set(i, null);
                     }
                 }
             }
             // filter out all of our null values
-            List<MobGroup> groups = new ArrayList<>();
-            for (MobGroup group : virtualGroups) {
-                if (group != null) groups.add(group);
-            }
+            virtualGroups = virtualGroups.stream().filter(g -> g != null).collect(Collectors.toList());
             event.setCancelled(true);
-            if (groups.isEmpty()) {
+            if (virtualGroups.isEmpty()) {
                 return;
             }
             // okay now we have some groups, lets grap a random one and spawn stuff
-            MobGroup mobGroup = groups.get(MathUtil.RANDOM.nextInt(groups.size()));
+            MobGroup mobGroup = virtualGroups.get(MathUtil.RANDOM.nextInt(virtualGroups.size()));
             mobGroup.spawn(event.getLocation());
         }
     }
