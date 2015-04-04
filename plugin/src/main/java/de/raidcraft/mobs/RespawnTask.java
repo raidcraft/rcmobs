@@ -1,8 +1,10 @@
 package de.raidcraft.mobs;
 
+import de.raidcraft.mobs.tables.TSpawnedMob;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -73,5 +75,15 @@ public class RespawnTask extends BukkitRunnable {
         }
         respawnQueue.forEach(de.raidcraft.mobs.QueuedRespawn::respawn);
         respawnQueue.clear();
+        // check all unloaded mobs that are in loaded chunks and add them to the respawn queue
+        List<TSpawnedMob> unloaded = plugin.getDatabase().find(TSpawnedMob.class).where().eq("unloaded", true).findList();
+        unloaded.stream()
+                .filter(mob -> mob.getLocation().getWorld().isChunkLoaded(mob.getChunkX(), mob.getChunkZ())).forEach(mob -> {
+            try {
+                respawnQueue.add(new QueuedRespawn(mob, plugin.getMobManager().getSpawnableMob(mob)));
+            } catch (UnknownMobException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
