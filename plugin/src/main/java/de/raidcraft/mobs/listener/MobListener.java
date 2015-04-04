@@ -13,7 +13,6 @@ import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
-import de.raidcraft.mobs.QueuedRespawn;
 import de.raidcraft.mobs.RespawnTask;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
@@ -460,8 +459,6 @@ public class MobListener implements Listener {
                     } else {
                         SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
                         if (respawnTask != null) {
-                            respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
-                        } else {
                             spawnableMob.respawn(mob, false);
                             respawnedMobs.add(mob);
                         }

@@ -100,6 +100,10 @@ public class SpawnableMob extends AbstractSpawnable {
      */
     public boolean respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
 
+        if (dbEntry.getWorld() == null) {
+            if (saveToDatabase) RaidCraft.getDatabase(MobsPlugin.class).delete(dbEntry);
+            return false;
+        }
         if (!dbEntry.getLocation().getWorld().isChunkLoaded(dbEntry.getChunkX(), dbEntry.getChunkZ())) return false;
 
         RCEntitySpawnEvent event = new RCEntitySpawnEvent(this, SpawnReason.RESPAWN);
