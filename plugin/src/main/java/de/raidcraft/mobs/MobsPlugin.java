@@ -183,6 +183,8 @@ public class MobsPlugin extends BasePlugin {
         public int respawnTaskMobBatchCount = 10;
         @Setting("respawn-task.mob-group-batch-count")
         public int respawnTaskMobGroupBatchCount = 5;
+        @Setting("respawn-task.cleanup-interval")
+        public double respawnTaskCleanupInterval = 30;
 
         private final HashSet<String> replacedMobsSet;
 
