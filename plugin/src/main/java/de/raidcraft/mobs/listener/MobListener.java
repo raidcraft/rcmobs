@@ -18,6 +18,7 @@ import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
 import de.raidcraft.mobs.tables.TMobPlayerKillLog;
 import de.raidcraft.mobs.tables.TPlayerMobKillLog;
@@ -304,6 +305,7 @@ public class MobListener implements Listener {
             if (spawnedMob.getMobGroupSource() != null && spawnedMob.getMobGroupSource().getSpawnedMobs().size() <= 1) {
                 try {
                     MobGroup mobGroup = plugin.getMobManager().getMobGroup(spawnedMob.getMobGroupSource().getMobGroup());
+                    if (character instanceof Mob) RaidCraft.callEvent(new RCMobDeathEvent((Mob) character, spawnedMob));
                     RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, character));
                     spawnedMob.delete();
                 } catch (UnknownMobException e) {

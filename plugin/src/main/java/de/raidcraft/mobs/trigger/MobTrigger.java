@@ -4,8 +4,8 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.action.trigger.Trigger;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.mobs.tables.TSpawnedMob;
-import de.raidcraft.skills.api.events.RCEntityDeathEvent;
 import de.raidcraft.skills.api.hero.Hero;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,11 +26,10 @@ public class MobTrigger extends Trigger implements Listener {
             conf = {"mob"}
     )
     @EventHandler(ignoreCancelled = true)
-    public void onMobDeath(RCEntityDeathEvent event) {
+    public void onMobDeath(RCMobDeathEvent event) {
 
-        if (!(event.getCharacter() instanceof Mob)) return;
         MobManager mobManager = RaidCraft.getComponent(MobManager.class);
-        Mob mob = (Mob) event.getCharacter();
+        Mob mob = event.getMob();
         mob.getInvolvedTargets().stream()
                 .filter(target -> target instanceof Hero)
                 .map(target -> (Hero) target)
@@ -39,7 +38,7 @@ public class MobTrigger extends Trigger implements Listener {
                         return mob.getId().equalsIgnoreCase(config.getString("mob"));
                     }
                     if (config.isSet("group")) {
-                        TSpawnedMob spawnedMob = mobManager.getSpawnedMob(mob.getEntity());
+                        TSpawnedMob spawnedMob = event.getSpawnedMob();
                         if (spawnedMob != null && spawnedMob.getMobGroupSource() != null) {
                             return spawnedMob.getMobGroupSource().getMobGroup().equalsIgnoreCase(config.getString("group"));
                         }
