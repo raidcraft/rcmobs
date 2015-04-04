@@ -41,7 +41,7 @@ public class MobTrigger extends Trigger implements Listener {
                 .map(target -> (Hero) target)
                 .forEach(hero -> informListeners("kill", hero.getPlayer(), config -> {
                     if (config.isSet("mob")) {
-                        return mob.getId().equalsIgnoreCase(config.getString("mob"));
+                        return event.getSpawnedMob().getMob().equalsIgnoreCase(config.getString("mob"));
                     }
                     if (config.isSet("group")) {
                         TSpawnedMob spawnedMob = event.getSpawnedMob();
@@ -51,7 +51,7 @@ public class MobTrigger extends Trigger implements Listener {
                         return false;
                     }
                     if (config.isSet("mobs")) {
-                        return config.getStringList("mobs").contains(mob.getId());
+                        return config.getStringList("mobs").contains(event.getSpawnedMob().getMob());
                     }
                     return true;
                 }));
