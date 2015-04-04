@@ -6,9 +6,13 @@ import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.hero.Hero;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Silthus
@@ -30,7 +34,9 @@ public class MobTrigger extends Trigger implements Listener {
 
         MobManager mobManager = RaidCraft.getComponent(MobManager.class);
         Mob mob = event.getMob();
-        mob.getInvolvedTargets().stream()
+        Set<CharacterTemplate> involvedTargets = new HashSet<>(mob.getInvolvedTargets());
+        involvedTargets.add(mob.getLastDamageCause().getAttacker());
+        involvedTargets.stream()
                 .filter(target -> target instanceof Hero)
                 .map(target -> (Hero) target)
                 .forEach(hero -> informListeners("kill", hero.getPlayer(), config -> {
