@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.events.RCEntityRemovedEvent;
 import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.mobs.MobManager;
@@ -372,19 +373,7 @@ public class MobListener implements Listener {
         List<TSpawnedMob> unloadedMobs = new ArrayList<>();
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
-                TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) entity);
-                if (spawnedMob != null) {
-                    spawnedMob.setUnloaded(true);
-                    Location location = entity.getLocation();
-                    spawnedMob.setChunkX(location.getChunk().getX());
-                    spawnedMob.setChunkZ(location.getChunk().getZ());
-                    spawnedMob.setWorld(location.getWorld().getName());
-                    spawnedMob.setX(location.getBlockX());
-                    spawnedMob.setY(location.getBlockY());
-                    spawnedMob.setZ(location.getBlockZ());
-                    unloadedMobs.add(spawnedMob);
-                    if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
-                }
+                unloadedMobs.add(despawnMob((LivingEntity) entity));
             }
         }
         if (unloadedMobs.size() > 0) {
@@ -394,6 +383,32 @@ public class MobListener implements Listener {
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
             }
         }
+    }
+
+    private TSpawnedMob despawnMob(LivingEntity entity) {
+
+        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
+        if (spawnedMob != null) {
+            spawnedMob.setUnloaded(true);
+            Location location = entity.getLocation();
+            spawnedMob.setChunkX(location.getChunk().getX());
+            spawnedMob.setChunkZ(location.getChunk().getZ());
+            spawnedMob.setWorld(location.getWorld().getName());
+            spawnedMob.setX(location.getBlockX());
+            spawnedMob.setY(location.getBlockY());
+            spawnedMob.setZ(location.getBlockZ());
+            if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
+        }
+        return spawnedMob;
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityRemoved(RCEntityRemovedEvent event) {
+
+        if (event.getEntity() == null) return;
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (!plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) return;
+        plugin.getDatabase().save(despawnMob((LivingEntity) event.getEntity()));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
