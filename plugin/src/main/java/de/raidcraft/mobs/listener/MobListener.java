@@ -366,7 +366,7 @@ public class MobListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onChunkUnload(ChunkUnloadEvent event) {
 
         List<TSpawnedMob> unloadedMobs = new ArrayList<>();
@@ -396,7 +396,7 @@ public class MobListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onChunkLoad(ChunkLoadEvent event) {
 
         List<TSpawnedMob> respawnedMobs = new ArrayList<>();
