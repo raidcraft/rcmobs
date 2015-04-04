@@ -100,14 +100,19 @@ public final class MobManager implements Component, MobProvider {
             long ticks = TimeUtil.secondsToTicks(plugin.getConfiguration().respawnTaskCleanupInterval);
             Bukkit.getScheduler().runTaskTimer(plugin, () -> {
                 CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
+                List<TSpawnedMob> toDelete = new ArrayList<>();
                 for (TSpawnedMob spawnedMob : plugin.getDatabase().find(TSpawnedMob.class).findList()) {
                     CharacterTemplate character = characterManager.getCharacter(spawnedMob.getUuid());
                     if (character == null || !(character instanceof Mob)) {
                         if (!spawnedMob.isUnloaded()) {
-                            spawnedMob.delete();
+                            toDelete.add(spawnedMob);
                         }
                     }
                 }
+                plugin.getDatabase().delete(toDelete);
+                plugin.getDatabase().find(TSpawnedMobGroup.class).findList().stream()
+                        .filter(group -> group.getSpawnedMobs().isEmpty())
+                        .forEach(TSpawnedMobGroup::delete);
             }, ticks, ticks);
         }
     }
