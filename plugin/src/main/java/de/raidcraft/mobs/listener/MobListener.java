@@ -432,17 +432,15 @@ public class MobListener implements Listener {
                     }
                 }
             }
+            plugin.getDatabase().save(respawnedMobs);
             // lets respawn all entities in the chunk that were removed
             List<TSpawnedMob> spawnedMobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
             spawnedMobs.removeAll(respawnedMobs);
-            respawnedMobs.addAll(respawnRemovedMobs(spawnedMobs));
+            plugin.getDatabase().save(respawnRemovedMobs(spawnedMobs));
         }
-        if (respawnedMobs.size() > 0) {
-            plugin.getDatabase().save(respawnedMobs);
-            if (plugin.getConfiguration().debugMobSpawning) {
-                plugin.getLogger().info("Respawned " + respawnedMobs.size()
-                        + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
-            }
+        if (plugin.getConfiguration().debugMobSpawning) {
+            plugin.getLogger().info("Respawned " + respawnedMobs.size()
+                    + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
         }
     }
 
