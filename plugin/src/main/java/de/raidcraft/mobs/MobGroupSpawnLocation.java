@@ -16,6 +16,7 @@ import org.bukkit.Location;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,8 +83,15 @@ public class MobGroupSpawnLocation implements Spawnable {
         if (checkCooldown && getLastSpawn() != null && getLastSpawn().toInstant().plusMillis(getCooldown()).isAfter(Instant.now())) {
             return;
         }
-        if (getSpawnedMobCount() > getSpawnTreshhold()) {
+        int mobCount = getSpawnedMobCount();
+        if (mobCount > getSpawnTreshhold()) {
             return;
+        }
+        List<TSpawnedMob> remainingMobs = new ArrayList<>();
+        if (mobCount > 0) {
+            for (TSpawnedMobGroup group : getDatabaseEntry().getSpawnedMobGroups()) {
+                remainingMobs.addAll(group.getSpawnedMobs());
+            }
         }
         // spawn the mob
         List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), SpawnReason.GROUP);
@@ -95,7 +103,11 @@ public class MobGroupSpawnLocation implements Spawnable {
                 TSpawnedMobGroup mobGroup = spawnedMob.getMobGroupSource();
                 TMobGroupSpawnLocation entry = getDatabaseEntry();
                 if (mobGroup == null) {
-                    mobGroup = new TSpawnedMobGroup();
+                    if (!remainingMobs.isEmpty()) {
+                        mobGroup = remainingMobs.get(0).getMobGroupSource();
+                    } else {
+                        mobGroup = new TSpawnedMobGroup();
+                    }
                     mobGroup.setMobGroup(getSpawnable().getName());
                     mobGroup.setSpawnTime(Timestamp.from(Instant.now()));
                     mobGroup.setSpawnGroupLocationSource(entry);
