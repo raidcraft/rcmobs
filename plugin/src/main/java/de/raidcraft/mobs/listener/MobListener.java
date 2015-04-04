@@ -305,7 +305,7 @@ public class MobListener implements Listener {
             if (spawnedMob.getMobGroupSource() != null && spawnedMob.getMobGroupSource().getSpawnedMobs().size() <= 1) {
                 try {
                     MobGroup mobGroup = plugin.getMobManager().getMobGroup(spawnedMob.getMobGroupSource().getMobGroup());
-                    if (character instanceof Mob) RaidCraft.callEvent(new RCMobDeathEvent((Mob) character, spawnedMob));
+                    if (character instanceof Mob) RaidCraft.callEvent(new RCMobDeathEvent((Mob) character, spawnedMob, killer));
                     RaidCraft.callEvent(new RCMobGroupDeathEvent(spawnedMob.getSourceId(), mobGroup, character));
                     spawnedMob.delete();
                 } catch (UnknownMobException e) {
