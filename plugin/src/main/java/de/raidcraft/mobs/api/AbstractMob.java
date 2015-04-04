@@ -13,6 +13,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Silthus
@@ -69,7 +70,9 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
         if (combat == null) {
             return new ArrayList<>();
         }
-        return new ArrayList<>(combat.getInvolvedCharacters());
+        Set<CharacterTemplate> characters = combat.getInvolvedCharacters();
+        characters.add(getLastDamageCause().getAttacker());
+        return new ArrayList<>(characters);
     }
 
     @Override
