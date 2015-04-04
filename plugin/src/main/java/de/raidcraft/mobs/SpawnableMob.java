@@ -191,6 +191,12 @@ public class SpawnableMob extends AbstractSpawnable {
             spawnedMob.setMob(getId());
             spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
             spawnedMob.setUuid(mob.getEntity().getUniqueId());
+            spawnedMob.setChunkX(location.getChunk().getX());
+            spawnedMob.setChunkZ(location.getChunk().getZ());
+            spawnedMob.setWorld(location.getWorld().getName());
+            spawnedMob.setX(location.getBlockX());
+            spawnedMob.setY(location.getBlockY());
+            spawnedMob.setZ(location.getBlockZ());
             database.save(spawnedMob);
         }
         mobs.add(mob);
