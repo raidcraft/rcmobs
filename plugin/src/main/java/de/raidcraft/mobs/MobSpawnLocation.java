@@ -25,21 +25,16 @@ public class MobSpawnLocation implements Spawnable {
 
     private final int id;
     private final Spawnable spawnable;
-    private TMobSpawnLocation dbEntry;
 
     protected MobSpawnLocation(TMobSpawnLocation location, Spawnable spawnable) {
 
         this.id = location.getId();
         this.spawnable = spawnable;
-        this.dbEntry = location;
     }
 
     public TMobSpawnLocation getDatabaseEntry() {
 
-        if (dbEntry == null) {
-            dbEntry = RaidCraft.getDatabase(MobsPlugin.class).find(TMobSpawnLocation.class, getId());
-        }
-        return dbEntry;
+        return RaidCraft.getDatabase(MobsPlugin.class).find(TMobSpawnLocation.class, getId());
     }
 
     public Location getLocation() {

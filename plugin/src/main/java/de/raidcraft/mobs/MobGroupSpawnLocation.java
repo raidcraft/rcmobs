@@ -27,7 +27,6 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     private final int id;
     private final MobGroup spawnable;
-    private TMobGroupSpawnLocation dbEntry;
 
     protected MobGroupSpawnLocation(TMobGroupSpawnLocation location, MobGroup spawnable) {
 
@@ -37,10 +36,7 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     public TMobGroupSpawnLocation getDatabaseEntry() {
 
-        if (dbEntry == null) {
-            dbEntry = RaidCraft.getDatabase(MobsPlugin.class).find(TMobGroupSpawnLocation.class, getId());
-        }
-        return dbEntry;
+        return RaidCraft.getDatabase(MobsPlugin.class).find(TMobGroupSpawnLocation.class, getId());
     }
 
     public Location getLocation() {
@@ -83,7 +79,7 @@ public class MobGroupSpawnLocation implements Spawnable {
             return;
         }
         // dont spawn stuff if it is still on cooldown
-        if (checkCooldown && getLastSpawn() != null && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
+        if (checkCooldown && getLastSpawn() != null && getLastSpawn().toInstant().plusMillis(getCooldown()).isAfter(Instant.now())) {
             return;
         }
         if (getSpawnedMobCount() > getSpawnTreshhold()) {
