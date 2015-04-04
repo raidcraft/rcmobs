@@ -80,7 +80,8 @@ public class RespawnTask extends BukkitRunnable {
         unloaded.stream()
                 .filter(mob -> mob.getLocation().getWorld().isChunkLoaded(mob.getChunkX(), mob.getChunkZ())).forEach(mob -> {
             try {
-                respawnQueue.add(new QueuedRespawn(mob, plugin.getMobManager().getSpawnableMob(mob)));
+                SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                spawnableMob.respawn(mob, true);
             } catch (UnknownMobException e) {
                 e.printStackTrace();
             }
