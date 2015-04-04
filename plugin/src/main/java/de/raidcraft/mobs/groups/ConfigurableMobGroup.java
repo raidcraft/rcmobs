@@ -1,7 +1,6 @@
 package de.raidcraft.mobs.groups;
 
 import com.avaje.ebean.EbeanServer;
-import com.sk89q.worldedit.blocks.BlockType;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
@@ -14,6 +13,8 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.MathUtil;
+import de.raidcraft.util.pathfinding.AStar;
+import de.raidcraft.util.pathfinding.PathingResult;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -123,9 +124,9 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             boolean found = false;
             for (int k = 0; k < 100; k++) {
                 if (newLocation.getBlock().getType() == Material.AIR
-                        || newLocation.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR
-                        || BlockType.canPassThrough(newLocation.getBlock().getType().getId())
-                        || BlockType.canPassThrough(newLocation.getBlock().getRelative(BlockFace.UP).getType().getId())) {
+                        && newLocation.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR
+                        && newLocation.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.AIR) {
+                    newLocation = newLocation.getBlock().getRelative(BlockFace.UP).getLocation();
                     found = true;
                     break;
                 }
@@ -162,10 +163,20 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
 
     private Location getRandomLocation(Location location, int amount) {
 
-        return location.clone().add(
+        Location loc = location.clone().add(
                 MathUtil.RANDOM.nextInt(amount * 2) - amount,
                 0,
                 MathUtil.RANDOM.nextInt(amount * 2) - amount);
+        try {
+            AStar aStar = new AStar(location, loc, amount * 5);
+            aStar.iterate();
+            if (aStar.getPathingResult() == PathingResult.SUCCESS) {
+                return loc;
+            }
+        } catch (AStar.InvalidPathException e) {
+            return location;
+        }
+        return getRandomLocation(location, amount);
     }
 
     @Override
