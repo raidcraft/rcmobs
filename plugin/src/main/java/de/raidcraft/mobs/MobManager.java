@@ -398,6 +398,7 @@ public final class MobManager implements Component, MobProvider {
             }
         }
         spawnableMobs = newMobs.toArray(new MobSpawnLocation[newMobs.size()]);
+        startRespawnTask();
     }
 
     public void removeSpawnLocation(MobGroupSpawnLocation location) {
@@ -409,6 +410,7 @@ public final class MobManager implements Component, MobProvider {
             }
         }
         spawnableGroups = newMobs.toArray(new MobGroupSpawnLocation[newMobs.size()]);
+        startRespawnTask();
     }
 
     public MobSpawnLocation getClosestMobSpawnLocation(Location location, int distance) {
