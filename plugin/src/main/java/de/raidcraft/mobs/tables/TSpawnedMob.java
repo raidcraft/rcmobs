@@ -6,9 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import de.raidcraft.mobs.MobsPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -48,6 +46,8 @@ public class TSpawnedMob {
     private int z;
     private int chunkX;
     private int chunkZ;
+    @Version
+    public Timestamp lastUpdate;
 
     public Location getLocation() {
 
