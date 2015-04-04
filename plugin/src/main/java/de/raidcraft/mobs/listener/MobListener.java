@@ -52,6 +52,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -402,23 +403,7 @@ public class MobListener implements Listener {
 
         List<TSpawnedMob> respawnedMobs = new ArrayList<>();
         if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) {
-            List<TSpawnedMob> mobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
-            if (mobs.size() > 0) {
-                RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
-                mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
-                    try {
-                        SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                        if (respawnTask != null) {
-                            respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
-                        } else {
-                            spawnableMob.respawn(mob, false);
-                            respawnedMobs.add(mob);
-                        }
-                    } catch (UnknownMobException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
+            respawnRemovedMobs(plugin.getMobManager().getSpawnedMobs(event.getChunk()));
         } else {
             for (Entity entity : event.getChunk().getEntities()) {
                 if (entity instanceof LivingEntity) {
@@ -435,6 +420,10 @@ public class MobListener implements Listener {
                     }
                 }
             }
+            // lets respawn all entities in the chunk that were removed
+            List<TSpawnedMob> spawnedMobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
+            spawnedMobs.removeAll(respawnedMobs);
+            respawnedMobs.addAll(respawnRemovedMobs(spawnedMobs));
         }
         if (respawnedMobs.size() > 0) {
             plugin.getDatabase().save(respawnedMobs);
@@ -443,5 +432,27 @@ public class MobListener implements Listener {
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
             }
         }
+    }
+
+    private Collection<TSpawnedMob> respawnRemovedMobs(Collection<TSpawnedMob> mobs) {
+
+        List<TSpawnedMob> respawnedMobs = new ArrayList<>();
+        if (mobs.size() > 0) {
+            RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
+            mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
+                try {
+                    SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                    if (respawnTask != null) {
+                        respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
+                    } else {
+                        spawnableMob.respawn(mob, false);
+                        respawnedMobs.add(mob);
+                    }
+                } catch (UnknownMobException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        return respawnedMobs;
     }
 }
