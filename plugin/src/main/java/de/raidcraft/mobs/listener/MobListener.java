@@ -439,12 +439,17 @@ public class MobListener implements Listener {
             RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
             mobs.stream().forEach(mob -> {
                 try {
-                    SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
-                    if (respawnTask != null) {
-                        respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
+                    // only respawn fixed spawn location mobs and not the random ones...
+                    if (mob.getMobGroupSource() == null && mob.getSpawnLocationSource() == null) {
+                        mob.delete();
                     } else {
-                        spawnableMob.respawn(mob, false);
-                        respawnedMobs.add(mob);
+                        SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
+                        if (respawnTask != null) {
+                            respawnTask.addToRespawnQueue(new QueuedRespawn(mob, spawnableMob));
+                        } else {
+                            spawnableMob.respawn(mob, false);
+                            respawnedMobs.add(mob);
+                        }
                     }
                 } catch (UnknownMobException e) {
                     e.printStackTrace();
