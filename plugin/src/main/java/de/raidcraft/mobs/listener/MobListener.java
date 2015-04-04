@@ -437,7 +437,7 @@ public class MobListener implements Listener {
         List<TSpawnedMob> respawnedMobs = new ArrayList<>();
         if (mobs.size() > 0) {
             RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
-            mobs.stream().filter(TSpawnedMob::isUnloaded).forEach(mob -> {
+            mobs.stream().forEach(mob -> {
                 try {
                     SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
                     if (respawnTask != null) {
