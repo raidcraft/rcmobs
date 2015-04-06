@@ -242,16 +242,16 @@ public class MobListener implements Listener {
             // if there are no mobs nearby we grap a random group and spawn some mobs
             if (!nearbyMobs.isEmpty()) {
                 // now we need to filter our all of the groups that are not matching nearby mobs
-                for (int i = 0; i < virtualGroups.size(); i++) {
+                for (MobGroup group : new ArrayList<>(virtualGroups)) {
                     boolean inGroup = false;
                     for (SpawnableMob mob : nearbyMobs) {
-                        if (virtualGroups.get(i).isInGroup(mob)) {
+                        if (group.isInGroup(mob)) {
                             inGroup = true;
                             break;
                         }
                     }
                     if (!inGroup) {
-                        virtualGroups.set(i, null);
+                        virtualGroups.remove(group);
                     }
                 }
             }
