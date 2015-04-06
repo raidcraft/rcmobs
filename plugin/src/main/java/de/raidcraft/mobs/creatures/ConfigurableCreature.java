@@ -1,7 +1,5 @@
 package de.raidcraft.mobs.creatures;
 
-import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
-import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.api.random.RDSTable;
@@ -253,6 +251,8 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void playSound(String name, float pitch, float volume) {
 
+        // TODO: enable with 1.8
+        /*
         Location location = getEntity().getLocation();
         WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
         soundEffect.setSoundName(name);
@@ -261,6 +261,6 @@ public class ConfigurableCreature extends AbstractMob {
         soundEffect.setEffectPositionX(location.getX());
         soundEffect.setEffectPositionY(location.getY());
         soundEffect.setEffectPositionZ(location.getZ());
-        ProtocolLibrary.getProtocolManager().broadcastServerPacket(soundEffect.getHandle());
+        ProtocolLibrary.getProtocolManager().broadcastServerPacket(soundEffect.getHandle());*/
     }
 }
