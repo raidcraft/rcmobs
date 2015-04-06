@@ -171,7 +171,6 @@ public final class MobManager implements Component, MobProvider {
         loadSpawnLocations();
         plugin.getLogger().info("Loaded " + loadedSpawnLocations + " spawn locations!");
         plugin.getLogger().info("Loaded " + virtualGroups.size() + " virtual random groups!");
-        virtualGroups.clear();
     }
 
     protected void reload() {

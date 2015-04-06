@@ -221,6 +221,7 @@ public class MobListener implements Listener {
             // lets replace all natural mobs with our own
             List<MobGroup> virtualGroups = plugin.getMobManager().getVirtualGroups();
             if (virtualGroups.isEmpty()) {
+                event.setCancelled(true);
                 return;
             }
             List<SpawnableMob> nearbyMobs = new ArrayList<>();
