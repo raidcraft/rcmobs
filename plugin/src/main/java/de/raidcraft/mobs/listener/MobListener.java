@@ -375,7 +375,7 @@ public class MobListener implements Listener {
         List<TSpawnedMob> unloadedMobs = new ArrayList<>();
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
-                unloadedMobs.add(despawnMob((LivingEntity) entity));
+                unloadedMobs.add(despawnMob((LivingEntity) entity, false));
             }
         }
         if (unloadedMobs.size() > 0) {
@@ -387,7 +387,7 @@ public class MobListener implements Listener {
         }
     }
 
-    private TSpawnedMob despawnMob(LivingEntity entity) {
+    private TSpawnedMob despawnMob(LivingEntity entity, boolean saveToDb) {
 
         TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
         if (spawnedMob != null) {
@@ -399,6 +399,7 @@ public class MobListener implements Listener {
             spawnedMob.setX(location.getBlockX());
             spawnedMob.setY(location.getBlockY());
             spawnedMob.setZ(location.getBlockZ());
+            if (saveToDb) plugin.getDatabase().update(spawnedMob);
             if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
         }
         return spawnedMob;
@@ -410,7 +411,7 @@ public class MobListener implements Listener {
         if (event.getEntity() == null) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (!plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) return;
-        plugin.getDatabase().save(despawnMob((LivingEntity) event.getEntity()));
+        despawnMob((LivingEntity) event.getEntity(), true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
