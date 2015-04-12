@@ -76,7 +76,6 @@ public class MobListener implements Listener {
         final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
         ProtocolLibrary.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin,
-                        PacketType.Play.Server.NAMED_SOUND_EFFECT,
                         PacketType.Play.Server.SPAWN_ENTITY,
                         PacketType.Play.Server.ENTITY_METADATA) {
                     @Override
