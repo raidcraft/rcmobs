@@ -86,7 +86,7 @@ public class MobsPlugin extends BasePlugin {
     private void registerQuestConfigLoader() {
 
         // register mob config loader
-        Quests.registerQuestLoader(new QuestConfigLoader("mob.yml") {
+        Quests.registerQuestLoader(new QuestConfigLoader("mob") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
 
@@ -99,7 +99,7 @@ public class MobsPlugin extends BasePlugin {
                 return Mobs.getFriendlyName(key);
             }
         });
-        Quests.registerQuestLoader(new QuestConfigLoader("group.yml") {
+        Quests.registerQuestLoader(new QuestConfigLoader("group") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
 
