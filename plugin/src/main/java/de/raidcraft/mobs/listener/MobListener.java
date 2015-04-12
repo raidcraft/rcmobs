@@ -409,8 +409,11 @@ public class MobListener implements Listener {
 
         if (event.getEntity() == null) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
-        if (!plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) return;
-        despawnMob((LivingEntity) event.getEntity(), true);
+        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) event.getEntity());
+        if (spawnedMob != null) {
+            spawnedMob.delete();
+            event.getEntity().remove();
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
