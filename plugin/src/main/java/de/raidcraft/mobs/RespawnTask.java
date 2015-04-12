@@ -78,6 +78,7 @@ public class RespawnTask extends BukkitRunnable {
         // check all unloaded mobs that are in loaded chunks and add them to the respawn queue
         List<TSpawnedMob> unloaded = plugin.getDatabase().find(TSpawnedMob.class).where().eq("unloaded", true).findList();
         unloaded.stream()
+                .filter(mob -> mob.getLocation().getWorld() != null)
                 .filter(mob -> mob.getLocation().getWorld().isChunkLoaded(mob.getChunkX(), mob.getChunkZ())).forEach(mob -> {
             try {
                 SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);

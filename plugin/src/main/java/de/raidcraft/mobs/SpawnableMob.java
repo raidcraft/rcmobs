@@ -100,10 +100,7 @@ public class SpawnableMob extends AbstractSpawnable {
      */
     public boolean respawn(TSpawnedMob dbEntry, LivingEntity entity, boolean saveToDatabase) {
 
-        if (dbEntry.getWorld() == null) {
-            if (saveToDatabase) RaidCraft.getDatabase(MobsPlugin.class).delete(dbEntry);
-            return false;
-        }
+        if (dbEntry.getWorld() == null) return false;
         if (!dbEntry.getLocation().getWorld().isChunkLoaded(dbEntry.getChunkX(), dbEntry.getChunkZ())) return false;
 
         RCEntitySpawnEvent event = new RCEntitySpawnEvent(this, SpawnReason.RESPAWN);
@@ -133,6 +130,7 @@ public class SpawnableMob extends AbstractSpawnable {
     public boolean respawn(TSpawnedMob dbMob, boolean saveToDatabase) {
 
         if (!dbMob.isUnloaded()) return false;
+        if (dbMob.getLocation().getWorld() == null) return false;
         Location location = dbMob.getLocation();
         if (!dbMob.getLocation().getWorld().isChunkLoaded(dbMob.getChunkX(), dbMob.getChunkZ())) return false;
 
@@ -161,6 +159,8 @@ public class SpawnableMob extends AbstractSpawnable {
     public List<CharacterTemplate> spawn(Location location, SpawnReason reason) {
 
         ArrayList<CharacterTemplate> mobs = new ArrayList<>();
+
+        if (location.getWorld() == null) return mobs;
 
         RCEntitySpawnEvent event = new RCEntitySpawnEvent(this, reason);
         RaidCraft.callEvent(event);
