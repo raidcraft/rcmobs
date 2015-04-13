@@ -76,6 +76,9 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     public void spawn(boolean checkCooldown) {
 
+        if (getLocation().getWorld() == null) {
+            return;
+        }
         if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
             return;
         }

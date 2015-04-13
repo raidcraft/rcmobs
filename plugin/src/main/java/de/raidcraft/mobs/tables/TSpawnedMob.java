@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class TSpawnedMob {
     private UUID uuid;
     private String sourceId;
     private String mob;
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp spawnTime;
     @ManyToOne(optional = true)
     private TMobSpawnLocation spawnLocationSource;
