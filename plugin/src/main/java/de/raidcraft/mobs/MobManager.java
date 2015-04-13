@@ -23,7 +23,6 @@ import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
 import de.raidcraft.util.TimeUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -95,6 +94,7 @@ public final class MobManager implements Component, MobProvider {
                 }
             }
         }, 100L, 100L);*/
+        /*
         if (plugin.getConfiguration().respawnTaskCleanupInterval > 0) {
             // lets run a mob db purge task for all obsolete entries that were missed
             long ticks = TimeUtil.secondsToTicks(plugin.getConfiguration().respawnTaskCleanupInterval);
@@ -114,7 +114,7 @@ public final class MobManager implements Component, MobProvider {
                         .filter(group -> group.getSpawnedMobs().isEmpty())
                         .forEach(TSpawnedMobGroup::delete);
             }, ticks, ticks);
-        }
+        }*/
     }
 
     public RespawnTask getRespawnTask() {
