@@ -1,7 +1,6 @@
 package de.raidcraft.mobs.listener;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -77,6 +76,7 @@ public class MobListener implements Listener {
         ProtocolLibrary.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin,
                         PacketType.Play.Server.SPAWN_ENTITY,
+                        PacketType.Play.Server.NAMED_ENTITY_SPAWN,
                         PacketType.Play.Server.ENTITY_METADATA) {
                     @Override
                     public void onPacketSending(PacketEvent event) {
@@ -120,20 +120,12 @@ public class MobListener implements Listener {
                                     entity.hasMetadata("RARE"));
                         }
 
-                        if (name != null) {
-                            // Clone the packet!
-                            event.setPacket(packet = packet.deepClone());
+                        // Clone the packet!
+                        event.setPacket(packet = packet.deepClone());
+                        WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
 
-                            // This comes down to a difference in what the packets store in memory
-                            if (event.getPacketID() == Packets.Server.ENTITY_METADATA) {
-                                WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
-
-                                processDataWatcher(watcher, name);
-                                packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
-                            } else {
-                                processDataWatcher(packet.getDataWatcherModifier().read(0), name);
-                            }
-                        }
+                        processDataWatcher(watcher, name);
+                        packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
                     }
                 });
     }
