@@ -23,6 +23,7 @@ import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.ReflectionUtil;
 import de.raidcraft.util.TimeUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -94,18 +95,19 @@ public final class MobManager implements Component, MobProvider {
                 }
             }
         }, 100L, 100L);*/
-        /*
         if (plugin.getConfiguration().respawnTaskCleanupInterval > 0) {
             // lets run a mob db purge task for all obsolete entries that were missed
             long ticks = TimeUtil.secondsToTicks(plugin.getConfiguration().respawnTaskCleanupInterval);
             Bukkit.getScheduler().runTaskTimer(plugin, () -> {
                 CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
                 List<TSpawnedMob> toDelete = new ArrayList<>();
-                for (TSpawnedMob spawnedMob : plugin.getDatabase().find(TSpawnedMob.class).findList()) {
-                    CharacterTemplate character = characterManager.getCharacter(spawnedMob.getUuid());
-                    if (character == null || !(character instanceof Mob)) {
-                        if (!spawnedMob.isUnloaded()) {
-                            toDelete.add(spawnedMob);
+                for (World world : Bukkit.getServer().getWorlds()) {
+                    for (TSpawnedMob spawnedMob : plugin.getDatabase().find(TSpawnedMob.class).where().eq("world", world.getName()).findList()) {
+                        CharacterTemplate character = characterManager.getCharacter(spawnedMob.getUuid());
+                        if (character == null || !(character instanceof Mob)) {
+                            if (!spawnedMob.isUnloaded()) {
+                                toDelete.add(spawnedMob);
+                            }
                         }
                     }
                 }
@@ -114,7 +116,7 @@ public final class MobManager implements Component, MobProvider {
                         .filter(group -> group.getSpawnedMobs().isEmpty())
                         .forEach(TSpawnedMobGroup::delete);
             }, ticks, ticks);
-        }*/
+        }
     }
 
     public RespawnTask getRespawnTask() {
