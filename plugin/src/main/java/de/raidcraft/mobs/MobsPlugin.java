@@ -185,6 +185,8 @@ public class MobsPlugin extends BasePlugin {
         public int respawnTaskMobGroupBatchCount = 5;
         @Setting("respawn-task.cleanup-interval")
         public double respawnTaskCleanupInterval = 30;
+        @Setting("respawn-task.cleanup-removed-characters")
+        public boolean respawnTaskCleanupRemovedCharacters = false;
 
         private final HashSet<String> replacedMobsSet;
 

@@ -404,6 +404,7 @@ public class MobListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onEntityRemoved(RCEntityRemovedEvent event) {
 
+        if (!plugin.getConfiguration().respawnTaskCleanupRemovedCharacters) return;
         if (event.getEntity() == null) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) event.getEntity());
