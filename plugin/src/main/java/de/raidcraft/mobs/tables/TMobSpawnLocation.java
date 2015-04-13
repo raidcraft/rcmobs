@@ -8,6 +8,7 @@ import org.bukkit.Location;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -40,7 +41,7 @@ public class TMobSpawnLocation {
     private double cooldown;
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp lastSpawn;
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "spawn_location_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 

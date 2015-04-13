@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -34,7 +35,7 @@ public class TSpawnedMobGroup {
     private Timestamp spawnTime;
     @ManyToOne(optional = true)
     private TMobGroupSpawnLocation spawnGroupLocationSource;
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "mob_group_source_id")
     private List<TSpawnedMob> spawnedMobs = new ArrayList<>();
 
