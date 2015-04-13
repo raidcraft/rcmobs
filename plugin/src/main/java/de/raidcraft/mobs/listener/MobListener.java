@@ -122,10 +122,15 @@ public class MobListener implements Listener {
 
                         // Clone the packet!
                         event.setPacket(packet = packet.deepClone());
-                        WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
 
-                        processDataWatcher(watcher, name);
-                        packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+                        if (packet.getType() == PacketType.Play.Server.ENTITY_METADATA) {
+                            WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
+
+                            processDataWatcher(watcher, name);
+                            packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+                        } else {
+                            processDataWatcher(packet.getDataWatcherModifier().read(0), name);
+                        }
                     }
                 });
     }
