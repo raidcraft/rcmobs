@@ -538,7 +538,8 @@ public final class MobManager implements Component, MobProvider {
 
     public boolean isAllowedNaturalSpawn(Location location) {
 
-        return getMobSpawnLocations(location, plugin.getConfiguration().defaultSpawnDenyRadius).isEmpty()
-                && getGroupSpawnLocations(location, plugin.getConfiguration().defaultSpawnDenyRadius).isEmpty();
+        return plugin.getConfiguration().defaultSpawnDenyRadius < 0
+                || (getMobSpawnLocations(location, plugin.getConfiguration().defaultSpawnDenyRadius).isEmpty()
+                && getGroupSpawnLocations(location, plugin.getConfiguration().defaultSpawnDenyRadius).isEmpty());
     }
 }
