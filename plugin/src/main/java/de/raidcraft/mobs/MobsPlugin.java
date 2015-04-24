@@ -142,8 +142,6 @@ public class MobsPlugin extends BasePlugin {
         public boolean denyHorseSpawning = false;
         @Setting("default.spawn-deny-radius")
         public int defaultSpawnDenyRadius = 50;
-        @Setting("default.task-interval")
-        public double spawnTaskInterval = 5.0;
         @Setting("default.reset-range")
         public int resetRange = 50;
         @Setting("default.spawn-similiar-random-mobs")
