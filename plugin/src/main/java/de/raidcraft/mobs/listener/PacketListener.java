@@ -76,6 +76,8 @@ public class PacketListener extends PacketAdapter {
 
         WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(entity);
         meta.setObject(CUSTOM_NAME_INDEX, name);
+        meta.setObject(ALWAYS_SHOW_INDEX, (byte) 1);
+
         if (event.getPacketType() == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
             WrapperPlayServerSpawnEntityLiving wrapper = new WrapperPlayServerSpawnEntityLiving(event.getPacket());
             wrapper.setMetadata(meta);
