@@ -1,5 +1,7 @@
 package de.raidcraft.mobs.listener;
 
+import com.comphenix.packetwrapper.WrapperPlayServerNamedEntitySpawn;
+import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntityLiving;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -27,7 +29,7 @@ public class PacketListener extends PacketAdapter {
 
     public PacketListener(MobsPlugin plugin) {
 
-        super(plugin, PacketType.Play.Server.SPAWN_ENTITY,
+        super(plugin, PacketType.Play.Server.SPAWN_ENTITY_LIVING,
                 PacketType.Play.Server.NAMED_ENTITY_SPAWN,
                 PacketType.Play.Server.ENTITY_METADATA);
         this.characterManager = RaidCraft.getComponent(CharacterManager.class);
@@ -35,8 +37,6 @@ public class PacketListener extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-
-        PacketContainer packet = event.getPacket();
 
         // handle the custom mob hurt effects
                         /*
@@ -48,7 +48,7 @@ public class PacketListener extends PacketAdapter {
                             }
                         }*/
         // You may also want to check event.getPacketID()
-        final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
+        final Entity entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
         if (!(entity instanceof LivingEntity)
                 || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) entity)) {
             return;
@@ -74,16 +74,22 @@ public class PacketListener extends PacketAdapter {
                     entity.hasMetadata("RARE"));
         }
 
-        // Clone the packet!
-        event.setPacket(packet = packet.deepClone());
-
-        if (packet.getType() == PacketType.Play.Server.ENTITY_METADATA) {
+        WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(entity);
+        meta.setObject(CUSTOM_NAME_INDEX, name);
+        if (event.getPacketType() == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
+            WrapperPlayServerSpawnEntityLiving wrapper = new WrapperPlayServerSpawnEntityLiving(event.getPacket());
+            wrapper.setMetadata(meta);
+            event.setPacket(wrapper.getHandle());
+        } else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+            WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
+            wrapper.setMetadata(meta);
+            event.setPacket(wrapper.getHandle());
+        } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
+            PacketContainer packet = event.getPacket().deepClone();
             WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
-
             processDataWatcher(watcher, name);
             packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
-        } else {
-            processDataWatcher(packet.getDataWatcherModifier().read(0), name);
+            event.setPacket(packet);
         }
     }
 
