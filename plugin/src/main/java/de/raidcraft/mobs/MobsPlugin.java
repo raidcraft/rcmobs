@@ -1,5 +1,6 @@
 package de.raidcraft.mobs;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
@@ -16,6 +17,7 @@ import de.raidcraft.mobs.actions.MobRemoveAction;
 import de.raidcraft.mobs.actions.MobSpawnAction;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.listener.MobListener;
+import de.raidcraft.mobs.listener.PacketListener;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobPlayerKillLog;
@@ -51,7 +53,10 @@ public class MobsPlugin extends BasePlugin {
         registerCommands(BaseCommands.class);
         this.mobManager = new MobManager(this);
 
-        Bukkit.getScheduler().runTaskLater(this, () -> registerEvents(new MobListener(this)), 5L);
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            registerEvents(new MobListener(this));
+            ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
+        }, 5L);
 
         registerActionAPI();
         registerQuestConfigLoader();

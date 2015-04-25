@@ -1,16 +1,9 @@
 package de.raidcraft.mobs.listener;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.events.RCEntityRemovedEvent;
 import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.RespawnTask;
 import de.raidcraft.mobs.SpawnableMob;
@@ -28,9 +21,7 @@ import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.BukkitUtil;
-import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -62,8 +53,6 @@ import java.util.stream.Collectors;
  */
 public class MobListener implements Listener {
 
-    private static final int CUSTOM_NAME_INDEX = 10;
-
     private final MobsPlugin plugin;
     private final CharacterManager characterManager;
 
@@ -71,75 +60,6 @@ public class MobListener implements Listener {
 
         this.plugin = plugin;
         this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
-
-        final CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
-        ProtocolLibrary.getProtocolManager().addPacketListener(
-                new PacketAdapter(plugin,
-                        PacketType.Play.Server.SPAWN_ENTITY,
-                        PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-                        PacketType.Play.Server.ENTITY_METADATA) {
-                    @Override
-                    public void onPacketSending(PacketEvent event) {
-
-                        PacketContainer packet = event.getPacket();
-
-                        // handle the custom mob hurt effects
-                        /*
-                        if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-                            WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect(event.getPacket());
-                            if (false) {
-                                // supress skeleton sounds since they are our custom mobs
-                                event.setCancelled(true);
-                            }
-                        }*/
-
-                        // You may also want to check event.getPacketID()
-                        final Entity entity = packet.getEntityModifier(event.getPlayer().getWorld()).read(0);
-                        if (!(entity instanceof LivingEntity)
-                                || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) entity)) {
-                            return;
-                        }
-                        CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
-                        ChatColor mobColor = EntityUtil.getConColor(
-                                characterManager.getHero(event.getPlayer()).getPlayerLevel(),
-                                character.getAttachedLevel().getLevel());
-                        String name;
-                        if (character.isInCombat()) {
-                            name = EntityUtil.drawHealthBar(
-                                    character.getHealth(),
-                                    character.getMaxHealth(),
-                                    mobColor,
-                                    entity.hasMetadata("ELITE"),
-                                    entity.hasMetadata("RARE"));
-                        } else {
-                            name = EntityUtil.drawMobName(
-                                    character.getName(),
-                                    character.getAttachedLevel().getLevel(),
-                                    mobColor,
-                                    entity.hasMetadata("ELITE"),
-                                    entity.hasMetadata("RARE"));
-                        }
-
-                        // Clone the packet!
-                        event.setPacket(packet = packet.deepClone());
-
-                        if (packet.getType() == PacketType.Play.Server.ENTITY_METADATA) {
-                            WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
-
-                            processDataWatcher(watcher, name);
-                            packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
-                        } else {
-                            processDataWatcher(packet.getDataWatcherModifier().read(0), name);
-                        }
-                    }
-                });
-    }
-
-    private void processDataWatcher(WrappedDataWatcher watcher, String name) {
-        // If it's being updated, change it!
-        if (watcher.getObject(CUSTOM_NAME_INDEX) != null) {
-            watcher.setObject(CUSTOM_NAME_INDEX, name);
-        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

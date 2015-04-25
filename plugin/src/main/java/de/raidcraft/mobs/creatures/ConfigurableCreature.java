@@ -1,5 +1,7 @@
 package de.raidcraft.mobs.creatures;
 
+import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
+import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.api.random.RDSTable;
@@ -190,7 +192,12 @@ public class ConfigurableCreature extends AbstractMob {
         if (isInCombat()) {
             getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));
         } else {
-            getEntity().setCustomName(getName());
+            getEntity().setCustomName(EntityUtil.drawMobName(
+                    getName(),
+                    getAttachedLevel().getLevel(),
+                    ChatColor.YELLOW,
+                    isElite(),
+                    isRare()));
         }
     }
 
@@ -251,16 +258,14 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void playSound(String name, float pitch, float volume) {
 
-        // TODO: enable with 1.8
-        /*
         Location location = getEntity().getLocation();
         WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
         soundEffect.setSoundName(name);
-        soundEffect.setPitch(pitch);
+        soundEffect.setPitch((byte) pitch);
         soundEffect.setVolume(volume);
-        soundEffect.setEffectPositionX(location.getX());
-        soundEffect.setEffectPositionY(location.getY());
-        soundEffect.setEffectPositionZ(location.getZ());
-        ProtocolLibrary.getProtocolManager().broadcastServerPacket(soundEffect.getHandle());*/
+        soundEffect.setEffectPositionX(location.getBlockX());
+        soundEffect.setEffectPositionY(location.getBlockY());
+        soundEffect.setEffectPositionZ(location.getBlockZ());
+        ProtocolLibrary.getProtocolManager().broadcastServerPacket(soundEffect.getHandle());
     }
 }
