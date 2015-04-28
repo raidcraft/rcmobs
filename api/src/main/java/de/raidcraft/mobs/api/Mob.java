@@ -3,7 +3,6 @@ package de.raidcraft.mobs.api;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.SkilledCharacter;
-import de.raidcraft.skills.api.exceptions.CombatException;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     public Optional<RDSTable> getLootTable();
 
-    public CharacterTemplate getHighestThreat() throws CombatException;
+    public Optional<CharacterTemplate> getHighestThreat();
 
     public List<CharacterTemplate> getInvolvedTargets();
 

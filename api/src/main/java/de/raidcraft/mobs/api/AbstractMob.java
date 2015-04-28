@@ -3,7 +3,6 @@ package de.raidcraft.mobs.api;
 import de.raidcraft.skills.api.character.AbstractSkilledCharacter;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.CharacterType;
-import de.raidcraft.skills.api.combat.ThreatTable;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.creature.CreatureAttachedLevel;
@@ -13,6 +12,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -49,17 +49,14 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     @Override
     public CharacterTemplate getTarget() throws CombatException {
 
-        return getHighestThreat();
+        Optional<CharacterTemplate> highestThreat = getHighestThreat();
+        return highestThreat.isPresent() ? highestThreat.get() : null;
     }
 
     @Override
-    public CharacterTemplate getHighestThreat() throws CombatException {
+    public Optional<CharacterTemplate> getHighestThreat() {
 
-        ThreatTable.ThreatLevel highestThreat = getThreatTable().getHighestThreat();
-        if (highestThreat == null) {
-            return null;
-        }
-        return highestThreat.getTarget();
+        return Optional.ofNullable(getThreatTable().getHighestThreat().getTarget());
     }
 
     @Override

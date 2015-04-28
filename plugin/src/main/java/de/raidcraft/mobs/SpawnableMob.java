@@ -2,7 +2,7 @@ package de.raidcraft.mobs;
 
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.api.mobs.CustomNmsEntity;
+import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.SpawnReason;
@@ -144,6 +144,7 @@ public class SpawnableMob extends AbstractSpawnable {
             mob = manager.spawnCharacter(type, location, mClass, config);
         } else if (customEntityTypeName != null) {
             CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
+            nmsEntity.load(config);
             mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
         }
         if (mob == null) return false;

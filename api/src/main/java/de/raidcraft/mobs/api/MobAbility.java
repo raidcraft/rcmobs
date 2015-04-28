@@ -5,6 +5,8 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.persistance.AbilityProperties;
 
+import java.util.Optional;
+
 /**
  * @author Silthus
  */
@@ -18,6 +20,7 @@ public abstract class MobAbility extends AbstractAbility<Mob> {
     @Override
     public CharacterTemplate getTarget() throws CombatException {
 
-        return getHolder().getHighestThreat();
+        Optional<CharacterTemplate> threat = getHolder().getHighestThreat();
+        return threat.isPresent() ? threat.get() : null;
     }
 }

@@ -4,7 +4,7 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.Component;
 import de.raidcraft.api.config.SimpleConfiguration;
-import de.raidcraft.api.mobs.CustomNmsEntity;
+import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.mobs.api.Mob;
