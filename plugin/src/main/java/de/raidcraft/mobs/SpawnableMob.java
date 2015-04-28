@@ -141,11 +141,16 @@ public class SpawnableMob extends AbstractSpawnable {
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         Mob mob = null;
         if (type != null) {
-            mob = manager.spawnCharacter(type, location, mClass, config);
-        } else if (customEntityTypeName != null) {
-            CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
-            nmsEntity.load(config);
-            mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
+            CustomNmsEntity nmsEntity = null;
+            if (customEntityTypeName != null) {
+                nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
+            }
+            if (nmsEntity != null) {
+                nmsEntity.load(config);
+                mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
+            } else {
+                mob = manager.spawnCharacter(type, location, mClass, config);
+            }
         }
         if (mob == null) return false;
         mob.setId(dbMob.getMob());
