@@ -3,6 +3,7 @@ package de.raidcraft.mobs.api;
 import de.raidcraft.skills.api.character.AbstractSkilledCharacter;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.CharacterType;
+import de.raidcraft.skills.api.combat.ThreatTable;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.creature.CreatureAttachedLevel;
@@ -56,7 +57,11 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
     @Override
     public Optional<CharacterTemplate> getHighestThreat() {
 
-        return Optional.ofNullable(getThreatTable().getHighestThreat().getTarget());
+        ThreatTable threatTable = getThreatTable();
+        if (threatTable == null) return Optional.empty();
+        ThreatTable.ThreatLevel highestThreat = threatTable.getHighestThreat();
+        if (highestThreat == null) return Optional.empty();
+        return Optional.ofNullable(highestThreat.getTarget());
     }
 
     @Override
