@@ -28,9 +28,12 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
+import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +65,6 @@ public class MobsPlugin extends BasePlugin {
         registerQuestConfigLoader();
 
         // register our custom NMS entity
-        // TODO: enable with 1.8 update
         EntityUtil.registerEntity(EntityType.SKELETON, ReflectionUtil.getNmsClass("de.raidcraft.mobs.entites.nms", "RCSkeleton"));
     }
 
