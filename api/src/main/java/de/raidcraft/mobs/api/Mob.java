@@ -5,7 +5,6 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.SkilledCharacter;
 import org.bukkit.Location;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,8 +29,6 @@ public interface Mob extends SkilledCharacter<Mob> {
     public Optional<RDSTable> getLootTable();
 
     public Optional<CharacterTemplate> getHighestThreat();
-
-    public List<CharacterTemplate> getInvolvedTargets();
 
     public CharacterTemplate getRandomTarget();
 

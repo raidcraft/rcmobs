@@ -4,17 +4,14 @@ import de.raidcraft.skills.api.character.AbstractSkilledCharacter;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.CharacterType;
 import de.raidcraft.skills.api.combat.ThreatTable;
-import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.creature.CreatureAttachedLevel;
 import de.raidcraft.util.LocationUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author Silthus
@@ -62,19 +59,6 @@ public abstract class AbstractMob extends AbstractSkilledCharacter<Mob> implemen
         ThreatTable.ThreatLevel highestThreat = threatTable.getHighestThreat();
         if (highestThreat == null) return Optional.empty();
         return Optional.ofNullable(highestThreat.getTarget());
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<CharacterTemplate> getInvolvedTargets() {
-
-        Combat combat = getLastCombat();
-        if (combat == null) {
-            return new ArrayList<>();
-        }
-        Set<CharacterTemplate> characters = combat.getInvolvedCharacters();
-        characters.add(getLastDamageCause().getAttacker());
-        return new ArrayList<>(characters);
     }
 
     @Override
