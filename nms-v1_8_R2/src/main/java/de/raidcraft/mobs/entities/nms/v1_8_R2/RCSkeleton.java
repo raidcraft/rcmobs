@@ -3,6 +3,7 @@ package de.raidcraft.mobs.entities.nms.v1_8_R2;
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.util.ReflectionUtil;
+import net.minecraft.server.v1_8_R2.EntityLiving;
 import net.minecraft.server.v1_8_R2.EntityPlayer;
 import net.minecraft.server.v1_8_R2.EntitySkeleton;
 import net.minecraft.server.v1_8_R2.GenericAttributes;
@@ -55,10 +56,10 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathFinderGoalHighestThreatTarget(this, true));
         this.targetSelector.a(2, new PathfinderGoalHurtByTarget(this, true));
-        this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityPlayer.class, true));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void load(ConfigurationSection config) {
 
         this.hurtSound = config.getString("sound.hurt");
@@ -69,6 +70,17 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
             this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
         } else {
             this.goalSelector.a(4, new PathfinderGoalMeleeAttack(this, EntityPlayer.class, 1.2D, true));
+        }
+        List<String> targets = config.getStringList("targets");
+        if (targets == null || targets.isEmpty()) {
+            this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityPlayer.class, true));
+        } else {
+            for (String target : targets) {
+                Class<?> nmsClass = ReflectionUtil.getNmsClass("net.minecraft.server", target);
+                if (nmsClass != null && EntityLiving.class.isAssignableFrom(nmsClass)) {
+                    this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, (Class<? extends EntityLiving>) nmsClass, true));
+                }
+            }
         }
     }
 
