@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
+import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.config.ConfigurationBase;
@@ -19,6 +20,7 @@ import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.listener.PacketListener;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
+import de.raidcraft.mobs.skills.Summon;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobPlayerKillLog;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
@@ -28,6 +30,8 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
+import de.raidcraft.skills.SkillsPlugin;
+import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.ReflectionUtil;
 import org.bukkit.Bukkit;
@@ -63,6 +67,12 @@ public class MobsPlugin extends BasePlugin {
 
         registerActionAPI();
         registerQuestConfigLoader();
+
+        try {
+            RaidCraft.getComponent(SkillsPlugin.class).getSkillManager().registerClass(Summon.class);
+        } catch (UnknownSkillException e) {
+            e.printStackTrace();
+        }
 
         // register our custom NMS entity
         EntityUtil.registerEntity(EntityType.SKELETON, ReflectionUtil.getNmsClass("de.raidcraft.mobs.entites.nms", "RCSkeleton"));
