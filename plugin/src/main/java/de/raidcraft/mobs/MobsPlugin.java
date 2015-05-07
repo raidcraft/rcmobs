@@ -63,7 +63,7 @@ public class MobsPlugin extends BasePlugin {
 
         // register our custom NMS entity
         // TODO: enable with 1.8 update
-        // EntityUtil.registerEntity(EntityType.SKELETON, ReflectionUtil.getNmsClass("de.raidcraft.mobs.entites.nms", "RCSkeleton"));
+        EntityUtil.registerEntity(EntityType.SKELETON, ReflectionUtil.getNmsClass("de.raidcraft.mobs.entites.nms", "RCSkeleton"));
     }
 
     @Override
