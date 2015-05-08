@@ -16,6 +16,7 @@ import de.raidcraft.mobs.actions.GroupRemoveAction;
 import de.raidcraft.mobs.actions.GroupSpawnAction;
 import de.raidcraft.mobs.actions.MobRemoveAction;
 import de.raidcraft.mobs.actions.MobSpawnAction;
+import de.raidcraft.mobs.api.MobConstants;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.listener.PacketListener;
@@ -78,7 +79,10 @@ public class MobsPlugin extends BasePlugin {
         }
 
         // register our custom NMS entity
-        EntityUtil.registerEntity(EntityType.SKELETON, ReflectionUtil.getNmsClass("de.raidcraft.mobs.entites.nms", "RCSkeleton"));
+        Class<?> rcSkeleton = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCSkeleton");
+        Class<?> rcZombie = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCZombie");
+        if (rcSkeleton != null) EntityUtil.registerEntity(EntityType.SKELETON, rcSkeleton);
+        if (rcZombie != null) EntityUtil.registerEntity(EntityType.ZOMBIE, rcZombie);
     }
 
     @Override
