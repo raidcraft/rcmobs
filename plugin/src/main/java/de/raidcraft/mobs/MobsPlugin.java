@@ -34,15 +34,18 @@ import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.ReflectionUtil;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Silthus
@@ -190,6 +193,16 @@ public class MobsPlugin extends BasePlugin {
                 "IRON_GOLEM"
         };
 
+        @Setting("default.ignored-entities")
+        public String[] ignoredEntities = {
+                "ARMOR_STAND"
+        };
+
+        @Setting("default.ignored-spawn-reasons")
+        public String[] ignoredSpawnReasonList = {
+                "CUSTOM"
+        };
+
         @Setting("respawn-task.remove-entity-on-chunk-unload")
         public boolean respawnTaskRemoveEntityOnChunkUnload = false;
         @Setting("respawn-task.interval")
@@ -204,11 +217,21 @@ public class MobsPlugin extends BasePlugin {
         public boolean respawnTaskCleanupRemovedCharacters = false;
 
         private final HashSet<String> replacedMobsSet;
+        @Getter
+        private final Set<EntityType> ignoredEntityTypes = new HashSet<>();
+        @Getter
+        private final Set<CreatureSpawnEvent.SpawnReason> ignoredSpawnReasons = new HashSet<>();
 
         public LocalConfiguration(MobsPlugin plugin) {
 
             super(plugin, "config.yml");
-            replacedMobsSet = new HashSet<>(Arrays.asList(replacedMobs));
+            replacedMobsSet = new HashSet<>(Arrays.asList(ignoredEntities));
+            for (String spawnReason : ignoredSpawnReasonList) {
+                ignoredSpawnReasons.add(CreatureSpawnEvent.SpawnReason.valueOf(spawnReason));
+            }
+            for (String entityType : ignoredEntities) {
+                ignoredEntityTypes.add(EntityType.valueOf(entityType));
+            }
         }
 
         public HashSet<String> getReplacedMobs() {

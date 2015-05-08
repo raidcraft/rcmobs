@@ -120,6 +120,12 @@ public class MobListener implements Listener {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
             return;
         }
+        if (plugin.getConfiguration().getIgnoredEntityTypes().contains(event.getEntityType())) {
+            return;
+        }
+        if (plugin.getConfiguration().getIgnoredSpawnReasons().contains(event.getSpawnReason())) {
+            return;
+        }
         if (event.getEntity().getType() == EntityType.HORSE && plugin.getConfiguration().denyHorseSpawning) {
             event.setCancelled(true);
             return;
