@@ -14,7 +14,11 @@ public interface CustomNmsEntity {
 
     public UUID getUniqueID();
 
-    public void load(ConfigurationSection config);
+    public void setDeathSound(String sound);
+
+    public void setHurtSound(String sound);
+
+    public default void load(ConfigurationSection config) {}
 
     public LivingEntity spawn(Location location);
 

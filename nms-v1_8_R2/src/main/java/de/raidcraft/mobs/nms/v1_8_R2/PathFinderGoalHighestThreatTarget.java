@@ -1,4 +1,4 @@
-package de.raidcraft.mobs.entities.nms.v1_8_R2;
+package de.raidcraft.mobs.nms.v1_8_R2;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;

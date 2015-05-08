@@ -1,24 +1,20 @@
-package de.raidcraft.mobs.entities.nms.v1_8_R2;
+package de.raidcraft.mobs.nms.v1_8_R2;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.util.ReflectionUtil;
-import net.minecraft.server.v1_8_R2.EntityLiving;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_8_R2.EntityPlayer;
-import net.minecraft.server.v1_8_R2.EntitySkeleton;
-import net.minecraft.server.v1_8_R2.GenericAttributes;
-import net.minecraft.server.v1_8_R2.PathfinderGoalArrowAttack;
+import net.minecraft.server.v1_8_R2.EntityZombie;
 import net.minecraft.server.v1_8_R2.PathfinderGoalFloat;
 import net.minecraft.server.v1_8_R2.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R2.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R2.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R2.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_8_R2.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R2.PathfinderGoalSelector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
 import org.bukkit.entity.LivingEntity;
 
@@ -28,14 +24,16 @@ import java.util.Optional;
 /**
  * @author Silthus
  */
-public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
+@Getter
+@Setter
+public class RCZombie extends EntityZombie implements CustomNmsEntity {
 
     private Optional<Mob> wrappedEntity = Optional.empty();
     private Location spawnLocation;
     private String deathSound;
     private String hurtSound;
 
-    public RCSkeleton(org.bukkit.World world) {
+    public RCZombie(org.bukkit.World world) {
 
         super(((CraftWorld) world).getHandle());
 
@@ -56,32 +54,6 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathFinderGoalHighestThreatTarget(this, true));
         this.targetSelector.a(2, new PathfinderGoalHurtByTarget(this, true));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void load(ConfigurationSection config) {
-
-        this.hurtSound = config.getString("sound.hurt");
-        this.deathSound = config.getString("sound.death");
-        // modify the attack radius
-        this.getAttributeInstance(GenericAttributes.b).setValue(config.getDouble("aggro-range", 8.0));
-        if (config.getBoolean("ranged", false)) {
-            this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        } else {
-            this.goalSelector.a(4, new PathfinderGoalMeleeAttack(this, EntityPlayer.class, 1.2D, true));
-        }
-        List<String> targets = config.getStringList("targets");
-        if (targets == null || targets.isEmpty()) {
-            this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityPlayer.class, true));
-        } else {
-            for (String target : targets) {
-                Class<?> nmsClass = ReflectionUtil.getNmsClass("net.minecraft.server", target);
-                if (nmsClass != null && EntityLiving.class.isAssignableFrom(nmsClass)) {
-                    this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, (Class<? extends EntityLiving>) nmsClass, true));
-                }
-            }
-        }
     }
 
     // sound hurt

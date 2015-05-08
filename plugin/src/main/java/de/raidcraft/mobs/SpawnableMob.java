@@ -2,13 +2,13 @@ package de.raidcraft.mobs;
 
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.api.events.RCEntitySpawnEvent;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.tables.TSpawnedMob;
+import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Silthus
@@ -138,21 +139,9 @@ public class SpawnableMob extends AbstractSpawnable {
         RaidCraft.callEvent(event);
         if (event.isCancelled()) return false;
 
-        CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
-        Mob mob = null;
-        if (type != null) {
-            CustomNmsEntity nmsEntity = null;
-            if (customEntityTypeName != null) {
-                nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
-            }
-            if (nmsEntity != null) {
-                nmsEntity.load(config);
-                mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
-            } else {
-                mob = manager.spawnCharacter(type, location, mClass, config);
-            }
-        }
-        if (mob == null) return false;
+        Optional<Mob> optional = spawnMob(location);
+        if (!optional.isPresent()) return false;
+        Mob mob = optional.get();
         mob.setId(dbMob.getMob());
         dbMob.setUuid(mob.getUniqueId());
         dbMob.setSpawnTime(Timestamp.from(Instant.now()));
@@ -172,23 +161,18 @@ public class SpawnableMob extends AbstractSpawnable {
         RaidCraft.callEvent(event);
         if (event.isCancelled()) return mobs;
 
-        CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
+
         // spawn is not forced so we calculate the spawn chance
         if (!reason.isForcingSpawn() && getSpawnChance() < 1.0) {
             if (Math.random() > getSpawnChance()) {
                 return new ArrayList<>();
             }
         }
-        Mob mob = null;
-        if (type != null) {
-            mob = manager.spawnCharacter(type, location, mClass, config);
-        } else if (customEntityTypeName != null) {
-            CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
-            mob = manager.wrapCharacter(nmsEntity.spawn(location), mClass, config);
-        }
-        if (mob == null) {
+        Optional<Mob> optional = spawnMob(location);
+        if (!optional.isPresent()) {
             return mobs;
         }
+        Mob mob = optional.get();
         mob.setId(getId());
         EbeanServer database = RaidCraft.getDatabase(MobsPlugin.class);
         TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(mob.getEntity());
@@ -213,6 +197,21 @@ public class SpawnableMob extends AbstractSpawnable {
     public List<CharacterTemplate> spawn(Location location) {
 
         return spawn(location, SpawnReason.UNKNOWN);
+    }
+
+    private Optional<Mob> spawnMob(Location location) {
+
+        CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
+        Mob mob = null;
+        if (type != null) {
+            Optional<? extends Mob> optional = CustomMobUtil.spawnNMSEntity(customEntityTypeName, location, mClass, config);
+            if (!optional.isPresent()) {
+                mob = manager.spawnCharacter(type, location, mClass, config);
+            } else {
+                mob = optional.get();
+            }
+        }
+        return Optional.ofNullable(mob);
     }
 
     @Override

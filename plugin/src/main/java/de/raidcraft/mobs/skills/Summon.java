@@ -8,9 +8,8 @@ import de.raidcraft.api.action.requirement.RequirementException;
 import de.raidcraft.api.action.requirement.RequirementFactory;
 import de.raidcraft.api.action.requirement.RequirementResolver;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.api.AbstractMob;
-import de.raidcraft.mobs.api.CustomNmsEntity;
+import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -179,8 +178,14 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
             SummonedCreature creature;
             Location targetBlock = getTargetBlock();
             if (config.customEntityName != null) {
-                CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(targetBlock.getWorld(), config.customEntityName);
-                creature = CHARACTER_MANAGER.wrapCharacter(nmsEntity.spawn(targetBlock), SummonedCreature.class, config);
+                Optional<SummonedCreature> mob = CustomMobUtil.spawnNMSEntity(config.customEntityName, targetBlock, SummonedCreature.class, config.config);
+                if (mob.isPresent()) {
+                    creature = mob.get();
+                } else {
+                    RaidCraft.LOGGER.warning("failed to summon entity: " + config.customEntityName
+                            + " in " + de.raidcraft.util.ConfigUtil.getFileName(config.config));
+                    continue;
+                }
             } else {
                 creature = CHARACTER_MANAGER.spawnCharacter(
                         config.entityType,
@@ -269,11 +274,13 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
         private ConfigurationSection maxDamage;
         private ConfigurationSection minHealth;
         private ConfigurationSection maxHealth;
+        private ConfigurationSection config;
 
         public SummonedCreatureConfig(String name, ConfigurationSection config, Summon skill) throws InvalidConfigurationException {
 
             this.name = name;
             this.skill = skill;
+            this.config = config;
             load(config);
         }
 
