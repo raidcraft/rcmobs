@@ -24,6 +24,8 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -94,6 +96,15 @@ public class ConfigurableCreature extends AbstractMob {
                 ((Zombie) getEntity()).setBaby(true);
             }
         }
+
+        if (config.getBoolean("aggro")) {
+            if (getEntity() instanceof PigZombie) {
+                ((PigZombie) getEntity()).setAngry(config.getBoolean("aggro"));
+            } else if (getEntity() instanceof Wolf) {
+                ((Wolf) getEntity()).setAngry(config.getBoolean("aggro"));
+            }
+        }
+
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         setName(config.getString("name"));
