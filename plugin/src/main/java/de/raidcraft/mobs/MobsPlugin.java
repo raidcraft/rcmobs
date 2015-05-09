@@ -207,6 +207,11 @@ public class MobsPlugin extends BasePlugin {
                 "CUSTOM"
         };
 
+        @Setting("default.denied-entity-types")
+        public String[] deniedEntitiesList = {
+                "IRON_GOLEM"
+        };
+
         @Setting("respawn-task.remove-entity-on-chunk-unload")
         public boolean respawnTaskRemoveEntityOnChunkUnload = false;
         @Setting("respawn-task.interval")
@@ -224,6 +229,8 @@ public class MobsPlugin extends BasePlugin {
         @Getter
         private final Set<EntityType> ignoredEntityTypes = new HashSet<>();
         @Getter
+        private final Set<EntityType> deniedEntities = new HashSet<>();
+        @Getter
         private final Set<CreatureSpawnEvent.SpawnReason> ignoredSpawnReasons = new HashSet<>();
 
         public LocalConfiguration(MobsPlugin plugin) {
@@ -235,6 +242,9 @@ public class MobsPlugin extends BasePlugin {
             }
             for (String entityType : ignoredEntities) {
                 ignoredEntityTypes.add(EntityType.valueOf(entityType));
+            }
+            for (String entityType : deniedEntitiesList) {
+                deniedEntities.add(EntityType.valueOf(entityType));
             }
         }
 

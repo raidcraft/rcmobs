@@ -126,6 +126,10 @@ public class MobListener implements Listener {
         if (plugin.getConfiguration().getIgnoredSpawnReasons().contains(event.getSpawnReason())) {
             return;
         }
+        if (plugin.getConfiguration().getDeniedEntities().contains(event.getEntityType())) {
+            event.setCancelled(true);
+            return;
+        }
         if (event.getEntity().getType() == EntityType.HORSE && plugin.getConfiguration().denyHorseSpawning) {
             event.setCancelled(true);
             return;
@@ -133,8 +137,7 @@ public class MobListener implements Listener {
         if (!plugin.getConfiguration().getReplacedMobs().contains(event.getEntity().getType().name())) {
             return;
         }
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL
-                || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
             // check if there are custom mobs around and stop the spawning of the entity
             if (!plugin.getMobManager().isAllowedNaturalSpawn(event.getLocation())) {
                 event.setCancelled(true);
