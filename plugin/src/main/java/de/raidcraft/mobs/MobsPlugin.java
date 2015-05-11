@@ -158,6 +158,8 @@ public class MobsPlugin extends BasePlugin {
 
     public static class LocalConfiguration extends ConfigurationBase<MobsPlugin> {
 
+        @Setting("default.prevent-slime-splitting")
+        public boolean preventSlimeSplitting = true;
         @Setting("debug.mob-spawning")
         public boolean debugMobSpawning = false;
         @Setting("debug.fixed-spawn-locations")

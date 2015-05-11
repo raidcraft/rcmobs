@@ -37,6 +37,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.SlimeSplitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
@@ -87,31 +88,12 @@ public class MobListener implements Listener {
         }
     }
 
-    // TODO: finish checkPathfinding
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void checkPathfinding(EntityDamageByEntityEvent event) {
+    @EventHandler(ignoreCancelled = true)
+    public void checkPathfinding(SlimeSplitEvent event) {
 
-        /*
-        if (!event.getEntity().hasMetadata("RC_CUSTOM_MOB")
-                || !(event.getEntity() instanceof LivingEntity)
-                || !(event.getDamager() instanceof LivingEntity)) {
-            return;
+        if (plugin.getConfiguration().preventSlimeSplitting) {
+            event.setCancelled(true);
         }
-        CharacterTemplate mob = characterManager.getCharacter((LivingEntity) event.getEntity());
-        CharacterTemplate attacker = characterManager.getCharacter((LivingEntity) event.getDamager());
-        // TODO: debug this shit
-        // lets check if our entity can reach the attacker
-        try {
-            AStar aStar = new AStar(mob.getEntity().getLocation(), attacker.getEntity().getLocation(), 50);
-            aStar.iterate();
-            if (aStar.getPathingResult() == PathingResult.NO_PATH) {
-                mob.reset();
-            } else {
-                // lets make him walk there
-            }
-        } catch (AStar.InvalidPathException e) {
-            mob.reset();
-        }*/
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
