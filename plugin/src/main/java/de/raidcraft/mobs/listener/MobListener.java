@@ -89,7 +89,7 @@ public class MobListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void checkPathfinding(SlimeSplitEvent event) {
+    public void onSlimeSplit(SlimeSplitEvent event) {
 
         if (plugin.getConfiguration().preventSlimeSplitting) {
             event.setCancelled(true);
