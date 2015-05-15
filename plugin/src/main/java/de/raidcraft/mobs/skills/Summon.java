@@ -3,9 +3,8 @@ package de.raidcraft.mobs.skills;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.action.requirement.Requirement;
-import de.raidcraft.api.action.requirement.RequirementException;
-import de.raidcraft.api.action.RequirementFactory;
 import de.raidcraft.api.action.requirement.RequirementResolver;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.mobs.api.AbstractMob;
@@ -299,15 +298,10 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
 
             Bukkit.getScheduler().runTaskLater(RaidCraft.getComponent(SkillsPlugin.class), () -> {
 
-                try {
-                    requirements.addAll(RequirementFactory.getInstance().createRequirements(getName(),
-                            config.getConfigurationSection("requirements"),
-                            Player.class
-                    ));
-                } catch (RequirementException e) {
-                    RaidCraft.LOGGER.warning(e.getMessage() + " in " + de.raidcraft.util.ConfigUtil.getFileName(config));
-                    requirements.clear();
-                }
+                requirements.addAll(ActionAPI.createRequirements(getName(),
+                        config.getConfigurationSection("requirements"),
+                        Player.class
+                ));
             }, 1L);
 
             amount = config.getConfigurationSection("amount");
