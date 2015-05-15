@@ -5,7 +5,7 @@ import com.sk89q.util.StringUtil;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.action.requirement.Requirement;
 import de.raidcraft.api.action.requirement.RequirementException;
-import de.raidcraft.api.action.requirement.RequirementFactory;
+import de.raidcraft.api.action.RequirementFactory;
 import de.raidcraft.api.action.requirement.RequirementResolver;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.mobs.api.AbstractMob;

@@ -7,5 +7,5 @@ import org.bukkit.configuration.ConfigurationSection;
  */
 public interface NmsEntityManager {
 
-    public void loadEntity(CustomNmsEntity entity, ConfigurationSection config);
+    void loadEntity(CustomNmsEntity entity, ConfigurationSection config);
 }

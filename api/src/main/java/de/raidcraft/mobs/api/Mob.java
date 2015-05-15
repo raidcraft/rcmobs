@@ -12,27 +12,27 @@ import java.util.Optional;
  */
 public interface Mob extends SkilledCharacter<Mob> {
 
-    public String getId();
+    String getId();
 
-    public void setId(String id);
+    void setId(String id);
 
-    public Location getSpawnLocation();
+    Location getSpawnLocation();
 
-    public boolean isRare();
+    boolean isRare();
 
-    public boolean isElite();
+    boolean isElite();
 
-    public boolean isSpawningNaturally();
+    boolean isSpawningNaturally();
 
-    public boolean isWaterMob();
+    boolean isWaterMob();
 
-    public Optional<RDSTable> getLootTable();
+    Optional<RDSTable> getLootTable();
 
-    public Optional<CharacterTemplate> getHighestThreat();
+    Optional<CharacterTemplate> getHighestThreat();
 
-    public CharacterTemplate getRandomTarget();
+    CharacterTemplate getRandomTarget();
 
-    public CharacterTemplate getNearestTarget();
+    CharacterTemplate getNearestTarget();
 
-    public CharacterTemplate getFarthestTarget();
+    CharacterTemplate getFarthestTarget();
 }

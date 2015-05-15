@@ -7,17 +7,17 @@ import java.util.List;
  */
 public interface MobGroup extends Spawnable {
 
-    public String getName();
+    String getName();
 
-    public double getSpawnInterval();
+    double getSpawnInterval();
 
-    public int getMinSpawnAmount();
+    int getMinSpawnAmount();
 
-    public int getMaxSpawnAmount();
+    int getMaxSpawnAmount();
 
-    public int getRespawnTreshhold();
+    int getRespawnTreshhold();
 
-    public boolean isInGroup(Spawnable spawnable);
+    boolean isInGroup(Spawnable spawnable);
 
-    public List<Spawnable> getSpawnables();
+    List<Spawnable> getSpawnables();
 }

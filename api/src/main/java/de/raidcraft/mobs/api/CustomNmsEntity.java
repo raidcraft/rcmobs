@@ -12,17 +12,17 @@ import java.util.UUID;
  */
 public interface CustomNmsEntity {
 
-    public UUID getUniqueID();
+    UUID getUniqueID();
 
-    public void setDeathSound(String sound);
+    void setDeathSound(String sound);
 
-    public void setHurtSound(String sound);
+    void setHurtSound(String sound);
 
-    public default void load(ConfigurationSection config) {}
+    default void load(ConfigurationSection config) {}
 
-    public LivingEntity spawn(Location location);
+    LivingEntity spawn(Location location);
 
-    public void setWrappedEntity(Mob mob);
+    void setWrappedEntity(Mob mob);
 
-    public Optional<Mob> getWrappedEntity();
+    Optional<Mob> getWrappedEntity();
 }
