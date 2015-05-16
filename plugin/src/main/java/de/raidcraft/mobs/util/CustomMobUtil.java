@@ -44,10 +44,10 @@ public class CustomMobUtil {
             }
         }
 
-        CustomNmsEntity nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
-        if (nmsEntity != null) {
-            entityManager.loadEntity(nmsEntity, config);
-            return Optional.ofNullable(RaidCraft.getComponent(CharacterManager.class).wrapCharacter(nmsEntity.spawn(location), mobClass, config));
+        Optional<CustomNmsEntity> nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
+        if (nmsEntity.isPresent()) {
+            entityManager.loadEntity(nmsEntity.get(), config);
+            return Optional.ofNullable(RaidCraft.getComponent(CharacterManager.class).wrapCharacter(nmsEntity.get().spawn(location), mobClass, config));
         }
         return Optional.empty();
     }

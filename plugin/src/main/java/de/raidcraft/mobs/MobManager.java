@@ -8,6 +8,7 @@ import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.MobConstants;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.groups.ConfigurableMobGroup;
@@ -521,17 +522,21 @@ public final class MobManager implements Component, MobProvider {
         return "";
     }
 
-    public CustomNmsEntity getCustonNmsEntity(World world, String name) {
+    public Optional<CustomNmsEntity> getCustonNmsEntity(World world, String name) {
 
         try {
-            Class<?> clazz = ReflectionUtil.getNmsClass("de.raidcraft.mobs.entities.nms", name);
+            Class<?> clazz = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, name);
+            if (clazz == null) {
+                plugin.getLogger().warning("No Custom NMS entity with Class " + name + " found in " + MobConstants.NMS_PACKAGE);
+                return Optional.empty();
+            }
             Constructor<?> constructor = clazz.getDeclaredConstructor(World.class);
             constructor.setAccessible(true);
-            return (CustomNmsEntity) constructor.newInstance(world);
+            return Optional.of((CustomNmsEntity) constructor.newInstance(world));
         } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     public boolean isAllowedNaturalSpawn(Location location) {
