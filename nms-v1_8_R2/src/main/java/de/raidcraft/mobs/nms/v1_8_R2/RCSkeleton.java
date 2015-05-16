@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -104,7 +105,7 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
 
         this.spawnLocation = location;
         setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        ((CraftWorld) location.getWorld()).getHandle().addEntity(this);
+        ((CraftWorld) location.getWorld()).getHandle().addEntity(this, CreatureSpawnEvent.SpawnReason.CUSTOM);
         return (LivingEntity) Bukkit.getWorld(location.getWorld().getUID()).getEntities().stream()
                 .filter(e -> e.getUniqueId().equals(getUniqueID()))
                 .findFirst().get();
