@@ -42,7 +42,7 @@ public class SpawnableMob extends AbstractSpawnable {
         this.id = id;
         this.mobName = mobName;
         this.type = type;
-        this.customEntityTypeName = type == null ? config.getString("custom-type", "RCSkeleton") : null;
+        this.customEntityTypeName = config.getString("custom-type");
         this.spawnNaturally = config.getBoolean("spawn-naturally");
         this.config = config;
     }
@@ -203,8 +203,11 @@ public class SpawnableMob extends AbstractSpawnable {
 
         CharacterManager manager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
         Mob mob = null;
-        if (type != null) {
-            Optional<? extends Mob> optional = CustomMobUtil.spawnNMSEntity(customEntityTypeName, location, mClass, config);
+        if (type != null || customEntityTypeName != null) {
+            Optional<? extends Mob> optional = Optional.empty();
+            if (customEntityTypeName != null) {
+                optional = CustomMobUtil.spawnNMSEntity(customEntityTypeName, location, mClass, config);
+            }
             if (!optional.isPresent()) {
                 mob = manager.spawnCharacter(type, location, mClass, config);
             } else {
