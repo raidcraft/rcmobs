@@ -162,6 +162,8 @@ public class MobsPlugin extends BasePlugin {
         public boolean preventSlimeSplitting = true;
         @Setting("debug.mob-spawning")
         public boolean debugMobSpawning = false;
+        @Setting("debug.vanilla-spawning")
+        public boolean debugVanillaSpawning = false;
         @Setting("debug.fixed-spawn-locations")
         public boolean debugFixedSpawnLocations = false;
         @Setting("default.deny-horse-spawning")

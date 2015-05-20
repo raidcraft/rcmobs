@@ -102,10 +102,13 @@ public class MobListener implements Listener {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
             return;
         }
+        boolean debug = plugin.getConfiguration().debugVanillaSpawning;
         if (plugin.getConfiguration().getIgnoredEntityTypes().contains(event.getEntityType())) {
+            if (debug) plugin.getLogger().info("Spawned Vanilla Mob for " + event.getEntity().getName() + " because the entity type " + event.getEntityType() + " is ignored.");
             return;
         }
         if (plugin.getConfiguration().getIgnoredSpawnReasons().contains(event.getSpawnReason())) {
+            if (debug) plugin.getLogger().info("Spawned Vanilla Mob for " + event.getEntity().getName() + " because the spawn reason " + event.getSpawnReason() + " is ignored.");
             return;
         }
         if (plugin.getConfiguration().getDeniedEntities().contains(event.getEntityType())) {
@@ -116,7 +119,8 @@ public class MobListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (!plugin.getConfiguration().getReplacedMobs().contains(event.getEntity().getType().name())) {
+        if (!plugin.getConfiguration().getReplacedMobs().contains(event.getEntityType().name())) {
+            if (debug) plugin.getLogger().info("Spawned Vanilla Mob for " + event.getEntity().getName() + " because the entity type " + event.getEntityType() + " is not on the replacement list");
             return;
         }
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
