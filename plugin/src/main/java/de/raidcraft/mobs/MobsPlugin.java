@@ -240,7 +240,7 @@ public class MobsPlugin extends BasePlugin {
         public LocalConfiguration(MobsPlugin plugin) {
 
             super(plugin, "config.yml");
-            replacedMobsSet = new HashSet<>(Arrays.asList(ignoredEntities));
+            replacedMobsSet = new HashSet<>(Arrays.asList(replacedMobs));
             for (String spawnReason : ignoredSpawnReasonList) {
                 ignoredSpawnReasons.add(CreatureSpawnEvent.SpawnReason.valueOf(spawnReason));
             }
