@@ -7,10 +7,13 @@ import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobConstants;
 import de.raidcraft.mobs.api.NmsEntityManager;
 import de.raidcraft.skills.CharacterManager;
+import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.ReflectionUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.ArmorStand;
 
 import java.util.Optional;
 
@@ -50,5 +53,22 @@ public class CustomMobUtil {
             return Optional.ofNullable(RaidCraft.getComponent(CharacterManager.class).wrapCharacter(nmsEntity.get().spawn(location), mobClass, config));
         }
         return Optional.empty();
+    }
+
+    public static ArmorStand setMobName(Mob mob) {
+
+        ArmorStand armorStand = mob.getEntity().getLocation().getWorld().spawn(mob.getEntity().getLocation(), ArmorStand.class);
+        String name = EntityUtil.drawMobName(
+                mob.getName(),
+                mob.getAttachedLevel().getLevel(),
+                ChatColor.YELLOW,
+                mob.isElite(),
+                mob.isRare());
+        armorStand.setCustomName(name);
+        armorStand.setCustomNameVisible(true);
+        armorStand.setVisible(false);
+        armorStand.setCanPickupItems(false);
+        mob.getEntity().setPassenger(armorStand);
+        return armorStand;
     }
 }

@@ -23,6 +23,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Wolf;
@@ -49,6 +50,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final float hurtSoundPitch;
     private final String deathSound;
     private final float deathSoundPitch;
+    private final ArmorStand armorStand;
     private Optional<RDSTable> lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
@@ -108,6 +110,7 @@ public class ConfigurableCreature extends AbstractMob {
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         setName(config.getString("name"));
+        this.armorStand = CustomMobUtil.setMobName(this);
         getEntity().setCanPickupItems(config.getBoolean("item-pickup", false));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
@@ -265,6 +268,8 @@ public class ConfigurableCreature extends AbstractMob {
 
         playSound(deathSound, deathSoundPitch, 1.0F);
         super.kill();
+        armorStand.remove();
+        getEntity().setPassenger(null);
     }
 
     private void playSound(String name, float pitch, float volume) {
