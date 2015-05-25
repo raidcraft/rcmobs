@@ -29,8 +29,8 @@ public class PacketListener extends PacketAdapter {
 
     public PacketListener(MobsPlugin plugin) {
 
-        super(plugin, PacketType.Play.Server.SPAWN_ENTITY_LIVING,
-                PacketType.Play.Server.NAMED_ENTITY_SPAWN,
+        super(plugin, //PacketType.Play.Server.SPAWN_ENTITY_LIVING,
+                //PacketType.Play.Server.NAMED_ENTITY_SPAWN,
                 PacketType.Play.Server.ENTITY_METADATA);
         this.characterManager = RaidCraft.getComponent(CharacterManager.class);
     }
