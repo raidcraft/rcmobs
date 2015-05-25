@@ -14,6 +14,7 @@ import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.EntityUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -48,34 +49,37 @@ public class PacketListener extends PacketAdapter {
                             }
                         }*/
         // You may also want to check event.getPacketID()
-        final Entity entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
-        if (!(entity instanceof LivingEntity)
-                || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) entity)) {
+        final Entity armorStand = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
+        if (!(armorStand instanceof ArmorStand) || !armorStand.isInsideVehicle()) {
             return;
         }
-        CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
+        Entity spawnedMob = armorStand.getVehicle();
+        if (!(spawnedMob instanceof LivingEntity) || !RaidCraft.getComponent(MobManager.class).isSpawnedMob((LivingEntity) spawnedMob)) {
+            return;
+        }
+        CharacterTemplate character = characterManager.getCharacter((LivingEntity) spawnedMob);
         ChatColor mobColor = EntityUtil.getConColor(
                 characterManager.getHero(event.getPlayer()).getPlayerLevel(),
                 character.getAttachedLevel().getLevel());
-        String name;
+        String healthBar;
         if (character.isInCombat()) {
-            name = EntityUtil.drawHealthBar(
+            healthBar = EntityUtil.drawHealthBar(
                     character.getHealth(),
                     character.getMaxHealth(),
                     mobColor,
-                    entity.hasMetadata("ELITE"),
-                    entity.hasMetadata("RARE"));
+                    spawnedMob.hasMetadata("ELITE"),
+                    spawnedMob.hasMetadata("RARE"));
         } else {
-            name = EntityUtil.drawMobName(
+            healthBar = EntityUtil.drawMobName(
                     character.getName(),
                     character.getAttachedLevel().getLevel(),
                     mobColor,
-                    entity.hasMetadata("ELITE"),
-                    entity.hasMetadata("RARE"));
+                    spawnedMob.hasMetadata("ELITE"),
+                    spawnedMob.hasMetadata("RARE"));
         }
 
-        WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(entity);
-        meta.setObject(CUSTOM_NAME_INDEX, name);
+        WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(armorStand);
+        meta.setObject(CUSTOM_NAME_INDEX, healthBar);
         meta.setObject(ALWAYS_SHOW_INDEX, (byte) 1);
 
         if (event.getPacketType() == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
@@ -89,7 +93,7 @@ public class PacketListener extends PacketAdapter {
         } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
             PacketContainer packet = event.getPacket().deepClone();
             WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
-            processDataWatcher(watcher, name);
+            processDataWatcher(watcher, healthBar);
             packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
             event.setPacket(packet);
         }

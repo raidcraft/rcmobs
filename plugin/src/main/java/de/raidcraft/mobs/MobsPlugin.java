@@ -1,5 +1,6 @@
 package de.raidcraft.mobs;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.NestedCommand;
@@ -18,6 +19,7 @@ import de.raidcraft.mobs.actions.MobSpawnAction;
 import de.raidcraft.mobs.api.MobConstants;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.listener.MobListener;
+import de.raidcraft.mobs.listener.PacketListener;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.skills.Summon;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -66,7 +68,7 @@ public class MobsPlugin extends BasePlugin {
             // mob names cannot be shown over distance since 1.8: http://www.spigotmc.org/threads/setcustomnamevisible.35927/
             // mojang fucked up again...
             // TODO: renable this method if the bug is fixed
-            // ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
+            ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
         }, 5L);
 
         registerActionAPI();

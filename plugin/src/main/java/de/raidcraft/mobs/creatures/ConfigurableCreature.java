@@ -50,7 +50,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final float hurtSoundPitch;
     private final String deathSound;
     private final float deathSoundPitch;
-    private final ArmorStand armorStand;
+    private ArmorStand armorStand;
     private Optional<RDSTable> lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
@@ -110,7 +110,6 @@ public class ConfigurableCreature extends AbstractMob {
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         setName(config.getString("name"));
-        this.armorStand = CustomMobUtil.setMobName(this);
         getEntity().setCanPickupItems(config.getBoolean("item-pickup", false));
         loadAbilities(config.getConfigurationSection("abilities"));
         equipItems(config.getConfigurationSection("equipment"));
@@ -180,6 +179,7 @@ public class ConfigurableCreature extends AbstractMob {
             playSound(hurtSound, hurtSoundPitch, 1.0F);
         }
         super.setHealth(health);
+        armorStand.setHealth(health);
         updateHealthBar();
     }
 
@@ -187,6 +187,7 @@ public class ConfigurableCreature extends AbstractMob {
     public void setMaxHealth(double maxHealth) {
 
         super.setMaxHealth(maxHealth);
+        armorStand.setMaxHealth(maxHealth);
         updateHealthBar();
     }
 
@@ -203,10 +204,13 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void updateHealthBar() {
 
+        if (armorStand == null) {
+            this.armorStand = CustomMobUtil.createArmorStand(this);
+        }
         if (isInCombat()) {
-            getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));
+            armorStand.setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));
         } else {
-            getEntity().setCustomName(EntityUtil.drawMobName(
+            armorStand.setCustomName(EntityUtil.drawMobName(
                     getName(),
                     getAttachedLevel().getLevel(),
                     ChatColor.YELLOW,
