@@ -107,6 +107,7 @@ public class ConfigurableCreature extends AbstractMob {
             }
         }
 
+        if (armorStand == null) armorStand = CustomMobUtil.createArmorStand(this);
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         setName(config.getString("name"));
@@ -179,6 +180,7 @@ public class ConfigurableCreature extends AbstractMob {
             playSound(hurtSound, hurtSoundPitch, 1.0F);
         }
         super.setHealth(health);
+        if (armorStand == null) armorStand = CustomMobUtil.createArmorStand(this);
         armorStand.setHealth(health);
         updateHealthBar();
     }
@@ -187,6 +189,7 @@ public class ConfigurableCreature extends AbstractMob {
     public void setMaxHealth(double maxHealth) {
 
         super.setMaxHealth(maxHealth);
+        if (armorStand == null) armorStand = CustomMobUtil.createArmorStand(this);
         armorStand.setMaxHealth(maxHealth);
         updateHealthBar();
     }
