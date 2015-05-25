@@ -23,7 +23,6 @@ import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -62,20 +61,6 @@ public class MobListener implements Listener {
 
         this.plugin = plugin;
         this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onArmorStandDamage(EntityDamageByEntityEvent event) {
-
-        if (!(event.getEntity() instanceof ArmorStand) || !event.getEntity().isInsideVehicle()) {
-            return;
-        }
-        if (!(event.getEntity().getVehicle() instanceof LivingEntity) || !plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity().getVehicle())) {
-            return;
-        }
-        // redirect damage to the vehicle
-        event.setCancelled(true);
-        ((LivingEntity) event.getEntity().getVehicle()).damage(event.getDamage(), event.getDamager());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

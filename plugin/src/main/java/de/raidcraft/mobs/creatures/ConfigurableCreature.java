@@ -23,7 +23,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Wolf;
@@ -50,7 +49,6 @@ public class ConfigurableCreature extends AbstractMob {
     private final float hurtSoundPitch;
     private final String deathSound;
     private final float deathSoundPitch;
-    private ArmorStand armorStand;
     private Optional<RDSTable> lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
@@ -107,7 +105,6 @@ public class ConfigurableCreature extends AbstractMob {
             }
         }
 
-        if (armorStand == null) armorStand = CustomMobUtil.createArmorStand(this);
         setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
         setHealth(getMaxHealth());
         setName(config.getString("name"));
@@ -180,8 +177,6 @@ public class ConfigurableCreature extends AbstractMob {
             playSound(hurtSound, hurtSoundPitch, 1.0F);
         }
         super.setHealth(health);
-        if (armorStand == null) armorStand = CustomMobUtil.createArmorStand(this);
-        armorStand.setHealth(health);
         updateHealthBar();
     }
 
@@ -189,8 +184,6 @@ public class ConfigurableCreature extends AbstractMob {
     public void setMaxHealth(double maxHealth) {
 
         super.setMaxHealth(maxHealth);
-        if (armorStand == null) armorStand = CustomMobUtil.createArmorStand(this);
-        armorStand.setMaxHealth(maxHealth);
         updateHealthBar();
     }
 
@@ -207,13 +200,10 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void updateHealthBar() {
 
-        if (armorStand == null) {
-            this.armorStand = CustomMobUtil.createArmorStand(this);
-        }
         if (isInCombat()) {
-            armorStand.setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));
+            getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));
         } else {
-            armorStand.setCustomName(EntityUtil.drawMobName(
+            getEntity().setCustomName(EntityUtil.drawMobName(
                     getName(),
                     getAttachedLevel().getLevel(),
                     ChatColor.YELLOW,
@@ -275,7 +265,6 @@ public class ConfigurableCreature extends AbstractMob {
 
         playSound(deathSound, deathSoundPitch, 1.0F);
         super.kill();
-        armorStand.remove();
         getEntity().setPassenger(null);
     }
 
