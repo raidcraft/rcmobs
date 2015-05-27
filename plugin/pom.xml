@@ -34,6 +34,13 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>de.raidcraft.mobs</groupId>
+            <artifactId>nms-v1_8_R3</artifactId>
+            <version>v1_8_R3</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
