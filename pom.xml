@@ -30,6 +30,7 @@
     <modules>
         <module>plugin</module>
         <module>nms-v1_8_R2</module>
+        <module>nms-v1_8_R3</module>
         <module>api</module>
     </modules>
 
