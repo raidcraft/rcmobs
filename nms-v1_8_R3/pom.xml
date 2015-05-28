@@ -3,6 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>nms-v1_8_R3</artifactId>
+    <packaging>jar</packaging>
+    <version>v1_8_R3</version>
 
     <parent>
         <groupId>de.raidcraft.mobs</groupId>
@@ -10,20 +13,17 @@
         <version>parent</version>
     </parent>
 
-    <artifactId>nms-v1_8_R3</artifactId>
-    <version>v1_8_R3</version>
-    <packaging>jar</packaging>
-
     <dependencies>
-        <dependency>
-            <groupId>de.raidcraft.mobs</groupId>
-            <artifactId>api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8.6-R0.1-SNAPSHOT</version>
+            <version>1.8.6-R0.1-RC</version>
+        </dependency>
+        <dependency>
+            <groupId>de.raidcraft</groupId>
+            <artifactId>raidcraft-api</artifactId>
+            <version>1.6.3-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>
