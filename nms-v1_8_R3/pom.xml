@@ -20,10 +20,9 @@
             <version>1.8.6-R0.1-RC</version>
         </dependency>
         <dependency>
-            <groupId>de.raidcraft</groupId>
-            <artifactId>raidcraft-api</artifactId>
-            <version>1.6.3-SNAPSHOT</version>
-            <type>jar</type>
+            <groupId>de.raidcraft.mobs</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
