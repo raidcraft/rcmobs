@@ -97,11 +97,11 @@ public class ConfigurableCreature extends AbstractMob {
             }
         }
 
-        if (config.getBoolean("aggro")) {
+        if (config.getBoolean("aggro", true)) {
             if (getEntity() instanceof PigZombie) {
-                ((PigZombie) getEntity()).setAngry(config.getBoolean("aggro"));
+                ((PigZombie) getEntity()).setAngry(config.getBoolean("aggro", true));
             } else if (getEntity() instanceof Wolf) {
-                ((Wolf) getEntity()).setAngry(config.getBoolean("aggro"));
+                ((Wolf) getEntity()).setAngry(config.getBoolean("aggro", true));
             }
         }
 
