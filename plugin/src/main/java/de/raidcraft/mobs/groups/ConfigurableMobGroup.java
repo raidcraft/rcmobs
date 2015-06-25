@@ -161,10 +161,13 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
 
     private Location getRandomLocation(Location location, int amount) {
 
-        return location.clone().add(
+        Location newLoc = location.clone().add(
                 MathUtil.RANDOM.nextInt(amount * 2) - amount,
                 0,
                 MathUtil.RANDOM.nextInt(amount * 2) - amount);
+        if (newLoc.getBlockY() > location.getWorld().getMaxHeight() - 4) newLoc.setY(location.getWorld().getMaxHeight() - 4);
+        if (newLoc.getBlockY() < 4) newLoc.setY(4);
+        return newLoc;
     }
 
     @Override
