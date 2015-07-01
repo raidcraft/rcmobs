@@ -15,6 +15,14 @@ import org.bukkit.entity.Player;
 public class MobRemoveAction implements Action<Player> {
 
     @Override
+    @Information(
+            value = "mob.remove",
+            desc = "Removes the mob with the given tracking id.",
+            conf = {
+                    "mob",
+                    "id: tracking id of the mob that was set with mob.spawn"
+            }
+    )
     public void accept(Player player, ConfigurationSection config) {
 
         try {

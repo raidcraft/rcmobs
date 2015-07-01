@@ -20,7 +20,7 @@ public class MobSpawnAction implements Action<Player> {
     @Information(
             value = "mob.spawn",
             desc = "Spawns the given custom mob at the defined location.",
-            conf = {"world", "x", "y", "z"}
+            conf = {"mob", "x", "y", "z", "world", "id"}
     )
     public void accept(Player player, ConfigurationSection config) {
 

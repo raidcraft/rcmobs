@@ -15,6 +15,14 @@ import org.bukkit.entity.Player;
 public class GroupRemoveAction implements Action<Player> {
 
     @Override
+    @Information(
+            value = "group.remove",
+            desc = "Removes the mob group with the given tracking id.",
+            conf = {
+                    "group",
+                    "id: tracking id of the mob that was set with mob.spawn"
+            }
+    )
     public void accept(Player player, ConfigurationSection config) {
 
         try {
