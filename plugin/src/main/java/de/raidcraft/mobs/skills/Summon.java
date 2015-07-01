@@ -7,7 +7,7 @@ import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.action.requirement.Requirement;
 import de.raidcraft.api.action.requirement.RequirementResolver;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.mobs.api.AbstractMob;
+import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
@@ -204,11 +204,11 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
         return summonedCreatures;
     }
 
-    public static class SummonedCreature extends AbstractMob {
+    public static class SummonedCreature extends ConfigurableCreature {
 
         public SummonedCreature(LivingEntity entity, SummonedCreatureConfig config) {
 
-            super(entity);
+            super(entity, config.config);
             usingHealthBar = false;
             setMaxHealth(config.getMaxHealth());
             setHealth(getMaxHealth());
