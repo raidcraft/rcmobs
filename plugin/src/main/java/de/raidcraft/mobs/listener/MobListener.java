@@ -75,6 +75,12 @@ public class MobListener implements Listener {
         }
         try {
             Mob attacker = (Mob) character;
+            if (attacker.isPassive()) {
+                if (!attacker.isInCombat()) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
             CharacterTemplate target = attacker.getTarget();
             if (target == null) {
                 // just let the mob do a normal search

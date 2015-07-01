@@ -26,6 +26,8 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     boolean isWaterMob();
 
+    boolean isPassive();
+
     Optional<RDSTable> getLootTable();
 
     Optional<CharacterTemplate> getHighestThreat();

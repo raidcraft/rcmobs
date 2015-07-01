@@ -44,6 +44,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final boolean rare;
     private final boolean spawnNaturally;
     private final boolean water;
+    private final boolean passive;
     private final Location spawnLocation;
     private final String hurtSound;
     private final float hurtSoundPitch;
@@ -61,6 +62,7 @@ public class ConfigurableCreature extends AbstractMob {
         this.elite = config.getBoolean("elite", false);
         this.rare = config.getBoolean("rare", false);
         this.water = config.getBoolean("water", false);
+        this.passive = config.getBoolean("passive", false);
         this.spawnNaturally = config.getBoolean("spawn-naturally", false);
         this.hurtSound = config.getString("sound.hurt", "random.classic_hurt");
         this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
@@ -234,6 +236,12 @@ public class ConfigurableCreature extends AbstractMob {
     public boolean isWaterMob() {
 
         return water;
+    }
+
+    @Override
+    public boolean isPassive() {
+
+        return passive;
     }
 
     @Override
