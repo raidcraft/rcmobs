@@ -13,9 +13,9 @@ import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.util.BlockUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -122,9 +122,9 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             Location newLocation = getRandomLocation(location, amount);
             boolean found = false;
             for (int k = 0; k < 100; k++) {
-                if (newLocation.getBlock().getType() == Material.AIR
-                        && newLocation.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR
-                        && newLocation.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.AIR) {
+                if (BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getType())
+                        && BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getRelative(BlockFace.UP).getType())
+                        && BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType())) {
                     newLocation = newLocation.getBlock().getRelative(BlockFace.UP).getLocation();
                     found = true;
                     break;
@@ -132,6 +132,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
                 newLocation = getRandomLocation(location, amount);
             }
             if (!found) {
+                // really work around the endless loop ^^
                 RaidCraft.LOGGER.warning("cannot spawn " + getName() + " at " + location);
                 return new ArrayList<>();
             }
