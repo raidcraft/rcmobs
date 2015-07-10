@@ -134,6 +134,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
                 continue;
             }
 
+            RaidCraft.LOGGER.info("Spawning " + mob.toString());
             List<CharacterTemplate> spawn = mob.spawn(newLocation);
             if (spawn != null) spawnedMobs.addAll(spawn);
             i++;
