@@ -121,6 +121,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             Location newLocation = getRandomLocation(location, amount);
             boolean found = false;
             for (int k = 0; k < 100; k++) {
+                RaidCraft.LOGGER.info("Checking block " + newLocation.toString());
                 if (newLocation.getBlock().getType() == Material.AIR
                         && newLocation.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR
                         && newLocation.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.AIR) {
@@ -134,7 +135,6 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
                 continue;
             }
 
-            RaidCraft.LOGGER.info("Spawning " + mob.toString());
             List<CharacterTemplate> spawn = mob.spawn(newLocation);
             if (spawn != null) spawnedMobs.addAll(spawn);
             i++;
