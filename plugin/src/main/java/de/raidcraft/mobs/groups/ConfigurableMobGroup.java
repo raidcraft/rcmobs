@@ -2,6 +2,7 @@ package de.raidcraft.mobs.groups;
 
 import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.random.RDSRandom;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
@@ -163,9 +164,9 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     private Location getRandomLocation(Location location, int amount) {
 
         Location newLoc = location.clone().add(
-                MathUtil.RANDOM.nextInt(amount * 2) - amount,
-                0,
-                MathUtil.RANDOM.nextInt(amount * 2) - amount);
+                RDSRandom.getIntValue(-amount * 2, amount * 2),
+                RDSRandom.getIntValue(-amount * 2, amount * 2),
+                RDSRandom.getIntValue(-amount * 2, amount * 2));
         if (newLoc.getBlockY() > location.getWorld().getMaxHeight() - 4) newLoc.setY(location.getWorld().getMaxHeight() - 4);
         if (newLoc.getBlockY() < 4) newLoc.setY(4);
         return newLoc;
