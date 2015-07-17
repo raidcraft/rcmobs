@@ -202,6 +202,9 @@ public class MobListener implements Listener {
                 if (lootTable.isPresent()) {
                     lootTable.get().getResult().stream()
                             .filter(rdsObject -> rdsObject instanceof Dropable)
+                            .filter(object -> object.getRequirements(Player.class).stream()
+                                    .allMatch(objectRequirement -> event.getEntity().getKiller() == null
+                                            || objectRequirement.test(event.getEntity().getKiller())))
                             .forEach(rdsObject -> event.getDrops().add(((Dropable) rdsObject).getItemStack()));
                 }
             }
