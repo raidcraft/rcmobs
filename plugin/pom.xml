@@ -5,39 +5,32 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mobs</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.6-SNAPSHOT</version>
+    <version>1.12-0.1-SNAPSHOT</version>
     <name>RCMobs</name>
 
     <parent>
         <artifactId>parent</artifactId>
-        <groupId>de.raidcraft.mobs</groupId>
+        <groupId>de.faldoria.mobs</groupId>
         <version>parent</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>de.raidcraft</groupId>
+            <groupId>de.faldoria</groupId>
             <artifactId>loot</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.12-0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.raidcraft.mobs</groupId>
+            <groupId>de.faldoria.mobs</groupId>
             <artifactId>api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.12-0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <!-- we need to include all nms versions -->
         <dependency>
-            <groupId>de.raidcraft.mobs</groupId>
-            <artifactId>nms-v1_8_R2</artifactId>
-            <version>v1_8_R2</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>de.raidcraft.mobs</groupId>
-            <artifactId>nms-v1_8_R3</artifactId>
-            <version>v1_8_R3</version>
+            <groupId>de.faldoria.mobs</groupId>
+            <artifactId>nms-v1_12-01</artifactId>
+            <version>v1_12-01</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>

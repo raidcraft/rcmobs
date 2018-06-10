@@ -21,12 +21,9 @@ import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.PigZombie;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -129,7 +126,7 @@ public class ConfigurableCreature extends AbstractMob {
         if (config == null) return;
         for (String key : config.getKeys(false)) {
             try {
-                Ability<Mob> ability = RaidCraft.getComponent(AbilityManager.class).getAbility((Mob) this, key, config.getConfigurationSection(key));
+                Ability<Mob> ability = RaidCraft.getComponent(AbilityManager.class).getAbility(this, key, config.getConfigurationSection(key));
                 addAbility(ability);
             } catch (UnknownSkillException e) {
                 RaidCraft.LOGGER.warning(e.getMessage());
@@ -137,7 +134,7 @@ public class ConfigurableCreature extends AbstractMob {
         }
         if (!getAbilties().isEmpty()) {
             try {
-                addEffect((Mob) this, AbilityUser.class);
+                addEffect(this, AbilityUser.class);
             } catch (CombatException e) {
                 RaidCraft.LOGGER.warning(e.getMessage());
             }
@@ -280,7 +277,7 @@ public class ConfigurableCreature extends AbstractMob {
 
         Location location = getEntity().getLocation();
         WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
-        soundEffect.setSoundName(name);
+        soundEffect.setSoundEffect(Sound.valueOf(name));
         soundEffect.setPitch((byte) pitch);
         soundEffect.setVolume(volume);
         soundEffect.setEffectPositionX(location.getBlockX());

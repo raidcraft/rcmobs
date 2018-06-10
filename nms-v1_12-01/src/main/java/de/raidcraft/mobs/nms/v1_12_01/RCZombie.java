@@ -1,21 +1,14 @@
-package de.raidcraft.mobs.nms.v1_8_R2;
+package de.raidcraft.mobs.nms.v1_12_01;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.util.ReflectionUtil;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_8_R2.EntityPlayer;
-import net.minecraft.server.v1_8_R2.EntityZombie;
-import net.minecraft.server.v1_8_R2.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R2.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R2.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_8_R2.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_8_R2.PathfinderGoalSelector;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -54,26 +47,6 @@ public class RCZombie extends EntityZombie implements CustomNmsEntity {
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathFinderGoalHighestThreatTarget(this, true));
         this.targetSelector.a(2, new PathfinderGoalHurtByTarget(this, true));
-    }
-
-    // sound hurt
-    @Override
-    protected String bo() {
-
-        if (hurtSound == null) {
-            return super.bo();
-        }
-        return hurtSound;
-    }
-
-    // sound death
-    @Override
-    protected String bp() {
-
-        if (deathSound == null) {
-            return super.bp();
-        }
-        return deathSound;
     }
 
     @Override

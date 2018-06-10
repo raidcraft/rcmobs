@@ -1,12 +1,12 @@
-package de.raidcraft.mobs.nms.v1_8_R2;
+package de.raidcraft.mobs.nms.v1_12_01;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.api.character.CharacterTemplate;
-import net.minecraft.server.v1_8_R2.EntityCreature;
-import net.minecraft.server.v1_8_R2.EntityLiving;
-import net.minecraft.server.v1_8_R2.PathfinderGoalTarget;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftLivingEntity;
+import net.minecraft.server.v1_12_R1.EntityCreature;
+import net.minecraft.server.v1_12_R1.EntityLiving;
+import net.minecraft.server.v1_12_R1.PathfinderGoalTarget;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import java.util.Optional;

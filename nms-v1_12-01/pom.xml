@@ -3,12 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>nms-v1_8_R3</artifactId>
+    <artifactId>nms-v1_12-01</artifactId>
     <packaging>jar</packaging>
-    <version>v1_8_R3</version>
+    <version>v1_12-01</version>
 
     <parent>
-        <groupId>de.raidcraft.mobs</groupId>
+        <groupId>de.faldoria.mobs</groupId>
         <artifactId>parent</artifactId>
         <version>parent</version>
     </parent>
@@ -17,12 +17,12 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8.6-R0.1-RC</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.raidcraft.mobs</groupId>
+            <groupId>de.faldoria.mobs</groupId>
             <artifactId>api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.12-0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

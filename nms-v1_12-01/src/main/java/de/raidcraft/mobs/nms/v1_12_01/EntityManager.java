@@ -1,16 +1,9 @@
-package de.raidcraft.mobs.nms.v1_8_R3;
+package de.raidcraft.mobs.nms.v1_12_01;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.NmsEntityManager;
 import de.raidcraft.util.ReflectionUtil;
-import net.minecraft.server.v1_8_R3.EntityCreature;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
@@ -42,7 +35,7 @@ public class EntityManager implements NmsEntityManager {
                     Class<? extends EntityLiving> nmsClass = (Class<? extends EntityLiving>) ReflectionUtil.getNmsClass("net.minecraft.server", target);
                     if (nmsClass != null && EntityLiving.class.isAssignableFrom(nmsClass)) {
                         if (!config.getBoolean("ranged", false)) {
-                            goalSelector.a(4, new PathfinderGoalMeleeAttack(creature, nmsClass, 1.2D, true));
+                            goalSelector.a(4, new PathfinderGoalMeleeAttack(creature, 1.2D, true));
                         }
                         targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(creature, (Class<? extends EntityLiving>) nmsClass, true));
                     }

@@ -1,12 +1,12 @@
-package de.raidcraft.mobs.nms.v1_8_R3;
+package de.raidcraft.mobs.nms.v1_12_01;
 
 import de.raidcraft.util.LocationUtil;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.NavigationAbstract;
-import net.minecraft.server.v1_8_R3.PathEntity;
-import net.minecraft.server.v1_8_R3.PathfinderGoal;
+import net.minecraft.server.v1_12_R1.EntityInsentient;
+import net.minecraft.server.v1_12_R1.NavigationAbstract;
+import net.minecraft.server.v1_12_R1.PathEntity;
+import net.minecraft.server.v1_12_R1.PathfinderGoal;
 import org.bukkit.Location;
 
 /**
@@ -35,10 +35,7 @@ public class PathfinderGoalReturnToSpawn extends PathfinderGoal {
     public boolean a() {
 
         Location currentLocation = new Location(entity.world.getWorld(), entity.locX, entity.locY, entity.locZ);
-        if (LocationUtil.isWithinRadius(currentLocation, spawnLocation, radius)) {
-            return false;
-        }
-        return true;
+        return !LocationUtil.isWithinRadius(currentLocation, spawnLocation, radius);
     }
 
     // onStart()
