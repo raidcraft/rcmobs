@@ -23,7 +23,7 @@
 
     <modules>
         <module>plugin</module>
-        <module>nms-v1_12-01</module>
+        <module>nms-v1_12_R1</module>
         <module>api</module>
     </modules>
 

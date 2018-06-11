@@ -29,8 +29,8 @@
         <!-- we need to include all nms versions -->
         <dependency>
             <groupId>de.faldoria.mobs</groupId>
-            <artifactId>nms-v1_12-01</artifactId>
-            <version>v1_12-01</version>
+            <artifactId>nms-v1_12_R1</artifactId>
+            <version>v1_12_R1</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -54,8 +54,8 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>de.raidcraft.mobs:nms-*</include>
-                                    <include>de.raidcraft.mobs:api</include>
+                                    <include>de.faldoria.mobs:nms-*</include>
+                                    <include>de.faldoria.mobs:api</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

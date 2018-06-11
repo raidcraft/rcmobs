@@ -1,4 +1,4 @@
-package de.raidcraft.mobs.nms.v1_12_01;
+package de.raidcraft.mobs.nms.v1_12_R1;
 
 import de.raidcraft.util.LocationUtil;
 import lombok.Getter;

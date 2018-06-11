@@ -1,4 +1,4 @@
-package de.raidcraft.mobs.nms.v1_12_01;
+package de.raidcraft.mobs.nms.v1_12_R1;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;
@@ -8,10 +8,8 @@ import lombok.Setter;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,16 +17,16 @@ import java.util.Optional;
 /**
  * @author Silthus
  */
-@Setter
 @Getter
-public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
+@Setter
+public class RCZombie extends EntityZombie implements CustomNmsEntity {
 
     private Optional<Mob> wrappedEntity = Optional.empty();
     private Location spawnLocation;
     private String deathSound;
     private String hurtSound;
 
-    public RCSkeleton(org.bukkit.World world) {
+    public RCZombie(org.bukkit.World world) {
 
         super(((CraftWorld) world).getHandle());
 
@@ -52,15 +50,6 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
     }
 
     @Override
-    public void load(ConfigurationSection config) {
-
-        // add a ranged goal if configured
-        if (config.getBoolean("ranged", false)) {
-            goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        }
-    }
-
-    @Override
     public void setWrappedEntity(Mob mob) {
 
         this.wrappedEntity = Optional.of(mob);
@@ -77,7 +66,7 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
 
         this.spawnLocation = location;
         setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        ((CraftWorld) location.getWorld()).getHandle().addEntity(this, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        ((CraftWorld) location.getWorld()).getHandle().addEntity(this);
         return (LivingEntity) Bukkit.getWorld(location.getWorld().getUID()).getEntities().stream()
                 .filter(e -> e.getUniqueId().equals(getUniqueID()))
                 .findFirst().get();
