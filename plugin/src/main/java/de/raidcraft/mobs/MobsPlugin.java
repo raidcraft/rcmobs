@@ -22,18 +22,12 @@ import de.raidcraft.mobs.listener.MobListener;
 import de.raidcraft.mobs.listener.PacketListener;
 import de.raidcraft.mobs.requirements.MobKillRequirement;
 import de.raidcraft.mobs.skills.Summon;
-import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
-import de.raidcraft.mobs.tables.TMobPlayerKillLog;
-import de.raidcraft.mobs.tables.TMobSpawnLocation;
-import de.raidcraft.mobs.tables.TPlayerMobKillLog;
-import de.raidcraft.mobs.tables.TPlayerPlayerKillLog;
-import de.raidcraft.mobs.tables.TSpawnedMob;
-import de.raidcraft.mobs.tables.TSpawnedMobGroup;
+import de.raidcraft.mobs.tables.*;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
+import de.raidcraft.nms.NMSUtils;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
-import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.ReflectionUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -42,11 +36,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Silthus
@@ -83,8 +73,8 @@ public class MobsPlugin extends BasePlugin {
         // register our custom NMS entity
         Class<?> rcSkeleton = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCSkeleton");
         Class<?> rcZombie = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCZombie");
-        if (rcSkeleton != null) EntityUtil.registerEntity(EntityType.SKELETON, rcSkeleton);
-        if (rcZombie != null) EntityUtil.registerEntity(EntityType.ZOMBIE, rcZombie);
+        if (rcSkeleton != null) NMSUtils.registerEntity(NMSUtils.Type.SKELETON, rcSkeleton, true);
+        if (rcZombie != null) NMSUtils.registerEntity(NMSUtils.Type.ZOMBIE, rcZombie, true);
     }
 
     @Override
