@@ -76,7 +76,7 @@ public class PacketListener extends PacketAdapter {
 
         WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(entity);
         meta.setObject(CUSTOM_NAME_INDEX, healthBar);
-        meta.setObject(ALWAYS_SHOW_INDEX, (byte) 1);
+        meta.setObject(ALWAYS_SHOW_INDEX, true);
 
         if (event.getPacketType() == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
             WrapperPlayServerSpawnEntityLiving wrapper = new WrapperPlayServerSpawnEntityLiving(event.getPacket());
@@ -101,7 +101,7 @@ public class PacketListener extends PacketAdapter {
             watcher.setObject(CUSTOM_NAME_INDEX, name, true);
         }
         if (watcher.getObject(ALWAYS_SHOW_INDEX) != null) {
-            watcher.setObject(ALWAYS_SHOW_INDEX, (byte) 1);
+            watcher.setObject(ALWAYS_SHOW_INDEX, true);
         }
     }
 }

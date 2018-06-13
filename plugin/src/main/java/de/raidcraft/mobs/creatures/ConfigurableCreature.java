@@ -17,7 +17,9 @@ import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
+import de.raidcraft.tables.RcLogLevel;
 import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.EnumUtils;
 import de.raidcraft.util.MathUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -61,9 +63,9 @@ public class ConfigurableCreature extends AbstractMob {
         this.water = config.getBoolean("water", false);
         this.passive = config.getBoolean("passive", false);
         this.spawnNaturally = config.getBoolean("spawn-naturally", false);
-        this.hurtSound = config.getString("sound.hurt", "random.classic_hurt");
+        this.hurtSound = config.getString("sound.hurt", Sound.ENTITY_GENERIC_HURT.name());
         this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
-        this.deathSound = config.getString("sound.death", "random.classic_hurt");
+        this.deathSound = config.getString("sound.death", Sound.ENTITY_GENERIC_DEATH.name());
         this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.5);
         int minLevel = config.getInt("min-level", 1);
         int maxLevel = config.getInt("max-level", minLevel);
@@ -275,6 +277,11 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void playSound(String name, float pitch, float volume) {
 
+        Sound sound = EnumUtils.getEnumFromString(Sound.class, name);
+        if (sound == null) {
+            RaidCraft.log("Tried to play invalid sound: " + name, "CustomCreature", RcLogLevel.WARNING);
+            return;
+        }
         Location location = getEntity().getLocation();
         WrapperPlayServerNamedSoundEffect soundEffect = new WrapperPlayServerNamedSoundEffect();
         soundEffect.setSoundEffect(Sound.valueOf(name));

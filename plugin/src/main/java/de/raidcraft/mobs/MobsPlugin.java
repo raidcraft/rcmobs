@@ -70,11 +70,14 @@ public class MobsPlugin extends BasePlugin {
             e.printStackTrace();
         }
 
-        // register our custom NMS entity
-        Class<?> rcSkeleton = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCSkeleton");
-        Class<?> rcZombie = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCZombie");
-        if (rcSkeleton != null) NMSUtils.registerEntity(NMSUtils.Type.SKELETON, rcSkeleton, true);
-        if (rcZombie != null) NMSUtils.registerEntity(NMSUtils.Type.ZOMBIE, rcZombie, true);
+
+        if (getConfiguration().enableNmsEntities) {
+            // register our custom NMS entity
+            Class<?> rcSkeleton = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCSkeleton");
+            Class<?> rcZombie = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCZombie");
+            if (rcSkeleton != null) NMSUtils.registerEntity(NMSUtils.Type.SKELETON, rcSkeleton, true);
+            if (rcZombie != null) NMSUtils.registerEntity(NMSUtils.Type.ZOMBIE, rcZombie, true);
+        }
     }
 
     @Override
@@ -150,6 +153,8 @@ public class MobsPlugin extends BasePlugin {
 
     public static class LocalConfiguration extends ConfigurationBase<MobsPlugin> {
 
+        @Setting("enable-nms-entities")
+        public boolean enableNmsEntities = false;
         @Setting("default.prevent-slime-splitting")
         public boolean preventSlimeSplitting = true;
         @Setting("debug.mob-spawning")
