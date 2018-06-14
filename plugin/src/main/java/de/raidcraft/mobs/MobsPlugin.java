@@ -7,10 +7,10 @@ import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.action.ActionAPI;
+import de.raidcraft.api.config.ConfigLoader;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
 import de.raidcraft.api.mobs.Mobs;
-import de.raidcraft.api.quests.QuestConfigLoader;
 import de.raidcraft.api.quests.Quests;
 import de.raidcraft.mobs.actions.GroupRemoveAction;
 import de.raidcraft.mobs.actions.GroupSpawnAction;
@@ -105,7 +105,7 @@ public class MobsPlugin extends BasePlugin {
     private void registerQuestConfigLoader() {
 
         // register mob config loader
-        Quests.registerQuestLoader(new QuestConfigLoader("mob") {
+        Quests.registerQuestLoader(new ConfigLoader(this, "mob") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
 
@@ -118,7 +118,7 @@ public class MobsPlugin extends BasePlugin {
                 return Mobs.getFriendlyName(key);
             }
         });
-        Quests.registerQuestLoader(new QuestConfigLoader("group") {
+        Quests.registerQuestLoader(new ConfigLoader(this, "group") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
 
