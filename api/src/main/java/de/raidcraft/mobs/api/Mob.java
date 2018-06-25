@@ -18,6 +18,8 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     Location getSpawnLocation();
 
+    void updateNameDisplay();
+
     boolean isRare();
 
     boolean isElite();

@@ -178,28 +178,29 @@ public class ConfigurableCreature extends AbstractMob {
             playSound(hurtSound, hurtSoundPitch, 1.0F);
         }
         super.setHealth(health);
-        updateHealthBar();
+        updateNameDisplay();
     }
 
     @Override
     public void setMaxHealth(double maxHealth) {
 
         super.setMaxHealth(maxHealth);
-        updateHealthBar();
+        updateNameDisplay();
     }
 
     @Override
     public void setInCombat(boolean inCombat) {
 
         super.setInCombat(inCombat);
-        updateHealthBar();
+        updateNameDisplay();
         // reset the health to max
         if (!inCombat && resetHealth) {
             setHealth(getMaxHealth());
         }
     }
 
-    private void updateHealthBar() {
+    @Override
+    public void updateNameDisplay() {
 
         if (isInCombat()) {
             getEntity().setCustomName(EntityUtil.drawHealthBar(getHealth(), getMaxHealth(), ChatColor.WHITE));

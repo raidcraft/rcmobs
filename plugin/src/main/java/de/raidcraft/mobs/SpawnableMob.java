@@ -214,6 +214,9 @@ public class SpawnableMob extends AbstractSpawnable {
                 mob = optional.get();
             }
         }
+
+        if (mob != null) mob.updateNameDisplay();
+
         return Optional.ofNullable(mob);
     }
 

@@ -48,12 +48,18 @@ import java.util.stream.Collectors;
 public class MobListener implements Listener {
 
     private final MobsPlugin plugin;
-    private final CharacterManager characterManager;
+    private CharacterManager characterManager;
 
     public MobListener(MobsPlugin plugin) {
 
         this.plugin = plugin;
-        this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
+    }
+
+    private CharacterManager getCharacterManager() {
+        if (characterManager == null) {
+            this.characterManager = RaidCraft.getComponent(SkillsPlugin.class).getCharacterManager();
+        }
+        return this.characterManager;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -62,7 +68,7 @@ public class MobListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity) || !plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) {
             return;
         }
-        CharacterTemplate character = characterManager.getCharacter((LivingEntity) event.getEntity());
+        CharacterTemplate character = getCharacterManager().getCharacter((LivingEntity) event.getEntity());
         if (!(character instanceof Mob)) {
             return;
         }
@@ -190,7 +196,7 @@ public class MobListener implements Listener {
             event.getDrops().clear();
             event.setDroppedExp(0);
             // add our custom drops
-            CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter(event.getEntity());
+            CharacterTemplate character = getCharacterManager().getCharacter(event.getEntity());
             if (character instanceof Mob) {
                 // lets call our custom death event
                 Optional<RDSTable> lootTable = ((Mob) character).getLootTable();

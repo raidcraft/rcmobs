@@ -25,14 +25,11 @@ public class PacketListener extends PacketAdapter {
     private static final int CUSTOM_NAME_INDEX = 2;
     private static final int ALWAYS_SHOW_INDEX = 3;
 
-    private final CharacterManager characterManager;
-
     public PacketListener(MobsPlugin plugin) {
 
         super(plugin, //PacketType.Play.Server.SPAWN_ENTITY_LIVING,
                 //PacketType.Play.Server.NAMED_ENTITY_SPAWN,
                 PacketType.Play.Server.ENTITY_METADATA);
-        this.characterManager = RaidCraft.getComponent(CharacterManager.class);
     }
 
     @Override
@@ -53,9 +50,9 @@ public class PacketListener extends PacketAdapter {
             return;
         }
 
-        CharacterTemplate character = characterManager.getCharacter((LivingEntity) entity);
+        CharacterTemplate character = RaidCraft.getComponent(CharacterManager.class).getCharacter((LivingEntity) entity);
         ChatColor mobColor = EntityUtil.getConColor(
-                characterManager.getHero(event.getPlayer()).getPlayerLevel(),
+                RaidCraft.getComponent(CharacterManager.class).getHero(event.getPlayer()).getPlayerLevel(),
                 character.getAttachedLevel().getLevel());
         String healthBar;
         if (character.isInCombat()) {
