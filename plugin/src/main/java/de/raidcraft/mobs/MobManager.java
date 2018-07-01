@@ -389,9 +389,9 @@ public final class MobManager implements Component, MobProvider {
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
             if (mobGroups.size() < 1) {
-                throw new UnknownMobException("No mob group with the name " + name + " found!");
+                throw new UnknownMobException("No mob group with the displayName " + name + " found!");
             } else if (mobGroups.size() > 1) {
-                throw new UnknownMobException("Multiple mob groups with the name " + name + " found: " + String.join(",", mobGroups));
+                throw new UnknownMobException("Multiple mob groups with the displayName " + name + " found: " + String.join(",", mobGroups));
             }
             group = groups.get(mobGroups.get(0));
         }

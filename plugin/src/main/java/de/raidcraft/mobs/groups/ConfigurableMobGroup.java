@@ -194,7 +194,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     public String toString() {
 
         return "ConfigurableMobGroup{" +
-                "name='" + name + '\'' +
+                "displayName='" + name + '\'' +
                 ", minInterval=" + minInterval +
                 ", maxInterval=" + maxInterval +
                 ", minSpawnAmount=" + minSpawnAmount +

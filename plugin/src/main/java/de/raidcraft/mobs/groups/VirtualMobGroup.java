@@ -97,7 +97,7 @@ public class VirtualMobGroup extends AbstractSpawnable implements MobGroup {
     public String toString() {
 
         return "VirtualMobGroup{" +
-                "name='" + name + '\'' +
+                "displayName='" + name + '\'' +
                 ", spawnables=" + spawnables +
                 '}';
     }
