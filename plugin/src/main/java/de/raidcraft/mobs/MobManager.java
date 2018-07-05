@@ -62,6 +62,7 @@ public final class MobManager implements Component, MobProvider {
         load();
         startRespawnTask();
         // walk mobs to their spawnpoint
+        // causes lag?
         /*
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             CharacterManager manager = RaidCraft.getComponent(CharacterManager.class);
