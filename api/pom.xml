@@ -13,4 +13,5 @@
     <artifactId>api</artifactId>
     <version>1.12-0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>RCMobs API</name>
 </project>

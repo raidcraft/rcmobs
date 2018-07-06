@@ -18,6 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.faldoria.mobs</groupId>
     <artifactId>parent</artifactId>
+    <name>RCMobs Parent</name>
     <packaging>pom</packaging>
     <version>parent</version>
 
