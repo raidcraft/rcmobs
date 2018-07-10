@@ -118,8 +118,9 @@ public final class MobManager implements Component, MobProvider {
         if (respawnTask != null) respawnTask.cancel();
         // start the spawn task for the fixed spawn locations
         long time = TimeUtil.secondsToTicks(plugin.getConfiguration().respawnTaskInterval);
+        long delay = TimeUtil.secondsToTicks(plugin.getConfiguration().respawnTaskDelay);
         this.respawnTask = new RespawnTask(plugin, spawnableMobs, spawnableGroups);
-        respawnTask.runTaskTimer(plugin, time, time);
+        respawnTask.runTaskTimer(plugin, delay, time);
     }
 
     private void load(File directory, String path) {

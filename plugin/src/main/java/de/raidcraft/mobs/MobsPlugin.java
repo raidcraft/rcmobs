@@ -217,6 +217,8 @@ public class MobsPlugin extends BasePlugin {
         public boolean respawnTaskRemoveEntityOnChunkUnload = false;
         @Setting("respawn-task.interval")
         public double respawnTaskInterval = 5.0;
+        @Setting("respawn-task.delay")
+        public double respawnTaskDelay = 10.0;
         @Setting("respawn-task.mob-batch-count")
         public int respawnTaskMobBatchCount = 10;
         @Setting("respawn-task.mob-group-batch-count")
