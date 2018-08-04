@@ -36,8 +36,10 @@ public class MobTrigger extends Trigger implements Listener {
                 .filter(target -> target instanceof Hero)
                 .map(target -> ((Hero) target).getPlayer())
                 .collect(Collectors.toSet());
-        if (event.getKiller().isPresent()) involvedTargets.add(event.getKiller().get());
-        involvedTargets.stream()
+
+        event.getKiller().filter(Hero.class::isInstance).map(Hero.class::cast).map(Hero::getPlayer).ifPresent(involvedTargets::add);
+
+        involvedTargets
                 .forEach(player -> informListeners("kill", player, config -> {
                     if (config.isSet("mob")) {
                         return event.getSpawnedMob().getMob().equalsIgnoreCase(config.getString("mob"));

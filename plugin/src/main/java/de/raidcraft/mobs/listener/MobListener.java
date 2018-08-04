@@ -200,30 +200,31 @@ public class MobListener implements Listener {
             if (character instanceof Mob) {
                 // lets call our custom death event
                 Optional<RDSTable> lootTable = ((Mob) character).getLootTable();
-                if (lootTable.isPresent()) {
-                    lootTable.get().getResult().stream()
-                            .filter(rdsObject -> rdsObject instanceof Dropable)
-                            .filter(object -> object.getRequirements(Player.class).stream()
-                                    .allMatch(objectRequirement -> event.getEntity().getKiller() == null
-                                            || objectRequirement.test(event.getEntity().getKiller())))
-                            .forEach(rdsObject -> event.getDrops().add(((Dropable) rdsObject).getItemStack()));
-                }
+                lootTable.ifPresent(rdsTable -> rdsTable.getResult().stream()
+                        .filter(rdsObject -> rdsObject instanceof Dropable)
+                        .filter(object -> object.getRequirements(Player.class).stream()
+                                .allMatch(objectRequirement -> event.getEntity().getKiller() == null
+                                        || objectRequirement.test(event.getEntity().getKiller())))
+                        .forEach(rdsObject -> event.getDrops().add(((Dropable) rdsObject).getItemStack())));
             }
+
+            Optional<CharacterTemplate> killer = character.getKiller();
             // track the mob kill if it was killed by a player
-            Player killer = event.getEntity().getKiller();
-            if (killer != null) {
+            killer.ifPresent(characterTemplate -> {
                 TPlayerMobKillLog log = plugin.getDatabase().find(TPlayerMobKillLog.class).where()
-                        .eq("uuid", killer.getUniqueId())
+                        .eq("uuid", characterTemplate.getUniqueId())
                         .eq("mob", spawnedMob.getMob()).findUnique();
                 if (log == null) {
                     log = new TPlayerMobKillLog();
-                    log.setUuid(killer.getUniqueId());
+                    log.setUuid(characterTemplate.getUniqueId());
                     log.setMob(spawnedMob.getMob());
                 }
                 log.setKillCount(log.getKillCount() + 1);
                 plugin.getDatabase().save(log);
+            });
+            if (character instanceof Mob) {
+                RaidCraft.callEvent(new RCMobDeathEvent((Mob) character, spawnedMob, killer.orElse(null)));
             }
-            if (character instanceof Mob) RaidCraft.callEvent(new RCMobDeathEvent((Mob) character, spawnedMob, killer));
             // delete the mob group if the last mob dies
             if (spawnedMob.getMobGroupSource() != null && spawnedMob.getMobGroupSource().getSpawnedMobs().size() <= 1) {
                 try {

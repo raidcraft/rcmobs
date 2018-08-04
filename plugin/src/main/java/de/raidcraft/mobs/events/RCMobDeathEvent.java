@@ -2,40 +2,37 @@ package de.raidcraft.mobs.events;
 
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.tables.TSpawnedMob;
-import org.bukkit.entity.Player;
+import de.raidcraft.skills.api.character.CharacterTemplate;
+import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Silthus
  */
+@Getter
 public class RCMobDeathEvent extends Event {
-
 
     private final Mob mob;
     private final TSpawnedMob spawnedMob;
-    private final Player killer;
+    private final CharacterTemplate killer;
+    private final Set<CharacterTemplate> involvedTargets = new HashSet<>();
 
-    public RCMobDeathEvent(Mob mob, TSpawnedMob spawnedMob, Player killer) {
+    public RCMobDeathEvent(Mob mob, TSpawnedMob spawnedMob, CharacterTemplate killer) {
 
         this.mob = mob;
         this.spawnedMob = spawnedMob;
         this.killer = killer;
+
+        this.involvedTargets.addAll(mob.getInvolvedTargets());
+        if (killer != null) involvedTargets.add(killer);
     }
 
-    public Mob getMob() {
-
-        return mob;
-    }
-
-    public TSpawnedMob getSpawnedMob() {
-
-        return spawnedMob;
-    }
-
-    public Optional<Player> getKiller() {
+    public Optional<CharacterTemplate> getKiller() {
 
         return Optional.ofNullable(killer);
     }
