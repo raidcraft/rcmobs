@@ -4,6 +4,7 @@ Die grundlegende Konfiguration von Mobs ist sehr einfach und in ein paar Minuten
 
 - [Basis Config](#basis-config)
 - [Abilities](#abilities)
+- [Mob Gruppen](#mob-gruppen)
 
 ## Basis Config
 
@@ -15,7 +16,9 @@ Die EXP die ein Mob gibt ist z.B. abhängig von seinem Level. Wenn man außerdem
 1.5126 * (level ^ 2) + 15.946 * level + 80
 ```
 
-> In der folgenden Config sind alle angegebenen Werte, bis auf wenige Ausnahmen, die Default Werte.
+> Mob Configs müssen mit der Endung `.mob.yml` abgespeichert werden.
+
+In der folgenden Config sind alle angegebenen Werte, bis auf wenige Ausnahmen, die Default Werte.
 
 ```yml
 # Der Name wird über dem Mob und im Combatlog angezeigt.
@@ -193,4 +196,38 @@ abilities:
     custom:
       chance:
         base: 0.75
+```
+
+## Mob Gruppen
+
+Mobs können zu Gruppen zusammengefasst werden um das Spawn und Respawn Verhalten zu beinflussen. Außerdem ist es leichter Spawnpunkte für eine Gruppe für Mobs zu setzen, anstatt für jeden Mob einzeln.
+
+In Quests hat man zusätzlich die Möglichkeit mit einer [Action](https://git.faldoria.de/raidcraft/raidcraft-api/blob/master/docs/ART-API.md#actions) eine ganze Mob Gruppe auf einmal zu spawnen. Man kann dann mit einem [Requirement](https://git.faldoria.de/raidcraft/raidcraft-api/blob/master/docs/ART-API.md#requirements) abfragen ob der Spieler die gesamte Mob Gruppe getötet hat.
+
+Eine Mob Gruppe befindet sich gemeinsam in einer Gruppe, d.h. Heilungsfähigkeiten der Mobs betreffen die eigene Gruppe, genauso wie das Betreten und Verlassen eines Kampfes.
+
+> Mob Gruppen müssen mit der Dateiendung `.group.yml` abgespeichert werden.
+
+```yml
+# Spawn Intervall der Gruppe in Ticks
+# Sind alle tot dauert es einen zufälligen Wert zwischen min und max bis die Gruppe wieder spawnt.
+# Gruppen die manuell über Actions gespawnt werden ignorieren das Spawn Intervall.
+min-interval: 300
+max-interval: 300
+# Ein Zufälliger Wert wieviele Mobs aus der Gruppe spawnen.
+min-amount: 1
+max-amount: 1
+# Sobald die Gruppe nur noch aus dieser Anzahl Mobs besteht
+# können neue Mobs im vorgegebenen Intervall gespawnt werden.
+respawn-treshhold: 0
+mobs:
+    # Liste von Mobs ohne .mob.yml Endung, dabei sind Ordner mit - getrennt.
+    mein-eindeutiger-pfad-zum-mob:
+        # Die Spawn Chance des Mobs in %
+        # 1.0 == 100%
+        chance: 1.0
+    # this. referenziert den aktuellen Pfad.
+    # Der Name MUSS unbedingt in Anführungsstrichen stehen
+    'this.mob-name':
+        chance: 1.0
 ```
