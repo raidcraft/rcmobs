@@ -1,8 +1,8 @@
-[![pipeline status](https://git.faldoria.de/raidcraft/rcmobs/badges/master/pipeline.svg)](https://git.faldoria.de/raidcraft/rcmobs/commits/master)
+[![pipeline status](https://git.faldoria.de/tof/plugins/raidcraft/rcmobs/badges/master/pipeline.svg)](https://git.faldoria.de/tof/plugins/raidcraft/rcmobs/commits/master)
 
 # RCMobs
 
-Das RCMobs Plugin ermöglicht das Spawnen von Custom Mobs und Mob Gruppen. Custom Mobs können unter Verwendung des [RCSkill Plugins](https://git.faldoria.de/raidcraft/rcskills) eigene Zauber und Fähigkeiten besitzen.
+Das RCMobs Plugin ermöglicht das Spawnen von Custom Mobs und Mob Gruppen. Custom Mobs können unter Verwendung des [RCSkill Plugins](https://git.faldoria.de/tof/plugins/raidcraft/rcskills) eigene Zauber und Fähigkeiten besitzen.
 
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
@@ -11,18 +11,18 @@ Das RCMobs Plugin ermöglicht das Spawnen von Custom Mobs und Mob Gruppen. Custo
 
 ## Getting Started
 
-* [Project Details](https://git.faldoria.de/raidcraft/rcmobs)
-* [Source Code](https://git.faldoria.de/raidcraft/rcmobs/tree/master)
+* [Project Details](https://git.faldoria.de/tof/plugins/raidcraft/rcmobs)
+* [Source Code](https://git.faldoria.de/tof/plugins/raidcraft/rcmobs/tree/master)
 * [Latest Stable Download](https://ci.faldoria.de/view/RaidCraft/job/RCMobs/lastStableBuild)
-* [Issue Tracker](https://git.faldoria.de/raidcraft/rcmobs/issues)
+* [Issue Tracker](https://git.faldoria.de/tof/plugins/raidcraft/rcmobs/issues)
 * [Developer Documentation](docs/DEVELOPER.md)
 * [Admin Documentation](docs/ADMIN.md)
 
 ### Prerequisites
 
-Das `RCMobs` Plugin ist von der [RaidCraft API](https://git.faldoria.de/raidcraft/raidcraft-api) und dem  [RCSkill](https://git.faldoria.de/raidcraft/rcskills) Plugin abhängig und benötigt eine Verbindung zu einer MySQL Datenbank um die Spawn Punkte der Mobs zu speichern.
+Das `RCMobs` Plugin ist von der [RaidCraft API](https://git.faldoria.de/tof/plugins/raidcraft/raidcraft-api) und dem  [RCSkill](https://git.faldoria.de/tof/plugins/raidcraft/rcskills) Plugin abhängig und benötigt eine Verbindung zu einer MySQL Datenbank um die Spawn Punkte der Mobs zu speichern.
 
-Optional: [RCLoot](https://git.faldoria.de/raidcraft/rcloot) zum Verknüpfen von Loot-Tabellen die Mobs nach ihrem Tod droppen.
+Optional: [RCLoot](https://git.faldoria.de/tof/plugins/raidcraft/rcloot) zum Verknüpfen von Loot-Tabellen die Mobs nach ihrem Tod droppen.
 
 ### Installation
 

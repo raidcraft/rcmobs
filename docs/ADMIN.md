@@ -1,6 +1,6 @@
 # RCMobs Admin Dokumentation
 
-Die grundlegende Konfiguration von Mobs ist sehr einfach und in ein paar Minuten erledigt. Wenn man Mobs jedoch eigene Fähigkeiten geben will sollte man sich mit der [Konfiguration von Skills](https://git.faldoria.de/raidcraft/rcskills/blob/master/docs/Skills.md) auskennen, da Mobs eine abgespeckte Version von Skills verwenden.
+Die grundlegende Konfiguration von Mobs ist sehr einfach und in ein paar Minuten erledigt. Wenn man Mobs jedoch eigene Fähigkeiten geben will sollte man sich mit der [Konfiguration von Skills](https://git.faldoria.de/tof/plugins/raidcraft/rcskills/blob/master/docs/Skills.md) auskennen, da Mobs eine abgespeckte Version von Skills verwenden.
 
 - [Basis Config](#basis-config)
 - [Abilities](#abilities)
@@ -114,7 +114,7 @@ Custom Mobs ohne Fähigkeiten wären keine Custom Mobs. Daher gibt es die Mögli
 
 Der Mob wird versuchen alle seine Fähigkeiten so oft wie möglich auszuführen. Das Einzige was ihn daran hindert eine Fähigkeit auszuführen ist der `cooldown` der Fähigkeit.
 
-> Auch Fähigkeiten nutzen die [Basis Config](https://git.faldoria.de/raidcraft/rcskills/blob/master/docs/Skills.md#basis-config) aus dem Skills Plugin für Schaden, Cooldown, uvm.
+> Auch Fähigkeiten nutzen die [Basis Config](https://git.faldoria.de/tof/plugins/raidcraft/rcskills/blob/master/docs/Skills.md#basis-config) aus dem Skills Plugin für Schaden, Cooldown, uvm.
 
 Aktuell gibt es noch keine direkte Liste mit Fähigkeiten. Alle existierenden Fähigkeiten befinden sich im [Source Code](https://git.faldoria.de/raidcraft/rcmob-abilities/tree/master/src/main/java/de/raidcraft/mobs/abilities).
 
@@ -202,7 +202,7 @@ abilities:
 
 Mobs können zu Gruppen zusammengefasst werden um das Spawn und Respawn Verhalten zu beinflussen. Außerdem ist es leichter Spawnpunkte für eine Gruppe für Mobs zu setzen, anstatt für jeden Mob einzeln.
 
-In Quests hat man zusätzlich die Möglichkeit mit einer [Action](https://git.faldoria.de/raidcraft/raidcraft-api/blob/master/docs/ART-API.md#actions) eine ganze Mob Gruppe auf einmal zu spawnen. Man kann dann mit einem [Requirement](https://git.faldoria.de/raidcraft/raidcraft-api/blob/master/docs/ART-API.md#requirements) abfragen ob der Spieler die gesamte Mob Gruppe getötet hat.
+In Quests hat man zusätzlich die Möglichkeit mit einer [Action](https://git.faldoria.de/tof/plugins/raidcraft/raidcraft-api/blob/master/docs/ART-API.md#actions) eine ganze Mob Gruppe auf einmal zu spawnen. Man kann dann mit einem [Requirement](https://git.faldoria.de/tof/plugins/raidcraft/raidcraft-api/blob/master/docs/ART-API.md#requirements) abfragen ob der Spieler die gesamte Mob Gruppe getötet hat.
 
 Eine Mob Gruppe befindet sich gemeinsam in einer Gruppe, d.h. Heilungsfähigkeiten der Mobs betreffen die eigene Gruppe, genauso wie das Betreten und Verlassen eines Kampfes.
 
