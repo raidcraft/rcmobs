@@ -3,7 +3,6 @@ package de.raidcraft.mobs.creatures;
 import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
 import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.api.items.CustomItemException;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.loot.LootPlugin;
 import de.raidcraft.loot.LootTableManager;
@@ -18,6 +17,7 @@ import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.tables.RcLogLevel;
+import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.EnumUtils;
 import de.raidcraft.util.MathUtil;
@@ -84,9 +84,13 @@ public class ConfigurableCreature extends AbstractMob {
 
         LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
         if (tableManager != null) {
-            lootTable = Optional.ofNullable(tableManager.getLevelDependantLootTable(
+            RDSTable lootTable = tableManager.getLevelDependantLootTable(
                     config.getString("loot-table", RaidCraft.getComponent(MobsPlugin.class).getConfiguration().defaultLoottable),
-                    getAttachedLevel().getLevel()));
+                    getAttachedLevel().getLevel());
+            if (lootTable == null) {
+                RaidCraft.LOGGER.warning("Loot-Table " + config.getString("loot-table") + " defined in mob " + ConfigUtil.getFileName(config) + " does not exist!");
+            }
+            this.lootTable = Optional.ofNullable(lootTable);
         }
 
         if (config.getBoolean("baby")) {
@@ -146,23 +150,19 @@ public class ConfigurableCreature extends AbstractMob {
 
     private void equipItems(ConfigurationSection config) {
 
-        try {
-            if (config == null) return;
-            EntityEquipment equipment = getEntity().getEquipment();
-            equipment.setItemInHand(RaidCraft.getItem(config.getString("hand", "AIR")));
-            equipment.setHelmet(RaidCraft.getItem(config.getString("head", "AIR")));
-            equipment.setChestplate(RaidCraft.getItem(config.getString("chest", "AIR")));
-            equipment.setLeggings(RaidCraft.getItem(config.getString("legs", "AIR")));
-            equipment.setBoots(RaidCraft.getItem(config.getString("boots", "AIR")));
+        if (config == null) return;
+        EntityEquipment equipment = getEntity().getEquipment();
+        equipment.setItemInHand(RaidCraft.getUnsafeItem(config.getString("hand", "AIR")));
+        equipment.setHelmet(RaidCraft.getUnsafeItem(config.getString("head", "AIR")));
+        equipment.setChestplate(RaidCraft.getUnsafeItem(config.getString("chest", "AIR")));
+        equipment.setLeggings(RaidCraft.getUnsafeItem(config.getString("legs", "AIR")));
+        equipment.setBoots(RaidCraft.getUnsafeItem(config.getString("boots", "AIR")));
 
-            equipment.setItemInHandDropChance(config.getInt("hand-drop-chance", 0));
-            equipment.setHelmetDropChance(config.getInt("head-drop-chance", 0));
-            equipment.setChestplateDropChance(config.getInt("chest-drop-chance", 0));
-            equipment.setLeggingsDropChance(config.getInt("legs-drop-chance", 0));
-            equipment.setBootsDropChance(config.getInt("boots-drop-chance", 0));
-        } catch (CustomItemException e) {
-            RaidCraft.LOGGER.warning(e.getMessage());
-        }
+        equipment.setItemInHandDropChance(config.getInt("hand-drop-chance", 0));
+        equipment.setHelmetDropChance(config.getInt("head-drop-chance", 0));
+        equipment.setChestplateDropChance(config.getInt("chest-drop-chance", 0));
+        equipment.setLeggingsDropChance(config.getInt("legs-drop-chance", 0));
+        equipment.setBootsDropChance(config.getInt("boots-drop-chance", 0));
     }
 
     @Override
