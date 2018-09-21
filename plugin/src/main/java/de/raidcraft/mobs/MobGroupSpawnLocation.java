@@ -1,6 +1,5 @@
 package de.raidcraft.mobs;
 
-import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.SpawnReason;
@@ -10,6 +9,7 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.TimeUtil;
+import io.ebean.EbeanServer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Location;

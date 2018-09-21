@@ -1,6 +1,5 @@
 package de.raidcraft.mobs;
 
-import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
@@ -12,6 +11,7 @@ import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import io.ebean.EbeanServer;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;

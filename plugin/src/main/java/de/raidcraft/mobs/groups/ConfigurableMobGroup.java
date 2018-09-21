@@ -1,6 +1,5 @@
 package de.raidcraft.mobs.groups;
 
-import com.avaje.ebean.EbeanServer;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.RDSRandom;
 import de.raidcraft.mobs.MobManager;
@@ -15,6 +14,7 @@ import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.BlockUtil;
 import de.raidcraft.util.MathUtil;
+import io.ebean.EbeanServer;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;

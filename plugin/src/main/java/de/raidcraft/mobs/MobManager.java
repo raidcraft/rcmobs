@@ -100,7 +100,7 @@ public final class MobManager implements Component, MobProvider {
                         }
                     }
                 }
-                plugin.getDatabase().delete(toDelete);
+                plugin.getDatabase().deleteAll(toDelete);
                 plugin.getDatabase().find(TSpawnedMobGroup.class).findList().stream()
                         .filter(group -> group.getSpawnedMobs().isEmpty())
                         .forEach(TSpawnedMobGroup::delete);
@@ -331,7 +331,7 @@ public final class MobManager implements Component, MobProvider {
     @Nullable
     public TSpawnedMob getSpawnedMob(LivingEntity entity) {
 
-        return plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findUnique();
+        return plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findOne();
     }
 
     public Optional<TSpawnedMobGroup> getSpawnedMobGroup(LivingEntity entity) {

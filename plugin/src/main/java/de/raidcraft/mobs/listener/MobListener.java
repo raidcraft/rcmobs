@@ -213,7 +213,7 @@ public class MobListener implements Listener {
             killer.ifPresent(characterTemplate -> {
                 TPlayerMobKillLog log = plugin.getDatabase().find(TPlayerMobKillLog.class).where()
                         .eq("uuid", characterTemplate.getUniqueId())
-                        .eq("mob", spawnedMob.getMob()).findUnique();
+                        .eq("mob", spawnedMob.getMob()).findOne();
                 if (log == null) {
                     log = new TPlayerMobKillLog();
                     log.setUuid(characterTemplate.getUniqueId());
@@ -258,7 +258,7 @@ public class MobListener implements Listener {
                 if (spawnedMob == null) return;
                 TMobPlayerKillLog log = plugin.getDatabase().find(TMobPlayerKillLog.class).where()
                         .eq("uuid", event.getEntity().getUniqueId())
-                        .eq("mob", spawnedMob.getMob()).findUnique();
+                        .eq("mob", spawnedMob.getMob()).findOne();
                 if (log == null) {
                     log = new TMobPlayerKillLog();
                     log.setUuid(event.getEntity().getUniqueId());
