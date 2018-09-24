@@ -301,7 +301,7 @@ public class MobListener implements Listener {
             }
         }
         if (unloadedMobs.size() > 0) {
-            plugin.getDatabase().save(unloadedMobs);
+            plugin.getDatabase().saveAll(unloadedMobs);
             if (plugin.getConfiguration().debugMobSpawning) {
                 plugin.getLogger().info("Unloaded " + unloadedMobs.size()
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
@@ -362,7 +362,7 @@ public class MobListener implements Listener {
                     }
                 }
             }
-            plugin.getDatabase().save(respawnedMobs);
+            plugin.getDatabase().saveAll(respawnedMobs);
             // lets respawn all entities in the chunk that were removed
             List<TSpawnedMob> spawnedMobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
             spawnedMobs.removeAll(respawnedMobs);
