@@ -118,7 +118,7 @@ public class MobsPlugin extends BasePlugin {
                 return Mobs.getFriendlyName(key);
             }
         });
-        Quests.registerQuestLoader(new ConfigLoader(this, "group") {
+        Quests.registerQuestLoader(new ConfigLoader(this, "mob-group") {
             @Override
             public void loadConfig(String id, ConfigurationSection config) {
 
