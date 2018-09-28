@@ -24,7 +24,7 @@ public abstract class AbstractSpawnable implements Spawnable, Listener {
             TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity.getEntity());
             if (spawnedMob != null) {
                 spawnedMob.setSourceId(source);
-                plugin.getDatabase().update(spawnedMob);
+                plugin.getRcDatabase().update(spawnedMob);
             }
         }
         return entities;
@@ -34,12 +34,12 @@ public abstract class AbstractSpawnable implements Spawnable, Listener {
     public void remove(String source) {
 
         MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
-        List<TSpawnedMob> spawnedMobs = plugin.getDatabase().find(TSpawnedMob.class).where().eq("source_id", source).findList();
+        List<TSpawnedMob> spawnedMobs = plugin.getRcDatabase().find(TSpawnedMob.class).where().eq("source_id", source).findList();
         for (TSpawnedMob spawnedMob : spawnedMobs) {
             Mob mob = plugin.getMobManager().getMob(spawnedMob.getUuid());
             if (mob != null) {
                 mob.getEntity().remove();
-                plugin.getDatabase().delete(spawnedMob);
+                plugin.getRcDatabase().delete(spawnedMob);
             }
         }
     }

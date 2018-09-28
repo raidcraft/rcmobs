@@ -211,7 +211,7 @@ public class MobListener implements Listener {
             Optional<CharacterTemplate> killer = character.getKiller();
             // track the mob kill if it was killed by a player
             killer.ifPresent(characterTemplate -> {
-                TPlayerMobKillLog log = plugin.getDatabase().find(TPlayerMobKillLog.class).where()
+                TPlayerMobKillLog log = plugin.getRcDatabase().find(TPlayerMobKillLog.class).where()
                         .eq("uuid", characterTemplate.getUniqueId())
                         .eq("mob", spawnedMob.getMob()).findOne();
                 if (log == null) {
@@ -220,7 +220,7 @@ public class MobListener implements Listener {
                     log.setMob(spawnedMob.getMob());
                 }
                 log.setKillCount(log.getKillCount() + 1);
-                plugin.getDatabase().save(log);
+                plugin.getRcDatabase().save(log);
             });
             if (character instanceof Mob) {
                 RaidCraft.callEvent(new RCMobDeathEvent((Mob) character, spawnedMob, killer.orElse(null)));
@@ -252,11 +252,11 @@ public class MobListener implements Listener {
                 log.setVictim(event.getEntity().getUniqueId());
                 log.setTimestamp(Timestamp.from(Instant.now()));
                 log.setWorld(event.getEntity().getWorld().getName());
-                plugin.getDatabase().save(log);
+                plugin.getRcDatabase().save(log);
             } else if (damager instanceof LivingEntity) {
                 TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) damager);
                 if (spawnedMob == null) return;
-                TMobPlayerKillLog log = plugin.getDatabase().find(TMobPlayerKillLog.class).where()
+                TMobPlayerKillLog log = plugin.getRcDatabase().find(TMobPlayerKillLog.class).where()
                         .eq("uuid", event.getEntity().getUniqueId())
                         .eq("mob", spawnedMob.getMob()).findOne();
                 if (log == null) {
@@ -265,7 +265,7 @@ public class MobListener implements Listener {
                     log.setMob(spawnedMob.getMob());
                 }
                 log.setKillCount(log.getKillCount() + 1);
-                plugin.getDatabase().save(log);
+                plugin.getRcDatabase().save(log);
             }
         }
     }
@@ -301,7 +301,7 @@ public class MobListener implements Listener {
             }
         }
         if (unloadedMobs.size() > 0) {
-            plugin.getDatabase().saveAll(unloadedMobs);
+            plugin.getRcDatabase().saveAll(unloadedMobs);
             if (plugin.getConfiguration().debugMobSpawning) {
                 plugin.getLogger().info("Unloaded " + unloadedMobs.size()
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
@@ -321,7 +321,7 @@ public class MobListener implements Listener {
             spawnedMob.setX(location.getBlockX());
             spawnedMob.setY(location.getBlockY());
             spawnedMob.setZ(location.getBlockZ());
-            if (saveToDb) plugin.getDatabase().update(spawnedMob);
+            if (saveToDb) plugin.getRcDatabase().update(spawnedMob);
             if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
         }
         return spawnedMob;
@@ -362,11 +362,11 @@ public class MobListener implements Listener {
                     }
                 }
             }
-            plugin.getDatabase().saveAll(respawnedMobs);
+            plugin.getRcDatabase().saveAll(respawnedMobs);
             // lets respawn all entities in the chunk that were removed
             List<TSpawnedMob> spawnedMobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
             spawnedMobs.removeAll(respawnedMobs);
-            plugin.getDatabase().save(respawnRemovedMobs(spawnedMobs));
+            plugin.getRcDatabase().save(respawnRemovedMobs(spawnedMobs));
         }
         if (plugin.getConfiguration().debugMobSpawning) {
             plugin.getLogger().info("Respawned " + respawnedMobs.size()

@@ -5,12 +5,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import de.raidcraft.api.config.SimpleConfiguration;
-import de.raidcraft.mobs.MobGroupSpawnLocation;
-import de.raidcraft.mobs.MobManager;
-import de.raidcraft.mobs.MobSpawnLocation;
-import de.raidcraft.mobs.MobsPlugin;
-import de.raidcraft.mobs.SpawnableMob;
-import de.raidcraft.mobs.UnknownMobException;
+import de.raidcraft.mobs.*;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -105,7 +100,7 @@ public class MobCommands {
             spawn.setChunkZ(location.getChunk().getZ());
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1));
-            plugin.getDatabase().save(spawn);
+            plugin.getRcDatabase().save(spawn);
             MobSpawnLocation mobSpawnLocation = plugin.getMobManager().addSpawnLocation(spawn);
             mobSpawnLocation.spawn(false);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location von " + mob.getMobName() + " wurde gesetzt.");
@@ -137,7 +132,7 @@ public class MobCommands {
             spawn.setWorld(location.getWorld().getName());
             spawn.setCooldown(args.getDouble(1, mobGroup.getSpawnInterval()));
             spawn.setRespawnTreshhold(args.getInteger(2, mobGroup.getRespawnTreshhold()));
-            plugin.getDatabase().save(spawn);
+            plugin.getRcDatabase().save(spawn);
             sender.sendMessage(ChatColor.GREEN + "Mob Spawn Location für die Mob Gruppe " + mobGroup.getName() + " wurde gesetzt.");
             MobGroupSpawnLocation spawnLocation = plugin.getMobManager().addSpawnLocation(spawn);
             spawnLocation.spawn(false);
@@ -247,7 +242,7 @@ public class MobCommands {
         }
         Player player = (Player) sender;
         String world = player.getWorld().getName().toLowerCase();
-        plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList()
+        plugin.getRcDatabase().find(TMobGroupSpawnLocation.class).findList()
                 .forEach(loc -> {
                     try {
                         if (loc.getWorld().toLowerCase().equals(world)) {
@@ -257,7 +252,7 @@ public class MobCommands {
                         e.printStackTrace();
                     }
                 });
-        plugin.getDatabase().find(TMobSpawnLocation.class).findList()
+        plugin.getRcDatabase().find(TMobSpawnLocation.class).findList()
                 .forEach(loc -> {
                     try {
                         if (loc.getWorld().toLowerCase().equals(world)) {

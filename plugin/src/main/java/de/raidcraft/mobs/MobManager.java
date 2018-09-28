@@ -91,7 +91,7 @@ public final class MobManager implements Component, MobProvider {
                 CharacterManager characterManager = RaidCraft.getComponent(CharacterManager.class);
                 List<TSpawnedMob> toDelete = new ArrayList<>();
                 for (World world : Bukkit.getServer().getWorlds()) {
-                    for (TSpawnedMob spawnedMob : plugin.getDatabase().find(TSpawnedMob.class).where().eq("world", world.getName()).findList()) {
+                    for (TSpawnedMob spawnedMob : plugin.getRcDatabase().find(TSpawnedMob.class).where().eq("world", world.getName()).findList()) {
                         CharacterTemplate character = characterManager.getCharacter(spawnedMob.getUuid());
                         if (character == null || !(character instanceof Mob)) {
                             if (!spawnedMob.isUnloaded()) {
@@ -100,8 +100,8 @@ public final class MobManager implements Component, MobProvider {
                         }
                     }
                 }
-                plugin.getDatabase().deleteAll(toDelete);
-                plugin.getDatabase().find(TSpawnedMobGroup.class).findList().stream()
+                plugin.getRcDatabase().deleteAll(toDelete);
+                plugin.getRcDatabase().find(TSpawnedMobGroup.class).findList().stream()
                         .filter(group -> group.getSpawnedMobs().isEmpty())
                         .forEach(TSpawnedMobGroup::delete);
             }, ticks, ticks);
@@ -219,7 +219,7 @@ public final class MobManager implements Component, MobProvider {
 
         List<MobSpawnLocation> mobSpawnLocations = new ArrayList<>();
         // lets load single spawn locations first
-        List<TMobSpawnLocation> mobSpawnLocationList = plugin.getDatabase().find(TMobSpawnLocation.class).findList();
+        List<TMobSpawnLocation> mobSpawnLocationList = plugin.getRcDatabase().find(TMobSpawnLocation.class).findList();
         for (TMobSpawnLocation location : mobSpawnLocationList) {
             if (plugin.getServer().getWorld(location.getWorld()) == null) {
                 continue;
@@ -231,7 +231,7 @@ public final class MobManager implements Component, MobProvider {
                         Location bukkitLocation = location.getBukkitLocation();
                         location.setChunkX(bukkitLocation.getChunk().getX());
                         location.setChunkZ(bukkitLocation.getChunk().getZ());
-                        plugin.getDatabase().update(location);
+                        plugin.getRcDatabase().update(location);
                     }
                     mobSpawnLocations.add(new MobSpawnLocation(location, mob));
                     loadedSpawnLocations++;
@@ -247,7 +247,7 @@ public final class MobManager implements Component, MobProvider {
 
         List<MobGroupSpawnLocation> mobGroupSpawnLocations = new ArrayList<>();
         // and now load the group spawn locations
-        List<TMobGroupSpawnLocation> mobGroupSpawnLocationList = plugin.getDatabase().find(TMobGroupSpawnLocation.class).findList();
+        List<TMobGroupSpawnLocation> mobGroupSpawnLocationList = plugin.getRcDatabase().find(TMobGroupSpawnLocation.class).findList();
         for (TMobGroupSpawnLocation location : mobGroupSpawnLocationList) {
             if (plugin.getServer().getWorld(location.getWorld()) == null) {
                 continue;
@@ -259,7 +259,7 @@ public final class MobManager implements Component, MobProvider {
                         Location bukkitLocation = location.getBukkitLocation();
                         location.setChunkX(bukkitLocation.getChunk().getX());
                         location.setChunkZ(bukkitLocation.getChunk().getZ());
-                        plugin.getDatabase().update(location);
+                        plugin.getRcDatabase().update(location);
                     }
                     mobGroupSpawnLocations.add(new MobGroupSpawnLocation(location, mobGroup));
                     loadedSpawnLocations++;
@@ -331,7 +331,7 @@ public final class MobManager implements Component, MobProvider {
     @Nullable
     public TSpawnedMob getSpawnedMob(LivingEntity entity) {
 
-        return plugin.getDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findOne();
+        return plugin.getRcDatabase().find(TSpawnedMob.class).where().eq("uuid", entity.getUniqueId()).findOne();
     }
 
     public Optional<TSpawnedMobGroup> getSpawnedMobGroup(LivingEntity entity) {
@@ -496,7 +496,7 @@ public final class MobManager implements Component, MobProvider {
 
     public List<TSpawnedMob> getSpawnedMobs(Chunk chunk) {
 
-        return plugin.getDatabase().find(TSpawnedMob.class).where()
+        return plugin.getRcDatabase().find(TSpawnedMob.class).where()
                 .eq("world", chunk.getWorld().getName())
                 .eq("chunk_x", chunk.getX())
                 .eq("chunk_z", chunk.getZ())
