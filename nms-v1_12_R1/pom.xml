@@ -6,6 +6,7 @@
     <artifactId>nms-v1_12_R1</artifactId>
     <packaging>jar</packaging>
     <version>v1_12_R1</version>
+    <name>RCMobs NMS v1_12_R1</name>
 
     <parent>
         <groupId>de.faldoria.mobs</groupId>
