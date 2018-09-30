@@ -16,7 +16,6 @@ import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
-import de.raidcraft.tables.RcLogLevel;
 import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.EntityUtil;
 import de.raidcraft.util.EnumUtils;
@@ -281,7 +280,7 @@ public class ConfigurableCreature extends AbstractMob {
 
         Sound sound = EnumUtils.getEnumFromString(Sound.class, name);
         if (sound == null) {
-            RaidCraft.log("Tried to play invalid sound: " + name, "CustomCreature", RcLogLevel.WARNING);
+            RaidCraft.LOGGER.warning("Tried to play invalid sound: " + name);
             return;
         }
         Location location = getEntity().getLocation();
