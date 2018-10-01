@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <createTable name="rcmobs_mobgroup_spawn_location" pkName="pk_rcmobs_mobgroup_spawn_location">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="spawn_group" type="varchar" notnull="true"/>
+            <column name="x" type="integer" notnull="true"/>
+            <column name="y" type="integer" notnull="true"/>
+            <column name="z" type="integer" notnull="true"/>
+            <column name="chunk_x" type="integer" notnull="true"/>
+            <column name="chunk_z" type="integer" notnull="true"/>
+            <column name="world" type="varchar"/>
+            <column name="cooldown" type="double" notnull="true"/>
+            <column name="respawn_treshhold" type="integer" notnull="true"/>
+            <column name="last_spawn" type="timestamp"/>
+        </createTable>
+        <createTable name="rcmobs_mob_player_kill_log" pkName="pk_rcmobs_mob_player_kill_log">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="uuid" type="uuid"/>
+            <column name="mob" type="varchar"/>
+            <column name="kill_count" type="integer" notnull="true"/>
+        </createTable>
+        <createTable name="rcmobs_mob_spawn_location" pkName="pk_rcmobs_mob_spawn_location">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="mob" type="varchar" notnull="true"/>
+            <column name="x" type="integer" notnull="true"/>
+            <column name="y" type="integer" notnull="true"/>
+            <column name="z" type="integer" notnull="true"/>
+            <column name="chunk_x" type="integer" notnull="true"/>
+            <column name="chunk_z" type="integer" notnull="true"/>
+            <column name="world" type="varchar"/>
+            <column name="cooldown" type="double" notnull="true"/>
+            <column name="last_spawn" type="timestamp"/>
+        </createTable>
+        <createTable name="rcmobs_player_mob_kill_log" pkName="pk_rcmobs_player_mob_kill_log">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="uuid" type="uuid"/>
+            <column name="mob" type="varchar"/>
+            <column name="kill_count" type="integer" notnull="true"/>
+        </createTable>
+        <createTable name="rcmobs_player_kill_player_log" pkName="pk_rcmobs_player_kill_player_log">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="killer" type="uuid"/>
+            <column name="victim" type="uuid"/>
+            <column name="world" type="varchar"/>
+            <column name="timestamp" type="timestamp"/>
+        </createTable>
+        <createTable name="rcmobs_spawned_mobs" pkName="pk_rcmobs_spawned_mobs">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="uuid" type="uuid" unique="uq_rcmobs_spawned_mobs_uuid"/>
+            <column name="source_id" type="varchar"/>
+            <column name="mob" type="varchar"/>
+            <column name="spawn_time" type="timestamp"/>
+            <column name="spawn_location_source_id" type="integer" references="rcmobs_mob_spawn_location.id"
+                    foreignKeyName="fk_rcmobs_spawned_mobs_spawn_location_source_id"
+                    foreignKeyIndex="ix_rcmobs_spawned_mobs_spawn_location_source_id"/>
+            <column name="mob_group_source_id" type="integer" references="rcmobs_spawned_mob_groups.id"
+                    foreignKeyName="fk_rcmobs_spawned_mobs_mob_group_source_id"
+                    foreignKeyIndex="ix_rcmobs_spawned_mobs_mob_group_source_id"/>
+            <column name="unloaded" type="boolean" defaultValue="false" notnull="true"/>
+            <column name="world" type="varchar"/>
+            <column name="x" type="integer" notnull="true"/>
+            <column name="y" type="integer" notnull="true"/>
+            <column name="z" type="integer" notnull="true"/>
+            <column name="chunk_x" type="integer" notnull="true"/>
+            <column name="chunk_z" type="integer" notnull="true"/>
+        </createTable>
+        <createTable name="rcmobs_spawned_mob_groups" pkName="pk_rcmobs_spawned_mob_groups">
+            <column name="id" type="integer" primaryKey="true"/>
+            <column name="mob_group" type="varchar"/>
+            <column name="spawn_time" type="timestamp"/>
+            <column name="spawn_group_location_source_id" type="integer" references="rcmobs_mobgroup_spawn_location.id"
+                    foreignKeyName="fk_rcmobs_spawned_mob_groups_spawn_group_location_source_id"
+                    foreignKeyIndex="ix_rcmobs_spawned_mob_groups_spawn_group_location_source_id"/>
+        </createTable>
+    </changeSet>
+</migration>

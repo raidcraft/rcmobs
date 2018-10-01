@@ -1,0 +1,3 @@
+entity-packages: de.raidcraft.mobs
+transactional-packages: de.raidcraft.mobs
+querybean-packages: de.raidcraft.mobs

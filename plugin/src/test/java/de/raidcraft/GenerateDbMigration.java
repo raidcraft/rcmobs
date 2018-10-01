@@ -18,6 +18,8 @@ public class GenerateDbMigration {
     public static void main(String[] args) throws IOException {
 
         DbMigration dbMigration = new DefaultDbMigration();
+        dbMigration.setPathToResources("plugin/src/main/resources/");
+        dbMigration.setVersion("1.10");
         dbMigration.setPlatform(Platform.MYSQL);
         // generate the migration ddl and xml
         // ... with EbeanServer in "offline" mode
