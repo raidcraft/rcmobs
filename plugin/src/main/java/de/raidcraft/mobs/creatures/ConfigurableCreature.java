@@ -151,11 +151,11 @@ public class ConfigurableCreature extends AbstractMob {
 
         if (config == null) return;
         EntityEquipment equipment = getEntity().getEquipment();
-        equipment.setItemInHand(RaidCraft.getUnsafeItem(config.getString("hand", "AIR")));
-        equipment.setHelmet(RaidCraft.getUnsafeItem(config.getString("head", "AIR")));
-        equipment.setChestplate(RaidCraft.getUnsafeItem(config.getString("chest", "AIR")));
-        equipment.setLeggings(RaidCraft.getUnsafeItem(config.getString("legs", "AIR")));
-        equipment.setBoots(RaidCraft.getUnsafeItem(config.getString("boots", "AIR")));
+        RaidCraft.getItem(config.getString("hand")).ifPresent(equipment::setItemInMainHand);
+        RaidCraft.getItem(config.getString("head")).ifPresent(equipment::setHelmet);
+        RaidCraft.getItem(config.getString("chest")).ifPresent(equipment::setChestplate);
+        RaidCraft.getItem(config.getString("legs")).ifPresent(equipment::setLeggings);
+        RaidCraft.getItem(config.getString("boots")).ifPresent(equipment::setBoots);
 
         equipment.setItemInHandDropChance(config.getInt("hand-drop-chance", 0));
         equipment.setHelmetDropChance(config.getInt("head-drop-chance", 0));
