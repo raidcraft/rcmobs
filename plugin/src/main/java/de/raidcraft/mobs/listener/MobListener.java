@@ -200,7 +200,7 @@ public class MobListener implements Listener {
             if (character instanceof Mob) {
                 // lets call our custom death event
                 Optional<RDSTable> lootTable = ((Mob) character).getLootTable();
-                lootTable.ifPresent(rdsTable -> rdsTable.getResult().stream()
+                lootTable.ifPresent(rdsTable -> rdsTable.loot().stream()
                         .filter(rdsObject -> rdsObject instanceof Dropable)
                         .filter(object -> object.getRequirements(Player.class).stream()
                                 .allMatch(objectRequirement -> event.getEntity().getKiller() == null
