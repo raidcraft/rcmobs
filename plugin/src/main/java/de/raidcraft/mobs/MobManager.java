@@ -50,6 +50,8 @@ public final class MobManager implements Component, MobProvider {
     private int loadedMobs = 0;
     private int loadedMobGroups = 0;
     private int loadedSpawnLocations = 0;
+    private final Map<String, TMobSpawnLocation> delayedMobs = new HashMap<>();
+    private final Map<String, TMobGroupSpawnLocation> delayedMobGroups = new HashMap<>();
 
     protected MobManager(MobsPlugin plugin) {
 
@@ -175,13 +177,15 @@ public final class MobManager implements Component, MobProvider {
         spawnableGroups = new MobGroupSpawnLocation[0];
         queuedGroups.clear();
         virtualGroups.clear();
+        delayedMobs.clear();
+        delayedMobGroups.clear();
         load();
         startRespawnTask();
     }
 
     private SpawnableMob registerAndReturnMob(String mobId, ConfigurationSection config) {
 
-        EntityType type = null;
+        EntityType type;
         try {
             type = EntityType.valueOf(config.getString("type").toUpperCase());
         } catch (Exception e) {
@@ -191,6 +195,14 @@ public final class MobManager implements Component, MobProvider {
         SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
         mobs.put(mobId, mob);
         loadedMobs++;
+        TMobSpawnLocation spawnLocation = delayedMobs.remove(mobId);
+        if (spawnLocation != null) {
+            createMobSpawnLocation(spawnLocation).ifPresent(mobSpawnLocation -> {
+                spawnableMobs = Arrays.copyOf(spawnableMobs, spawnableMobs.length + 1);
+                spawnableMobs[spawnableMobs.length - 1] = mobSpawnLocation;
+            });
+            plugin.getLogger().info("Loaded queued mob: " + mobId);
+        }
         return mob;
     }
 
@@ -206,6 +218,14 @@ public final class MobManager implements Component, MobProvider {
         ConfigurableMobGroup group = new ConfigurableMobGroup(id, config);
         groups.put(group.getName(), group);
         loadedMobGroups++;
+        TMobGroupSpawnLocation spawnLocation = delayedMobGroups.remove(id);
+        if (spawnLocation != null) {
+            createMobGroupSpawnLocation(spawnLocation).ifPresent(mobSpawnLocation -> {
+                spawnableGroups = Arrays.copyOf(spawnableGroups, spawnableGroups.length + 1);
+                spawnableGroups[spawnableGroups.length - 1] = mobSpawnLocation;
+            });
+            plugin.getLogger().info("Loaded queued mob group: " + id);
+        }
     }
 
     private void loadGroups() {
@@ -224,26 +244,10 @@ public final class MobManager implements Component, MobProvider {
             if (plugin.getServer().getWorld(location.getWorld()) == null) {
                 continue;
             }
-            try {
-                SpawnableMob mob = getSpwanableMob(location.getMob());
-                if (mob != null) {
-                    if (location.getChunkX() == 0 || location.getChunkZ() == 0) {
-                        Location bukkitLocation = location.getBukkitLocation();
-                        location.setChunkX(bukkitLocation.getChunk().getX());
-                        location.setChunkZ(bukkitLocation.getChunk().getZ());
-                        plugin.getRcDatabase().update(location);
-                    }
-                    mobSpawnLocations.add(new MobSpawnLocation(location, mob));
-                    loadedSpawnLocations++;
-                } else {
-                    plugin.getLogger().warning("No mob " + location.getMob()
-                            + " for spawn location " + location.getBukkitLocation() + " found!");
-                }
-            } catch (UnknownMobException e) {
-                e.printStackTrace();
-            }
+            createMobSpawnLocation(location).ifPresent(mobSpawnLocations::add);
         }
-        spawnableMobs = mobSpawnLocations.toArray(new MobSpawnLocation[mobSpawnLocations.size()]);
+        spawnableMobs = mobSpawnLocations.toArray(new MobSpawnLocation[0]);
+        plugin.getLogger().info("Loaded " + spawnableMobs.length);
 
         List<MobGroupSpawnLocation> mobGroupSpawnLocations = new ArrayList<>();
         // and now load the group spawn locations
@@ -252,26 +256,51 @@ public final class MobManager implements Component, MobProvider {
             if (plugin.getServer().getWorld(location.getWorld()) == null) {
                 continue;
             }
-            try {
-                MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
-                if (mobGroup != null) {
-                    if (location.getChunkX() == 0 || location.getChunkZ() == 0) {
-                        Location bukkitLocation = location.getBukkitLocation();
-                        location.setChunkX(bukkitLocation.getChunk().getX());
-                        location.setChunkZ(bukkitLocation.getChunk().getZ());
-                        plugin.getRcDatabase().update(location);
-                    }
-                    mobGroupSpawnLocations.add(new MobGroupSpawnLocation(location, mobGroup));
-                    loadedSpawnLocations++;
-                } else {
-                    plugin.getLogger().warning("No mob group " + location.getSpawnGroup()
-                            + " for spawn location " + location.getBukkitLocation() + " found!");
-                }
-            } catch (UnknownMobException e) {
-                e.printStackTrace();
-            }
+            createMobGroupSpawnLocation(location).ifPresent(mobGroupSpawnLocations::add);
         }
-        spawnableGroups = mobGroupSpawnLocations.toArray(new MobGroupSpawnLocation[mobGroupSpawnLocations.size()]);
+        spawnableGroups = mobGroupSpawnLocations.toArray(new MobGroupSpawnLocation[0]);
+    }
+
+    private Optional<MobSpawnLocation> createMobSpawnLocation(TMobSpawnLocation mobLocation) {
+        try {
+            SpawnableMob mob = getSpwanableMob(mobLocation.getMob());
+            if (mob != null) {
+                if (mobLocation.getChunkX() == 0 || mobLocation.getChunkZ() == 0) {
+                    Location bukkitLocation = mobLocation.getBukkitLocation();
+                    mobLocation.setChunkX(bukkitLocation.getChunk().getX());
+                    mobLocation.setChunkZ(bukkitLocation.getChunk().getZ());
+                    plugin.getRcDatabase().update(mobLocation);
+                }
+                return Optional.of(new MobSpawnLocation(mobLocation, mob));
+            } else {
+                throw new UnknownMobException("No mob " + mobLocation.getMob() + " for spawn location " + mobLocation.getBukkitLocation() + " found!");
+            }
+        } catch (UnknownMobException e) {
+            plugin.getLogger().warning(e.getMessage() + " Queueing mob for delayed loading...");
+            delayedMobs.put(mobLocation.getMob(), mobLocation);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<MobGroupSpawnLocation> createMobGroupSpawnLocation(TMobGroupSpawnLocation location) {
+        try {
+            MobGroup mobGroup = getMobGroup(location.getSpawnGroup());
+            if (mobGroup != null) {
+                if (location.getChunkX() == 0 || location.getChunkZ() == 0) {
+                    Location bukkitLocation = location.getBukkitLocation();
+                    location.setChunkX(bukkitLocation.getChunk().getX());
+                    location.setChunkZ(bukkitLocation.getChunk().getZ());
+                    plugin.getRcDatabase().update(location);
+                }
+                return Optional.of(new MobGroupSpawnLocation(location, mobGroup));
+            } else {
+                throw new UnknownMobException("No mob group " + location.getSpawnGroup() + " for spawn location " + location.getBukkitLocation() + " found!");
+            }
+        } catch (UnknownMobException e) {
+            plugin.getLogger().warning(e.getMessage() + " Queueing mob group for delayed loading...");
+            delayedMobGroups.put(location.getSpawnGroup(), location);
+        }
+        return Optional.empty();
     }
 
     public MobSpawnLocation addSpawnLocation(TMobSpawnLocation location) {
