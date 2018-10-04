@@ -13,8 +13,8 @@ import java.util.Set;
 public class RespawnTask extends BukkitRunnable {
 
     private final MobsPlugin plugin;
-    private final MobSpawnLocation[] mobSpawnLocations;
-    private final MobGroupSpawnLocation[] mobGroupSpawnLocations;
+    private MobSpawnLocation[] mobSpawnLocations;
+    private MobGroupSpawnLocation[] mobGroupSpawnLocations;
     private final Set<QueuedRespawn> respawnQueue = new HashSet<>();
     // how many mobs and groups should be updated per run
     private final int mobBatchCount;
@@ -36,6 +36,14 @@ public class RespawnTask extends BukkitRunnable {
     public void addToRespawnQueue(QueuedRespawn respawn) {
 
         respawnQueue.add(respawn);
+    }
+
+    public void updateMobSpawnLocation(MobSpawnLocation[] mobSpawnLocations) {
+        this.mobSpawnLocations = mobSpawnLocations;
+    }
+
+    public void updateMobGroupSpawnLocation(MobGroupSpawnLocation[] mobGroupSpawnLocations) {
+        this.mobGroupSpawnLocations = mobGroupSpawnLocations;
     }
 
     @Override
