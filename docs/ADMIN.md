@@ -212,8 +212,10 @@ Eine Mob Gruppe befindet sich gemeinsam in einer Gruppe, d.h. Heilungsfähigkeit
 # Spawn Intervall der Gruppe in Ticks
 # Sind alle tot dauert es einen zufälligen Wert zwischen min und max bis die Gruppe wieder spawnt.
 # Gruppen die manuell über Actions gespawnt werden ignorieren das Spawn Intervall.
-min-interval: 300
-max-interval: 300
+# Wird das Intervall in der Config aktualisiert greift der Wert erst nach einem Reload
+# UND nachdem die Gruppe das nächste Mal gespawnt ist (mit dem alten Intervall).
+min-interval: 60
+max-interval: 180
 # Ein Zufälliger Wert wieviele Mobs aus der Gruppe spawnen.
 min-amount: 1
 max-amount: 1

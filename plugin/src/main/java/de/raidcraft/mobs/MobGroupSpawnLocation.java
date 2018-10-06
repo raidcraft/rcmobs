@@ -127,6 +127,7 @@ public class MobGroupSpawnLocation implements Spawnable {
                     db.update(mobGroup);
                 }
                 entry.setLastSpawn(Timestamp.from(Instant.now()));
+                entry.setCooldown(getSpawnable().getRespawnTreshhold());
                 db.update(entry);
             }
         }
