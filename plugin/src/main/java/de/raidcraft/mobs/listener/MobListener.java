@@ -69,7 +69,7 @@ public class MobListener implements Listener {
             return;
         }
         if (getCharacterManager() == null) return;
-        
+
         CharacterTemplate character = getCharacterManager().getCharacter((LivingEntity) event.getEntity());
         if (!(character instanceof Mob)) {
             return;
