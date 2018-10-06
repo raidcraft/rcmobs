@@ -68,6 +68,8 @@ public class MobListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity) || !plugin.getMobManager().isSpawnedMob((LivingEntity) event.getEntity())) {
             return;
         }
+        if (getCharacterManager() == null) return;
+        
         CharacterTemplate character = getCharacterManager().getCharacter((LivingEntity) event.getEntity());
         if (!(character instanceof Mob)) {
             return;
