@@ -3,9 +3,7 @@ package de.raidcraft.mobs;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author mdoering
@@ -23,6 +21,7 @@ public class RespawnTask extends BukkitRunnable {
     // to save performance the task will only update a certain amount of groups and mobs per run
     private int mobIndex = 0;
     private int mobGroupIndex = 0;
+    private final Map<String, Integer> spawnErrorCount = new HashMap<>();
 
     public RespawnTask(MobsPlugin plugin, MobSpawnLocation[] mobSpawnLocations, MobGroupSpawnLocation[] mobGroupSpawnLocations) {
 
@@ -92,7 +91,10 @@ public class RespawnTask extends BukkitRunnable {
                 SpawnableMob spawnableMob = plugin.getMobManager().getSpawnableMob(mob);
                 spawnableMob.respawn(mob, true);
             } catch (UnknownMobException e) {
-                e.printStackTrace();
+                spawnErrorCount.put(mob.getMob(), spawnErrorCount.getOrDefault(mob.getMob(), 1));
+                if (spawnErrorCount.get(mob.getMob()) > 5) {
+                    plugin.getLogger().warning("Failed to spawn Mob " + mob.getMob() + " " + spawnErrorCount.get(mob.getMob()) + "! Database ID: " + mob.getId());
+                }
             }
         });
     }
