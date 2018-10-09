@@ -223,13 +223,17 @@ max-amount: 1
 # können neue Mobs im vorgegebenen Intervall gespawnt werden.
 respawn-treshhold: 0
 mobs:
-    # Liste von Mobs ohne .mob.yml Endung, dabei sind Ordner mit - getrennt.
-    mein-eindeutiger-pfad-zum-mob:
+    # Liste von beliebigen Namen, die ID der Mobs wird unten definiert
+    mob1:
+        # Pfade werden mit Punkten getrennt
+        mob: 'mobs.mein-mob-ordner.supermob'
         # Die Spawn Chance des Mobs in %
         # 1.0 == 100%
         chance: 1.0
-    # this. referenziert den aktuellen Pfad.
-    # Der Name MUSS unbedingt in Anführungsstrichen stehen
-    'this.mob-name':
+    
+    zweiter-mob:
+        # this. referenziert den aktuellen Pfad.
+        # Der Name MUSS unbedingt in Anführungsstrichen stehen
+        mob: 'this.mein-mob'
         chance: 1.0
 ```

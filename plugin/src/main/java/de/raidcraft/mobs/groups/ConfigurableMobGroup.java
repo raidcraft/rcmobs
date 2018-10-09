@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.groups;
 
+import com.google.common.base.Strings;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.RDSRandom;
 import de.raidcraft.mobs.MobManager;
@@ -13,6 +14,7 @@ import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.mobs.tables.TSpawnedMobGroup;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.util.BlockUtil;
+import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.MathUtil;
 import io.ebean.EbeanServer;
 import org.bukkit.Location;
@@ -47,15 +49,19 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         respawnTreshhold = config.getInt("respawn-treshhold", minSpawnAmount - 1);
         if (config.getConfigurationSection("mobs") != null) {
             for (String key : config.getConfigurationSection("mobs").getKeys(false)) {
-                try {
-                    SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(key);
-                    ConfigurationSection section = config.getConfigurationSection("mobs").getConfigurationSection(key);
-                    mob.setSpawnChance(section.getDouble("chance", 1.0));
-                    mobs.add(mob);
-                } catch (UnknownMobException e) {
-                    RaidCraft.LOGGER.warning(e.getMessage());
-                }
+                createMob(config.getConfigurationSection("mobs").getConfigurationSection(key));
             }
+        }
+    }
+
+    private void createMob(ConfigurationSection config) {
+        try {
+            if (config == null) return;
+            SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(config.getString("mob"));
+            mob.setSpawnChance(config.getDouble("chance", 1.0));
+            mobs.add(mob);
+        } catch (UnknownMobException e) {
+            RaidCraft.LOGGER.warning(e.getMessage() + " in: " + ConfigUtil.getFileName(config));
         }
     }
 

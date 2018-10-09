@@ -269,11 +269,12 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public void kill() {
+    public boolean kill() {
 
         playSound(deathSound, deathSoundPitch, 1.0F);
-        super.kill();
+        boolean result = super.kill();
         getEntity().setPassenger(null);
+        return result;
     }
 
     private void playSound(String name, float pitch, float volume) {
