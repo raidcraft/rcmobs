@@ -20,7 +20,7 @@ public class MobSpawnAction implements Action<Player> {
     @Information(
             value = "mob.spawn",
             desc = "Spawns the given custom mob at the defined location.",
-            conf = {"mob", "x", "y", "z", "world", "id"}
+            conf = {"mob", "x", "y", "z", "world", "id", "amount"}
     )
     public void accept(Player player, ConfigurationSection config) {
 
@@ -32,10 +32,12 @@ public class MobSpawnAction implements Action<Player> {
                     config.getDouble("y"),
                     config.getDouble("z")
             );
-            if (config.isSet("id")) {
-                mob.spawn(config.getString("id"), location);
-            } else {
-                mob.spawn(location);
+            for (int i = 0; i < config.getInt("amount", 1); i++) {
+                if (config.isSet("id")) {
+                    mob.spawn(config.getString("id"), location);
+                } else {
+                    mob.spawn(location);
+                }
             }
         } catch (UnknownMobException e) {
             RaidCraft.LOGGER.warning(e.getMessage());
