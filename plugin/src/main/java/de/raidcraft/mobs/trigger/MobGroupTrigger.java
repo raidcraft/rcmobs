@@ -25,7 +25,7 @@ public class MobGroupTrigger extends Trigger implements Listener {
     @Information(
             value = "group.kill",
             desc = "Is triggered when the given mob group was killed. Will inform all involed players",
-            conf = {"id", "group"}
+            conf = {"group", "id"}
     )
     @EventHandler(ignoreCancelled = true)
     public void onGroupKill(RCMobGroupDeathEvent event) {
@@ -33,18 +33,15 @@ public class MobGroupTrigger extends Trigger implements Listener {
         if (!(event.getCharacter() instanceof Mob)) return;
         Mob mob = (Mob) event.getCharacter();
         Optional<TSpawnedMobGroup> spawnedMobGroup = RaidCraft.getComponent(MobManager.class).getSpawnedMobGroup(mob.getEntity());
-        if (spawnedMobGroup.isPresent()) {
-            mob.getInvolvedTargets().stream()
-                    .filter(target -> target instanceof Hero)
-                    .map(target -> (Hero) target)
-                    .forEach(hero -> informListeners("kill", hero.getPlayer(),
-                                    config -> {
-                                        if (config.isSet("group") && !config.getString("group").equals(spawnedMobGroup.get().getMobGroup()))
-                                            return false;
-                                        if (config.isSet("id") && !config.getString("id").equals(event.getTrackingId())) return false;
-                                        return true;
-                                    })
-                    );
-        }
+        spawnedMobGroup.ifPresent(tSpawnedMobGroup -> mob.getInvolvedTargets().stream()
+                .filter(target -> target instanceof Hero)
+                .map(target -> (Hero) target)
+                .forEach(hero -> informListeners("kill", hero.getPlayer(),
+                        config -> {
+                            if (config.isSet("group") && !config.getString("group").equals(tSpawnedMobGroup.getMobGroup()))
+                                return false;
+                            return !config.isSet("id") || config.getString("id").equals(event.getTrackingId());
+                        })
+                ));
     }
 }
