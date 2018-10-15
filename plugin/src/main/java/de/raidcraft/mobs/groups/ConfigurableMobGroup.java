@@ -57,6 +57,9 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     private void createMob(ConfigurationSection config) {
         try {
             if (config == null) return;
+            if (!config.isSet("mob")) {
+                RaidCraft.LOGGER.warning("Invalid OLD mob group format in file: " + ConfigUtil.getFileName(config) + "! Please set the mob as a own key 'mob: name'.");
+            }
             SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(config.getString("mob"));
             mob.setSpawnChance(config.getDouble("chance", 1.0));
             mobs.add(mob);

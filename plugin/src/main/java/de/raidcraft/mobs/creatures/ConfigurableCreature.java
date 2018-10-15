@@ -48,7 +48,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final float hurtSoundPitch;
     private final String deathSound;
     private final float deathSoundPitch;
-    private Optional<RDSTable> lootTable;
+    private RDSTable lootTable;
 
     public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
 
@@ -89,7 +89,7 @@ public class ConfigurableCreature extends AbstractMob {
             if (lootTable == null) {
                 RaidCraft.LOGGER.warning("Loot-Table " + config.getString("loot-table") + " defined in mob " + ConfigUtil.getFileName(config) + " does not exist!");
             }
-            this.lootTable = Optional.ofNullable(lootTable);
+            this.lootTable = lootTable;
         }
 
         if (config.getBoolean("baby")) {
@@ -257,7 +257,7 @@ public class ConfigurableCreature extends AbstractMob {
     @Override
     public Optional<RDSTable> getLootTable() {
 
-        return lootTable;
+        return Optional.ofNullable(lootTable);
     }
 
     @Override
