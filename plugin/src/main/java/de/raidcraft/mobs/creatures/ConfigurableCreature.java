@@ -16,10 +16,7 @@ import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
-import de.raidcraft.util.ConfigUtil;
-import de.raidcraft.util.EntityUtil;
-import de.raidcraft.util.EnumUtils;
-import de.raidcraft.util.MathUtil;
+import de.raidcraft.util.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -121,10 +118,11 @@ public class ConfigurableCreature extends AbstractMob {
         }
         // set custom meta data to identify our mob
         MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
-        getEntity().setMetadata("RC_MOB_ID", new FixedMetadataValue(plugin, getId()));
-        getEntity().setMetadata("RC_CUSTOM_MOB", new FixedMetadataValue(plugin, true));
-        if (elite) getEntity().setMetadata("ELITE", new FixedMetadataValue(plugin, true));
-        if (rare) getEntity().setMetadata("RARE", new FixedMetadataValue(plugin, true));
+        getEntity().setMetadata(EntityMetaData.RCMOBS_MOB_ID, new FixedMetadataValue(plugin, getId()));
+        getEntity().setMetadata(EntityMetaData.RCMOBS_CUSTOM_MOB, new FixedMetadataValue(plugin, true));
+        if (config.getBoolean("give-exp", true)) getEntity().setMetadata(EntityMetaData.RCMOBS_AWARD_EXP, new FixedMetadataValue(plugin, true));
+        if (elite) getEntity().setMetadata(EntityMetaData.RCMOBS_ELITE, new FixedMetadataValue(plugin, true));
+        if (rare) getEntity().setMetadata(EntityMetaData.RCMOBS_RARE, new FixedMetadataValue(plugin, true));
     }
 
     private void loadAbilities(ConfigurationSection config) {

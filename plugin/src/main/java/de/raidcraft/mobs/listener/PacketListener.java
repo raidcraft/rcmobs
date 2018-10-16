@@ -12,6 +12,7 @@ import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
+import de.raidcraft.util.EntityMetaData;
 import de.raidcraft.util.EntityUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -60,15 +61,15 @@ public class PacketListener extends PacketAdapter {
                     character.getHealth(),
                     character.getMaxHealth(),
                     mobColor,
-                    entity.hasMetadata("ELITE"),
-                    entity.hasMetadata("RARE"));
+                    entity.hasMetadata(EntityMetaData.RCMOBS_ELITE),
+                    entity.hasMetadata(EntityMetaData.RCMOBS_RARE));
         } else {
             healthBar = EntityUtil.drawMobName(
                     character.getName(),
                     character.getAttachedLevel().getLevel(),
                     mobColor,
-                    entity.hasMetadata("ELITE"),
-                    entity.hasMetadata("RARE"));
+                    entity.hasMetadata(EntityMetaData.RCMOBS_ELITE),
+                    entity.hasMetadata(EntityMetaData.RCMOBS_RARE));
         }
 
         WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(entity);
