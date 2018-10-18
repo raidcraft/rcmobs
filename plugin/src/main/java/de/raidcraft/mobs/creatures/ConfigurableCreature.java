@@ -206,7 +206,7 @@ public class ConfigurableCreature extends AbstractMob {
             getEntity().setCustomName(EntityUtil.drawMobName(
                     getName(),
                     getAttachedLevel().getLevel(),
-                    ChatColor.YELLOW,
+                    getAttachedLevel().getLevel() > 0 ? ChatColor.YELLOW : ChatColor.GRAY,
                     isElite(),
                     isRare()));
         }
