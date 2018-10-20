@@ -24,6 +24,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 import java.util.Optional;
 
@@ -271,7 +272,7 @@ public class ConfigurableCreature extends AbstractMob {
 
         playSound(deathSound, deathSoundPitch, 1.0F);
         boolean result = super.kill();
-        getEntity().setPassenger(null);
+        getEntity().getPassengers().forEach(Entity::remove);
         return result;
     }
 
