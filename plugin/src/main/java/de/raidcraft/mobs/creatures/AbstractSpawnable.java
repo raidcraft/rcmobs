@@ -1,7 +1,9 @@
-package de.raidcraft.mobs.api;
+package de.raidcraft.mobs.creatures;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobsPlugin;
+import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import org.bukkit.Location;

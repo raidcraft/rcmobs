@@ -4,19 +4,18 @@ import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
 import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.loot.LootPlugin;
-import de.raidcraft.loot.LootTableManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.MobConfig;
 import de.raidcraft.mobs.effects.AbilityUser;
-import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.AbilityManager;
 import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.*;
+import lombok.Data;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -24,73 +23,37 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.spigotmc.event.entity.EntityMountEvent;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Silthus
  */
+@Data
 public class ConfigurableCreature extends AbstractMob {
 
-    private final int minDamage;
-    private final int maxDamage;
-    private final boolean resetHealth;
-    private final boolean elite;
-    private final boolean rare;
-    private final boolean spawnNaturally;
-    private final boolean water;
-    private final boolean passive;
+    private final MobConfig config;
     private final Location spawnLocation;
-    private final String hurtSound;
-    private final float hurtSoundPitch;
-    private final String deathSound;
-    private final float deathSoundPitch;
-    private RDSTable lootTable;
 
-    public ConfigurableCreature(LivingEntity entity, ConfigurationSection config) {
+    public ConfigurableCreature(LivingEntity entity, MobConfig config) {
 
         super(entity);
+        this.config = config;
         this.spawnLocation = entity.getLocation();
-        this.minDamage = config.getInt("min-damage");
-        this.maxDamage = config.getInt("max-damage", minDamage);
-        this.resetHealth = config.getBoolean("reset-health", true);
-        this.elite = config.getBoolean("elite", false);
-        this.rare = config.getBoolean("rare", false);
-        this.water = config.getBoolean("water", false);
-        this.passive = config.getBoolean("passive", false);
-        this.spawnNaturally = config.getBoolean("spawn-naturally", false);
-        this.hurtSound = config.getString("sound.hurt", Sound.ENTITY_GENERIC_HURT.name());
-        this.hurtSoundPitch = (float) config.getDouble("sound.hurt-pitch", 1.0);
-        this.deathSound = config.getString("sound.death", Sound.ENTITY_GENERIC_DEATH.name());
-        this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.5);
-        int minLevel = config.getInt("min-level", 1);
-        int maxLevel = config.getInt("max-level", minLevel);
-        int diffLevel = maxLevel - minLevel;
+
+        int diffLevel = config.getMaxLevel() - config.getMinlevel();
         if (diffLevel <= 0) {
-            getAttachedLevel().setLevel(minLevel);
+            getAttachedLevel().setLevel(config.getMinlevel());
         } else {
-            getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(diffLevel) + minLevel);
+            getAttachedLevel().setLevel(MathUtil.RANDOM.nextInt(diffLevel) + config.getMinlevel());
         }
         if (getAttachedLevel().getLevel() <= 0) {
             RaidCraft.getComponent(MobsPlugin.class).getLogger().info(getId() + ":" + getName()
                     + " has level: " + getAttachedLevel().getLevel());
         }
-        int minHealth = config.getInt("min-health", (int) CustomMobUtil.getMaxHealth(getAttachedLevel().getLevel()));
-        int maxHealth = config.getInt("max-health", minHealth);
 
-        LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
-        if (tableManager != null) {
-            RDSTable lootTable = tableManager.getLevelDependantLootTable(
-                    config.getString("loot-table", RaidCraft.getComponent(MobsPlugin.class).getConfiguration().defaultLoottable),
-                    getAttachedLevel().getLevel());
-            if (lootTable == null) {
-                RaidCraft.LOGGER.warning("Loot-Table " + config.getString("loot-table") + " defined in mob " + ConfigUtil.getFileName(config) + " does not exist!");
-            }
-            this.lootTable = lootTable;
-        }
-
-        if (config.getBoolean("baby")) {
+        if (config.isBaby()) {
             if (getEntity() instanceof Ageable) {
                 ((Ageable) getEntity()).setBaby();
                 ((Ageable) getEntity()).setAgeLock(true);
@@ -99,21 +62,21 @@ public class ConfigurableCreature extends AbstractMob {
             }
         }
 
-        if (config.getBoolean("aggro", true)) {
+        if (config.isAggro()) {
             if (getEntity() instanceof PigZombie) {
-                ((PigZombie) getEntity()).setAngry(config.getBoolean("aggro", true));
+                ((PigZombie) getEntity()).setAngry(true);
             } else if (getEntity() instanceof Wolf) {
-                ((Wolf) getEntity()).setAngry(config.getBoolean("aggro", true));
+                ((Wolf) getEntity()).setAngry(true);
             }
         }
 
-        setMaxHealth(MathUtil.RANDOM.nextInt(maxHealth) + minHealth);
+        setMaxHealth(MathUtil.RANDOM.nextInt(config.getMaxHealth()) + config.getMinHealth());
         setHealth(getMaxHealth());
-        setName(config.getString("name"));
-        getEntity().setCanPickupItems(config.getBoolean("item-pickup", false));
-        loadAbilities(config.getConfigurationSection("abilities"));
-        equipItems(config.getConfigurationSection("equipment"));
-        if (config.getBoolean("ranged", false)) {
+        setName(config.getName());
+        getEntity().setCanPickupItems(config.isItemPickup());
+        loadAbilities(config.getAbilities());
+        equipItems(config.getEquipment());
+        if (config.isRanged()) {
             // TODO: investigate and fix
             // EntityUtil.setRangedMode(getEntity());
         }
@@ -121,9 +84,9 @@ public class ConfigurableCreature extends AbstractMob {
         MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
         getEntity().setMetadata(EntityMetaData.RCMOBS_MOB_ID, new FixedMetadataValue(plugin, getId()));
         getEntity().setMetadata(EntityMetaData.RCMOBS_CUSTOM_MOB, new FixedMetadataValue(plugin, true));
-        if (config.getBoolean("give-exp", true)) getEntity().setMetadata(EntityMetaData.RCMOBS_AWARD_EXP, new FixedMetadataValue(plugin, true));
-        if (elite) getEntity().setMetadata(EntityMetaData.RCMOBS_ELITE, new FixedMetadataValue(plugin, true));
-        if (rare) getEntity().setMetadata(EntityMetaData.RCMOBS_RARE, new FixedMetadataValue(plugin, true));
+        if (config.isGiveExp()) getEntity().setMetadata(EntityMetaData.RCMOBS_AWARD_EXP, new FixedMetadataValue(plugin, true));
+        if (config.isElite()) getEntity().setMetadata(EntityMetaData.RCMOBS_ELITE, new FixedMetadataValue(plugin, true));
+        if (config.isRare()) getEntity().setMetadata(EntityMetaData.RCMOBS_RARE, new FixedMetadataValue(plugin, true));
     }
 
     private void loadAbilities(ConfigurationSection config) {
@@ -174,7 +137,7 @@ public class ConfigurableCreature extends AbstractMob {
 
         // lets play the hurt sound if the new health is below our current
         if (health < getHealth()) {
-            playSound(hurtSound, hurtSoundPitch, 1.0F);
+            playSound(getConfig().getHurtSound(), getConfig().getHurtSoundPitch(), 1.0F);
         }
         super.setHealth(health);
         updateNameDisplay();
@@ -193,9 +156,34 @@ public class ConfigurableCreature extends AbstractMob {
         super.setInCombat(inCombat);
         updateNameDisplay();
         // reset the health to max
-        if (!inCombat && resetHealth) {
+        if (!inCombat && getConfig().isResetHealth()) {
             setHealth(getMaxHealth());
         }
+    }
+
+    @Override
+    public boolean isRare() {
+        return getConfig().isRare();
+    }
+
+    @Override
+    public boolean isElite() {
+        return getConfig().isElite();
+    }
+
+    @Override
+    public boolean isSpawningNaturally() {
+        return getConfig().isSpawningNaturally();
+    }
+
+    @Override
+    public boolean isWaterMob() {
+        return getConfig().isWaterMob();
+    }
+
+    @Override
+    public boolean isPassive() {
+        return getConfig().isPassive();
     }
 
     @Override
@@ -214,36 +202,6 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public boolean isRare() {
-
-        return rare;
-    }
-
-    @Override
-    public boolean isElite() {
-
-        return elite;
-    }
-
-    @Override
-    public boolean isSpawningNaturally() {
-
-        return spawnNaturally;
-    }
-
-    @Override
-    public boolean isWaterMob() {
-
-        return water;
-    }
-
-    @Override
-    public boolean isPassive() {
-
-        return passive;
-    }
-
-    @Override
     public void reset() {
 
         try {
@@ -254,26 +212,24 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     @Override
-    public Optional<RDSTable> getLootTable() {
-
-        return Optional.ofNullable(lootTable);
-    }
-
-    @Override
     public double getDamage() {
 
-        int maxDmg = maxDamage;
-        if (maxDamage <= minDamage) maxDmg = minDamage + 1;
-        return MathUtil.RANDOM.nextInt(maxDmg - minDamage) + minDamage;
+        int maxDmg = getConfig().getMaxDamage();
+        if (getConfig().getMaxDamage() <= getConfig().getMinDamage()) maxDmg = getConfig().getMinDamage() + 1;
+        return MathUtil.RANDOM.nextInt(maxDmg - getConfig().getMinDamage()) + getConfig().getMinDamage();
     }
 
     @Override
     public boolean kill() {
 
-        playSound(deathSound, deathSoundPitch, 1.0F);
+        playSound(getConfig().getDeathSound(), getConfig().getDeathSoundPitch(), 1.0F);
         boolean result = super.kill();
         getEntity().getPassengers().forEach(Entity::remove);
         return result;
+    }
+
+    public List<RDSTable> getLootTables() {
+        return new ArrayList<>(this.getConfig().getLootTables());
     }
 
     private void playSound(String name, float pitch, float volume) {

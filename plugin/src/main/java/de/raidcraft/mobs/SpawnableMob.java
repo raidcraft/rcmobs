@@ -1,8 +1,9 @@
 package de.raidcraft.mobs;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.mobs.api.AbstractSpawnable;
+import de.raidcraft.mobs.creatures.AbstractSpawnable;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.MobConfig;
 import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.api.events.RCEntitySpawnEvent;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
@@ -12,6 +13,7 @@ import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import io.ebean.EbeanServer;
+import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -26,6 +28,7 @@ import java.util.Optional;
 /**
  * @author Silthus
  */
+@Data
 public class SpawnableMob extends AbstractSpawnable {
 
     private final String id;
@@ -33,21 +36,19 @@ public class SpawnableMob extends AbstractSpawnable {
     private final Class<? extends Mob> mClass = ConfigurableCreature.class;
     private final EntityType type;
     private final String customEntityTypeName;
-    private final boolean spawnNaturally;
-    private final ConfigurationSection config;
+    private final MobConfig config;
     private double spawnChance = 1.0;
 
-    public SpawnableMob(String id, String mobName, EntityType type, ConfigurationSection config) {
+    public SpawnableMob(String id, String mobName, EntityType type, MobConfig config) {
 
         this.id = id;
         this.mobName = mobName;
         this.type = type;
-        this.customEntityTypeName = config.getString("custom-type");
-        this.spawnNaturally = config.getBoolean("spawn-naturally");
+        this.customEntityTypeName = config.getCustomEntityType();
         this.config = config;
     }
 
-    public SpawnableMob(String id, String mobName, ConfigurationSection config) {
+    public SpawnableMob(String id, String mobName, MobConfig config) {
 
         this(id, mobName, null, config);
     }
@@ -74,12 +75,7 @@ public class SpawnableMob extends AbstractSpawnable {
 
     public boolean isSpawningNaturally() {
 
-        return spawnNaturally;
-    }
-
-    public ConfigurationSection getConfig() {
-
-        return config;
+        return getConfig().isSpawningNaturally();
     }
 
     public double getSpawnChance() {
@@ -245,7 +241,7 @@ public class SpawnableMob extends AbstractSpawnable {
                 ", mobName='" + mobName + '\'' +
                 ", mClass=" + mClass +
                 ", type=" + type +
-                ", spawnNaturally=" + spawnNaturally +
+                ", spawnNaturally=" + getConfig().isSpawningNaturally() +
                 ", spawnChance=" + spawnChance +
                 '}';
     }

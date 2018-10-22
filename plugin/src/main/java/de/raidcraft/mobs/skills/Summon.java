@@ -7,6 +7,7 @@ import de.raidcraft.api.action.ActionAPI;
 import de.raidcraft.api.action.requirement.Requirement;
 import de.raidcraft.api.action.requirement.RequirementResolver;
 import de.raidcraft.api.random.RDSTable;
+import de.raidcraft.mobs.creatures.YamlMobConfig;
 import de.raidcraft.mobs.creatures.ConfigurableCreature;
 import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.skills.CharacterManager;
@@ -182,7 +183,7 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
                     creature = mob.get();
                 } else {
                     RaidCraft.LOGGER.warning("failed to summon entity: " + config.customEntityName
-                            + " in " + de.raidcraft.util.ConfigUtil.getFileName(config.config));
+                            + " in " + de.raidcraft.util.ConfigUtil.getFileName(config.config.getConfig()));
                     continue;
                 }
             } else {
@@ -252,9 +253,8 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
         }
 
         @Override
-        public Optional<RDSTable> getLootTable() {
-
-            return Optional.empty();
+        public List<RDSTable> getLootTables() {
+            return new ArrayList<>();
         }
     }
 
@@ -273,13 +273,13 @@ public class Summon extends AbstractLevelableSkill implements CommandTriggered {
         private ConfigurationSection maxDamage;
         private ConfigurationSection minHealth;
         private ConfigurationSection maxHealth;
-        private ConfigurationSection config;
+        private YamlMobConfig config;
 
         public SummonedCreatureConfig(String name, ConfigurationSection config, Summon skill) throws InvalidConfigurationException {
 
             this.name = name;
             this.skill = skill;
-            this.config = config;
+            this.config = new YamlMobConfig(config);
             load(config);
         }
 

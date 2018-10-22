@@ -2,14 +2,11 @@ package de.raidcraft.mobs.util;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
-import de.raidcraft.mobs.api.CustomNmsEntity;
-import de.raidcraft.mobs.api.Mob;
-import de.raidcraft.mobs.api.MobConstants;
-import de.raidcraft.mobs.api.NmsEntityManager;
+import de.raidcraft.mobs.api.*;
+import de.raidcraft.mobs.creatures.YamlMobConfig;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.util.ReflectionUtil;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.ArmorStand;
 
@@ -28,12 +25,12 @@ public class CustomMobUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Mob> Optional<T> spawnNMSEntity(String customEntityTypeName, Location location, Class<T> mobClass, ConfigurationSection config) {
+    public static <T extends Mob> Optional<T> spawnNMSEntity(String customEntityTypeName, Location location, Class<T> mobClass, MobConfig config) {
 
         if (customEntityTypeName == null || location == null || location.getWorld() == null || mobClass == null) {
             return Optional.empty();
         }
-        if (config == null) config = new MemoryConfiguration();
+        if (config == null) config = new YamlMobConfig(new MemoryConfiguration());
 
         if (entityManager == null) {
             try {

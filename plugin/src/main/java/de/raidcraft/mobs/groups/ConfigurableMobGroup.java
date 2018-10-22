@@ -1,13 +1,12 @@
 package de.raidcraft.mobs.groups;
 
-import com.google.common.base.Strings;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.RDSRandom;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
-import de.raidcraft.mobs.api.AbstractSpawnable;
+import de.raidcraft.mobs.creatures.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TSpawnedMob;

@@ -12,10 +12,7 @@ import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.api.quests.Quests;
-import de.raidcraft.mobs.actions.GroupRemoveAction;
-import de.raidcraft.mobs.actions.GroupSpawnAction;
-import de.raidcraft.mobs.actions.MobRemoveAction;
-import de.raidcraft.mobs.actions.MobSpawnAction;
+import de.raidcraft.mobs.actions.*;
 import de.raidcraft.mobs.api.MobConstants;
 import de.raidcraft.mobs.commands.MobCommands;
 import de.raidcraft.mobs.listener.MobListener;
@@ -99,7 +96,8 @@ public class MobsPlugin extends BasePlugin {
                 .action("mob.spawn", new MobSpawnAction())
                 .action("mob.remove", new MobRemoveAction())
                 .action("group.spawn", new GroupSpawnAction())
-                .action("group.remove", new GroupRemoveAction());
+                .action("group.remove", new GroupRemoveAction())
+                .action(new MobAddLootTableAction());
     }
 
     private void registerQuestConfigLoader() {

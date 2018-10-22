@@ -7,6 +7,7 @@ import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.api.mobs.MobProvider;
 import de.raidcraft.api.mobs.Mobs;
 import de.raidcraft.mobs.api.*;
+import de.raidcraft.mobs.creatures.YamlMobConfig;
 import de.raidcraft.mobs.groups.ConfigurableMobGroup;
 import de.raidcraft.mobs.groups.VirtualMobGroup;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -192,7 +193,7 @@ public final class MobManager implements Component, MobProvider {
             plugin.getLogger().warning("Unknown entity type " + config.getString("type") + " in mob config: " + config.getName());
             return null;
         }
-        SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, config);
+        SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, new YamlMobConfig(config));
         mobs.put(mobId, mob);
         loadedMobs++;
         TMobSpawnLocation spawnLocation = delayedMobs.remove(mobId);

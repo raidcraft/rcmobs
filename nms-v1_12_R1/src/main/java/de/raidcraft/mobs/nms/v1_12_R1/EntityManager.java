@@ -15,7 +15,7 @@ public class EntityManager implements NmsEntityManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void loadEntity(CustomNmsEntity entity, ConfigurationSection config) {
+    public void loadEntity(CustomNmsEntity entity, MobConfig config) {
 
         entity.setDeathSound(config.getString("sound.death"));
         entity.setHurtSound(config.getString("sound.hurt"));

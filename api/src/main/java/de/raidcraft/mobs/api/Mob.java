@@ -5,6 +5,7 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.character.SkilledCharacter;
 import org.bukkit.Location;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,7 +31,7 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     boolean isPassive();
 
-    Optional<RDSTable> getLootTable();
+    List<RDSTable> getLootTables();
 
     Optional<CharacterTemplate> getHighestThreat();
 

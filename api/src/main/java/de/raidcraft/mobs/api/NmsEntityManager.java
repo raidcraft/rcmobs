@@ -1,11 +1,10 @@
 package de.raidcraft.mobs.api;
 
-import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * @author mdoering
  */
 public interface NmsEntityManager {
 
-    void loadEntity(CustomNmsEntity entity, ConfigurationSection config);
+    void loadEntity(CustomNmsEntity entity, MobConfig config);
 }
