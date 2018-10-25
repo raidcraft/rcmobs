@@ -88,8 +88,9 @@ public class YamlMobConfig implements MobConfig {
                     getMinlevel());
             if (lootTable == null) {
                 RaidCraft.LOGGER.warning("Loot-Table " + config.getString("loot-table") + " defined in mob " + ConfigUtil.getFileName(config) + " does not exist!");
+            } else {
+                this.lootTables.add(lootTable);
             }
-            this.lootTables.add(lootTable);
 
             config.getStringList("loot-tables").stream()
                     .map(table -> tableManager.getLevelDependantLootTable(table, getMinlevel()))
