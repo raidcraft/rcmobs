@@ -26,6 +26,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Silthus
@@ -229,7 +231,9 @@ public class ConfigurableCreature extends AbstractMob {
     }
 
     public List<RDSTable> getLootTables() {
-        return new ArrayList<>(this.getConfig().getLootTables());
+        return new ArrayList<>(this.getConfig().getLootTables()).stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private void playSound(String name, float pitch, float volume) {
