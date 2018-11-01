@@ -72,6 +72,11 @@ public class ConfigurableCreature extends AbstractMob {
             }
         }
 
+        config.getDisguise().ifPresent(disguise -> {
+            disguise.setEntity(getEntity());
+            disguise.startDisguise();
+        });
+
         setMaxHealth(MathUtil.RANDOM.nextInt(config.getMaxHealth()) + config.getMinHealth());
         setHealth(getMaxHealth());
         setName(config.getName());

@@ -1,6 +1,7 @@
 package de.raidcraft.mobs.creatures;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.disguise.Disguise;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.loot.LootPlugin;
 import de.raidcraft.loot.LootTableManager;
@@ -9,6 +10,9 @@ import de.raidcraft.mobs.api.MobConfig;
 import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.util.ConfigUtil;
 import lombok.Data;
+import me.libraryaddict.disguise.disguisetypes.DisguiseType;
+import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import me.libraryaddict.disguise.disguisetypes.TargetedDisguise;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -16,6 +20,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Data
 public class YamlMobConfig implements MobConfig {
@@ -40,6 +45,7 @@ public class YamlMobConfig implements MobConfig {
     private boolean ranged;
     private boolean giveExp;
     private boolean itemPickup;
+    private TargetedDisguise disguise;
     private String hurtSound;
     private float hurtSoundPitch;
     private String deathSound;
@@ -80,6 +86,18 @@ public class YamlMobConfig implements MobConfig {
         this.maxHealth = config.getInt("max-health", minHealth);
         this.abilities = config.getConfigurationSection("abilities");
         this.equipment = config.getConfigurationSection("equipment");
+        if (config.isSet("disguise")) {
+            try {
+                DisguiseType disguiseType = DisguiseType.valueOf(config.getString("disguise"));
+                this.disguise = new MobDisguise(disguiseType);
+                this.disguise.setShowName(false);
+                this.disguise.setReplaceSounds(true);
+            } catch (IllegalArgumentException e) {
+                this.disguise = Disguise.fromAlias(config.getString("disguise"))
+                        .map(disguise -> disguise.getDisguise(getName()))
+                        .orElse(null);
+            }
+        }
 
         LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
         if (tableManager != null) {
@@ -97,6 +115,10 @@ public class YamlMobConfig implements MobConfig {
                     .filter(Objects::nonNull)
                     .forEach(lootTables::add);
         }
+    }
+
+    public Optional<TargetedDisguise> getDisguise() {
+        return Optional.ofNullable(disguise);
     }
 
     @Override

@@ -1,6 +1,9 @@
 package de.raidcraft.mobs.api;
 
 import de.raidcraft.api.random.RDSTable;
+import me.libraryaddict.disguise.disguisetypes.TargetedDisguise;
+
+import java.util.Optional;
 
 public interface MobConfig {
 
@@ -41,6 +44,8 @@ public interface MobConfig {
     boolean isGiveExp();
 
     boolean isItemPickup();
+
+    Optional<TargetedDisguise> getDisguise();
 
     String getHurtSound();
 
