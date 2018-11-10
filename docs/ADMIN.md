@@ -31,6 +31,8 @@ type: SKELETON
 baby: false
 # Zählt nur für Wölfe und PigZombies
 aggro: true
+# Gibt an ab welcher Entfernung der Mob den Spieler angreift.
+aggro-range: 8.0
 # Die Loot-Tabelle bestimmt was für Items der Mob mit welcher Wahrscheinlichkeit droppt.
 # Eine Standard Tabelle ist im Mob Plugin in der config.yml hinterlegt und kann hier
 # für jeden Mob überschrieben werden.
@@ -52,6 +54,8 @@ rare: false
 # Ändert den DisplayName des Mobs.
 # Leben und Schaden müssen manuell dafür angepasst werden.
 elite: false
+# Versteckt den Namen des Mobs.
+hide-name: false
 # Erlaubt dem Mob ins Wasser zu gehen
 water: false
 # Steuert ob der Mob den Spieler direkt angreift (false) oder erst angreift wenn er angegriffen wurde (true)
@@ -97,6 +101,13 @@ equipment:
     chest-drop-chance: 0
     legs-drop-chance: 0
     boots-drop-chance: 0
+# Ermöglicht es eine Liste von Entities zu definieren die dieser Mob angreift.
+# Es müssen die NMS Class Names der Entities angegeben werden.
+# Nur für Profis! Eine grobe veraltete Liste gibt es hier: https://github.com/Bukkit/mc-dev/tree/master/net/minecraft/server
+# targets:
+#   - EntityPlayer
+#   - EntityOcelot
+#   - EntitySheep
 # Eine Liste von allen Sounds gibt es auf: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
 sound:
     hurt: ENTITY_GENERIC_HURT

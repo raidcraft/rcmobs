@@ -28,6 +28,8 @@ public interface MobConfig {
 
     boolean isResetHealth();
 
+    boolean isHidingName();
+
     boolean isElite();
 
     boolean isRare();

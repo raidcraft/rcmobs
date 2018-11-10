@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.MobsPlugin;
+import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.hero.Hero;
@@ -63,7 +64,7 @@ public class PacketListener extends PacketAdapter {
         if (hero == null || character == null) return;
 
         WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(mobEntity);
-        meta.setObject(ALWAYS_SHOW_INDEX, true);
+        meta.setObject(ALWAYS_SHOW_INDEX, (!(character instanceof Mob)) || !((Mob) character).isHidingName());
         String mobName;
         if (character.isInCombat()) {
             mobName = EntityUtil.drawHealthBar(character.getHealth(), character.getMaxHealth(),

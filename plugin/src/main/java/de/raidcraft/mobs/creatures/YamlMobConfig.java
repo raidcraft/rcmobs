@@ -35,6 +35,7 @@ public class YamlMobConfig implements MobConfig {
     private int minHealth;
     private int maxHealth;
     private double aggroRange;
+    private boolean hidingName;
     private boolean resetHealth;
     private boolean elite;
     private boolean rare;
@@ -69,6 +70,7 @@ public class YamlMobConfig implements MobConfig {
         this.maxDamage = config.getInt("max-damage", minDamage);
         this.resetHealth = config.getBoolean("reset-health", true);
         this.aggroRange = config.getDouble("aggro-range", 8.0);
+        this.hidingName = config.getBoolean("hide-name", false);
         this.elite = config.getBoolean("elite", false);
         this.rare = config.getBoolean("rare", false);
         this.waterMob = config.getBoolean("water", false);

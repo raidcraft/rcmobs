@@ -37,12 +37,14 @@ public class ConfigurableCreature extends AbstractMob {
 
     private final MobConfig config;
     private final Location spawnLocation;
+    private final boolean hidingName;
 
     public ConfigurableCreature(LivingEntity entity, MobConfig config) {
 
         super(entity);
         this.config = config;
         this.spawnLocation = entity.getLocation();
+        this.hidingName = config.isHidingName();
 
         int diffLevel = config.getMaxLevel() - config.getMinlevel();
         if (diffLevel <= 0) {
@@ -205,6 +207,10 @@ public class ConfigurableCreature extends AbstractMob {
                     getAttachedLevel().getLevel() > 0 ? ChatColor.YELLOW : ChatColor.GRAY,
                     isElite(),
                     isRare()));
+        }
+
+        if (getConfig().isHidingName()) {
+            getEntity().setCustomNameVisible(false);
         }
     }
 

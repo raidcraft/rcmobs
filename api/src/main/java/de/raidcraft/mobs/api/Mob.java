@@ -21,6 +21,8 @@ public interface Mob extends SkilledCharacter<Mob> {
 
     void updateNameDisplay();
 
+    boolean isHidingName();
+
     boolean isRare();
 
     boolean isElite();
