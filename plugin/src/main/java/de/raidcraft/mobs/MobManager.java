@@ -154,6 +154,25 @@ public final class MobManager implements Component, MobProvider {
         virtualGroups.add(new VirtualMobGroup(path, createdMobs));
     }
 
+    protected void unload() {
+        respawnTask.cancel();
+        respawnTask = null;
+
+        for (World world : plugin.getServer().getWorlds()) {
+            plugin.getLogger().info("Despawning all mobs in " + world.getName() + "...");
+            despawnMobs(world.getLoadedChunks());
+        }
+
+        mobs.clear();
+        groups.clear();
+        spawnableMobs = new MobSpawnLocation[0];
+        spawnableGroups = new MobGroupSpawnLocation[0];
+        queuedGroups.clear();
+        virtualGroups.clear();
+        delayedMobs.clear();
+        delayedMobGroups.clear();
+    }
+
     private void load() {
 
         loadedMobs = 0;
@@ -170,16 +189,7 @@ public final class MobManager implements Component, MobProvider {
 
     protected void reload() {
 
-        respawnTask.cancel();
-        respawnTask = null;
-        mobs.clear();
-        groups.clear();
-        spawnableMobs = new MobSpawnLocation[0];
-        spawnableGroups = new MobGroupSpawnLocation[0];
-        queuedGroups.clear();
-        virtualGroups.clear();
-        delayedMobs.clear();
-        delayedMobGroups.clear();
+        unload();
         load();
         startRespawnTask();
     }
@@ -559,6 +569,45 @@ public final class MobManager implements Component, MobProvider {
             e.printStackTrace();
         }
         return Optional.empty();
+    }
+
+    public void despawnMobs(Chunk[] chunks) {
+        int count = 0;
+        for (Chunk chunk : chunks) {
+            count += despawnMob(chunk);
+        }
+        plugin.getLogger().info("Despawned " + count + " mobs in " + chunks.length + " chunks.");
+    }
+
+    public int despawnMob(Chunk chunk) {
+        List<TSpawnedMob> despawnedMobs = Arrays.stream(chunk.getEntities())
+                .filter(entity -> entity instanceof LivingEntity)
+                .map(entity -> despawnMob((LivingEntity) entity, false).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        plugin.getRcDatabase().saveAll(despawnedMobs);
+        return despawnedMobs.size();
+    }
+
+    public Optional<TSpawnedMob> despawnMob(LivingEntity entity) {
+        return despawnMob(entity, true);
+    }
+
+    public Optional<TSpawnedMob> despawnMob(LivingEntity entity, boolean saveToDb) {
+        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
+        if (spawnedMob != null) {
+            spawnedMob.setUnloaded(true);
+            Location location = entity.getLocation();
+            spawnedMob.setChunkX(location.getChunk().getX());
+            spawnedMob.setChunkZ(location.getChunk().getZ());
+            spawnedMob.setWorld(location.getWorld().getName());
+            spawnedMob.setX(location.getBlockX());
+            spawnedMob.setY(location.getBlockY());
+            spawnedMob.setZ(location.getBlockZ());
+            if (saveToDb) plugin.getRcDatabase().save(spawnedMob);
+            if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
+        }
+        return Optional.ofNullable(spawnedMob);
     }
 
     public boolean isAllowedNaturalSpawn(Location location) {

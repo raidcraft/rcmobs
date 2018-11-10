@@ -79,7 +79,7 @@ public class MobsPlugin extends BasePlugin {
 
     @Override
     public void disable() {
-
+        getMobManager().unload();
     }
 
     public void reload() {

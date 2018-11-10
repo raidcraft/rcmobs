@@ -22,7 +22,6 @@ import de.raidcraft.skills.api.character.CharacterTemplate;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.util.BukkitUtil;
 import de.raidcraft.util.MathUtil;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -296,7 +295,7 @@ public class MobListener implements Listener {
         List<TSpawnedMob> unloadedMobs = new ArrayList<>();
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity instanceof LivingEntity && plugin.getMobManager().isSpawnedMob((LivingEntity) entity)) {
-                unloadedMobs.add(despawnMob((LivingEntity) entity, false));
+                plugin.getMobManager().despawnMob((LivingEntity) entity, false).ifPresent(unloadedMobs::add);
             }
         }
         if (unloadedMobs.size() > 0) {
@@ -306,24 +305,6 @@ public class MobListener implements Listener {
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
             }
         }
-    }
-
-    private TSpawnedMob despawnMob(LivingEntity entity, boolean saveToDb) {
-
-        TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob(entity);
-        if (spawnedMob != null) {
-            spawnedMob.setUnloaded(true);
-            Location location = entity.getLocation();
-            spawnedMob.setChunkX(location.getChunk().getX());
-            spawnedMob.setChunkZ(location.getChunk().getZ());
-            spawnedMob.setWorld(location.getWorld().getName());
-            spawnedMob.setX(location.getBlockX());
-            spawnedMob.setY(location.getBlockY());
-            spawnedMob.setZ(location.getBlockZ());
-            if (saveToDb) plugin.getRcDatabase().update(spawnedMob);
-            if (plugin.getConfiguration().respawnTaskRemoveEntityOnChunkUnload) entity.remove();
-        }
-        return spawnedMob;
     }
 
     @EventHandler(ignoreCancelled = true)
