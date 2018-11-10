@@ -365,7 +365,7 @@ public class MobListener implements Listener {
             // lets respawn all entities in the chunk that were removed
             List<TSpawnedMob> spawnedMobs = plugin.getMobManager().getSpawnedMobs(event.getChunk());
             spawnedMobs.removeAll(respawnedMobs);
-            plugin.getRcDatabase().save(respawnRemovedMobs(spawnedMobs));
+            respawnRemovedMobs(spawnedMobs);
         }
         if (plugin.getConfiguration().debugMobSpawning) {
             plugin.getLogger().info("Respawned " + respawnedMobs.size()
@@ -373,12 +373,17 @@ public class MobListener implements Listener {
         }
     }
 
-    private Collection<TSpawnedMob> respawnRemovedMobs(Collection<TSpawnedMob> mobs) {
+    /**
+     * Respawns the collection of mobs and batch saves their spawn state to the database.
+     *
+     * @param mobs to respawn
+     */
+    private void respawnRemovedMobs(Collection<TSpawnedMob> mobs) {
 
         List<TSpawnedMob> respawnedMobs = new ArrayList<>();
         if (mobs.size() > 0) {
             RespawnTask respawnTask = plugin.getMobManager().getRespawnTask();
-            mobs.stream().forEach(mob -> {
+            mobs.forEach(mob -> {
                 try {
                     // only respawn fixed spawn location mobs and not the random ones...
                     if (mob.getMobGroupSource() == null && mob.getSpawnLocationSource() == null) {
@@ -395,6 +400,6 @@ public class MobListener implements Listener {
                 }
             });
         }
-        return respawnedMobs;
+        plugin.getRcDatabase().updateAll(respawnedMobs);
     }
 }
