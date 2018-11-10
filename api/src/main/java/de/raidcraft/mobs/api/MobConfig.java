@@ -3,6 +3,7 @@ package de.raidcraft.mobs.api;
 import de.raidcraft.api.random.RDSTable;
 import me.libraryaddict.disguise.disguisetypes.TargetedDisguise;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MobConfig {
@@ -22,6 +23,8 @@ public interface MobConfig {
     int getMinHealth();
 
     int getMaxHealth();
+
+    double getAggroRange();
 
     boolean isResetHealth();
 
@@ -114,4 +117,6 @@ public interface MobConfig {
     void setAbilities(org.bukkit.configuration.ConfigurationSection abilities);
 
     void setEquipment(org.bukkit.configuration.ConfigurationSection equipment);
+
+    List<String> getTargets();
 }

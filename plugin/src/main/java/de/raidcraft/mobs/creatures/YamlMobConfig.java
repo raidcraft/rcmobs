@@ -34,6 +34,7 @@ public class YamlMobConfig implements MobConfig {
     private int maxLevel;
     private int minHealth;
     private int maxHealth;
+    private double aggroRange;
     private boolean resetHealth;
     private boolean elite;
     private boolean rare;
@@ -52,6 +53,7 @@ public class YamlMobConfig implements MobConfig {
     private float deathSoundPitch;
     private ConfigurationSection abilities;
     private ConfigurationSection equipment;
+    private List<String> targets;
     private final List<RDSTable> lootTables = new ArrayList<>();
 
     public YamlMobConfig() {
@@ -66,6 +68,7 @@ public class YamlMobConfig implements MobConfig {
         this.minDamage = config.getInt("min-damage");
         this.maxDamage = config.getInt("max-damage", minDamage);
         this.resetHealth = config.getBoolean("reset-health", true);
+        this.aggroRange = config.getDouble("aggro-range", 8.0);
         this.elite = config.getBoolean("elite", false);
         this.rare = config.getBoolean("rare", false);
         this.waterMob = config.getBoolean("water", false);
@@ -86,6 +89,7 @@ public class YamlMobConfig implements MobConfig {
         this.maxHealth = config.getInt("max-health", minHealth);
         this.abilities = config.getConfigurationSection("abilities");
         this.equipment = config.getConfigurationSection("equipment");
+        this.targets = config.getStringList("targets");
         if (config.isSet("disguise")) {
             try {
                 DisguiseType disguiseType = DisguiseType.valueOf(config.getString("disguise"));

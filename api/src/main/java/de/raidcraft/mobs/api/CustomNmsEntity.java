@@ -18,7 +18,7 @@ public interface CustomNmsEntity {
 
     void setHurtSound(String sound);
 
-    default void load(ConfigurationSection config) {}
+    default void load(MobConfig config) {}
 
     LivingEntity spawn(Location location);
 

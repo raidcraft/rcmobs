@@ -2,12 +2,12 @@ package de.raidcraft.mobs.nms.v1_12_R1;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.MobConfig;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -45,10 +45,10 @@ public class RCSkeleton extends EntitySkeleton implements CustomNmsEntity {
     }
 
     @Override
-    public void load(ConfigurationSection config) {
+    public void load(MobConfig config) {
 
         // add a ranged goal if configured
-        if (config.getBoolean("ranged", false)) {
+        if (config.isRanged()) {
             goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
         }
     }
