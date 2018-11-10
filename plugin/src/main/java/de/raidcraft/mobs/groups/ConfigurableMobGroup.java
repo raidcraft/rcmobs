@@ -16,6 +16,7 @@ import de.raidcraft.util.BlockUtil;
 import de.raidcraft.util.ConfigUtil;
 import de.raidcraft.util.MathUtil;
 import io.ebean.EbeanServer;
+import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,6 +29,7 @@ import java.util.List;
 /**
  * @author Silthus
  */
+@Data
 public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup {
 
     private final String name;
@@ -36,6 +38,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     private final int minSpawnAmount;
     private final int maxSpawnAmount;
     private final int respawnTreshhold;
+    private final int spawnRadius;
     private final List<Spawnable> mobs = new ArrayList<>();
 
     public ConfigurableMobGroup(String name, ConfigurationSection config) {
@@ -45,6 +48,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         maxInterval = config.getInt("max-interval", minInterval);
         minSpawnAmount = config.getInt("min-amount", 1);
         maxSpawnAmount = config.getInt("max-amount", minSpawnAmount);
+        spawnRadius = config.getInt("spawn-radius", 5);
         respawnTreshhold = config.getInt("respawn-treshhold", minSpawnAmount - 1);
         if (config.getConfigurationSection("mobs") != null) {
             for (String key : config.getConfigurationSection("mobs").getKeys(false)) {
@@ -68,12 +72,6 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     }
 
     @Override
-    public String getName() {
-
-        return name;
-    }
-
-    @Override
     public double getSpawnInterval() {
 
         //get the range, casting to long to avoid overflow problems
@@ -82,24 +80,6 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         long fraction = (long) (range * MathUtil.RANDOM.nextDouble());
         int randomNumber = (int) (fraction + minInterval);
         return randomNumber;
-    }
-
-    @Override
-    public int getMinSpawnAmount() {
-
-        return minSpawnAmount;
-    }
-
-    @Override
-    public int getMaxSpawnAmount() {
-
-        return maxSpawnAmount;
-    }
-
-    @Override
-    public int getRespawnTreshhold() {
-
-        return respawnTreshhold;
     }
 
     @Override
@@ -127,7 +107,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
             Spawnable mob = mobs.get(i);
             // spawn with a slightly random offset
             // some workarounds to prevent endless loops
-            Location newLocation = getRandomLocation(location, amount);
+            Location newLocation = getRandomLocation(location, getSpawnRadius());
             boolean found = false;
             for (int k = 0; k < 100; k++) {
                 if (BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getType())
@@ -137,7 +117,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
                     found = true;
                     break;
                 }
-                newLocation = getRandomLocation(location, amount);
+                newLocation = getRandomLocation(location, getSpawnRadius());
             }
             if (!found) {
                 // really work around the endless loop ^^
@@ -170,12 +150,16 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         return spawnedMobs;
     }
 
-    private Location getRandomLocation(Location location, int amount) {
+    private Location getRandomLocation(Location location, int radius) {
+
+        if (radius <= 0) {
+            return location.clone();
+        }
 
         Location newLoc = location.clone().add(
-                RDSRandom.getIntNegativePositiveValue(-amount, amount),
-                RDSRandom.getIntNegativePositiveValue(-amount, amount),
-                RDSRandom.getIntNegativePositiveValue(-amount, amount));
+                RDSRandom.getIntNegativePositiveValue(-radius, radius),
+                RDSRandom.getIntNegativePositiveValue(-radius, radius),
+                RDSRandom.getIntNegativePositiveValue(-radius, radius));
         if (newLoc.getBlockY() > location.getWorld().getMaxHeight() - 4) newLoc.setY(location.getWorld().getMaxHeight() - 4);
         if (newLoc.getBlockY() < 4) newLoc.setY(4);
         return newLoc;
