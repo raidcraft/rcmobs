@@ -230,6 +230,9 @@ max-interval: 180
 # Ein Zufälliger Wert wieviele Mobs aus der Gruppe spawnen.
 min-amount: 1
 max-amount: 1
+# Die Mobs spawnen in diesem Radius um den gesetzten Spawnpunkt.
+# Kann auf 0 gesetzt werden um alle Mobs am gleichen Ort spawnen zu lassen.
+spawn-radis: 5
 # Sobald die Gruppe nur noch aus dieser Anzahl Mobs besteht
 # können neue Mobs im vorgegebenen Intervall gespawnt werden.
 respawn-treshhold: 0
