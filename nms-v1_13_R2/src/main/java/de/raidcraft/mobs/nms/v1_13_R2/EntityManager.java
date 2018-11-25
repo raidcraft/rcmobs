@@ -1,10 +1,10 @@
-package de.raidcraft.mobs.nms.v1_12_R1;
+package de.raidcraft.mobs.nms.v1_13_R2;
 
 import de.raidcraft.mobs.api.CustomNmsEntity;
 import de.raidcraft.mobs.api.MobConfig;
 import de.raidcraft.mobs.api.NmsEntityManager;
 import de.raidcraft.util.ReflectionUtil;
-import net.minecraft.server.v1_12_R1.*;
+import net.minecraft.server.v1_13_R2.*;
 
 import java.util.List;
 

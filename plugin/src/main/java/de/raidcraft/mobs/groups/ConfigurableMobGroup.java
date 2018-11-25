@@ -73,13 +73,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
 
     @Override
     public double getSpawnInterval() {
-
-        //get the range, casting to long to avoid overflow problems
-        long range = (long) maxInterval - (long) minInterval + 1;
-        // compute a fraction of the range, 0 <= frac < range
-        long fraction = (long) (range * MathUtil.RANDOM.nextDouble());
-        int randomNumber = (int) (fraction + minInterval);
-        return randomNumber;
+        return RDSRandom.getIntValue(minInterval, maxInterval);
     }
 
     @Override

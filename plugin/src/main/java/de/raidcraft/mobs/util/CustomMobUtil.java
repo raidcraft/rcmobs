@@ -1,14 +1,16 @@
 package de.raidcraft.mobs.util;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.api.*;
 import de.raidcraft.mobs.creatures.YamlMobConfig;
+import de.raidcraft.nms.api.EntityRegistry;
 import de.raidcraft.skills.CharacterManager;
 import de.raidcraft.util.ReflectionUtil;
 import org.bukkit.Location;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 
 import java.util.Optional;
 
@@ -42,10 +44,11 @@ public class CustomMobUtil {
             }
         }
 
-        Optional<CustomNmsEntity> nmsEntity = RaidCraft.getComponent(MobManager.class).getCustonNmsEntity(location.getWorld(), customEntityTypeName);
-        if (nmsEntity.isPresent()) {
-            entityManager.loadEntity(nmsEntity.get(), config);
-            return Optional.ofNullable(RaidCraft.getComponent(CharacterManager.class).wrapCharacter(nmsEntity.get().spawn(location), mobClass, config));
+        Optional<Entity> entity = RaidCraft.getComponent(EntityRegistry.class).getEntity(customEntityTypeName, location.getWorld());
+        if (entity.isPresent() && entity.get() instanceof CustomNmsEntity && entity.get() instanceof LivingEntity) {
+            entityManager.loadEntity((CustomNmsEntity) entity.get(), config);
+            ((CustomNmsEntity) entity.get()).spawn(location);
+            return Optional.ofNullable(RaidCraft.getComponent(CharacterManager.class).wrapCharacter((LivingEntity) entity.get(), mobClass, config));
         }
         return Optional.empty();
     }

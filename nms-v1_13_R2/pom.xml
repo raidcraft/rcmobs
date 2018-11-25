@@ -3,10 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>nms-v1_12_R1</artifactId>
+    <artifactId>nms-v1_13_R2</artifactId>
     <packaging>jar</packaging>
-    <version>v1_12_R1</version>
-    <name>RCMobs NMS v1_12_R1</name>
+    <version>v1_13_R2</version>
+    <name>RCMobs NMS v1_13_R2</name>
 
     <parent>
         <groupId>de.faldoria.mobs</groupId>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.faldoria.mobs</groupId>

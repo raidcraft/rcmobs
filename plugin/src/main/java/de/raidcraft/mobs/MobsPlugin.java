@@ -22,7 +22,7 @@ import de.raidcraft.mobs.skills.Summon;
 import de.raidcraft.mobs.tables.*;
 import de.raidcraft.mobs.trigger.MobGroupTrigger;
 import de.raidcraft.mobs.trigger.MobTrigger;
-import de.raidcraft.nms.NMSUtils;
+import de.raidcraft.nms.api.EntityRegistry;
 import de.raidcraft.skills.SkillsPlugin;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
 import de.raidcraft.util.ReflectionUtil;
@@ -52,9 +52,6 @@ public class MobsPlugin extends BasePlugin {
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             registerEvents(new MobListener(this));
-            // mob names cannot be shown over distance since 1.8: http://www.spigotmc.org/threads/setcustomnamevisible.35927/
-            // mojang fucked up again...
-            // TODO: renable this method if the bug is fixed
             ProtocolLibrary.getProtocolManager().addPacketListener(new PacketListener(this));
         }, 5L);
 
@@ -67,13 +64,18 @@ public class MobsPlugin extends BasePlugin {
             e.printStackTrace();
         }
 
+        EntityRegistry entityRegistry = RaidCraft.getComponent(EntityRegistry.class);
 
-        if (getConfiguration().enableNmsEntities) {
+        if (entityRegistry != null && getConfiguration().enableNmsEntities) {
             // register our custom NMS entity
             Class<?> rcSkeleton = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCSkeleton");
             Class<?> rcZombie = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, "RCZombie");
-            if (rcSkeleton != null) NMSUtils.registerEntity(NMSUtils.Type.SKELETON, rcSkeleton, true);
-            if (rcZombie != null) NMSUtils.registerEntity(NMSUtils.Type.ZOMBIE, rcZombie, true);
+
+            if (rcSkeleton != null) entityRegistry.registerCustomEntity("rc_skeleton", EntityType.SKELETON, rcSkeleton);
+            if (rcZombie != null) entityRegistry.registerCustomEntity("rc_zombie", EntityType.ZOMBIE, rcZombie);
+
+            entityRegistry.rebuildWorldGenMobs();
+            entityRegistry.rebuildBiomes();
         }
     }
 

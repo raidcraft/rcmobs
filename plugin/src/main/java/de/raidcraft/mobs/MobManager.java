@@ -51,8 +51,8 @@ public final class MobManager implements Component, MobProvider {
     private int loadedMobs = 0;
     private int loadedMobGroups = 0;
     private int loadedSpawnLocations = 0;
-    private final Map<String, TMobSpawnLocation> delayedMobs = new HashMap<>();
-    private final Map<String, TMobGroupSpawnLocation> delayedMobGroups = new HashMap<>();
+    private final Map<String, List<TMobSpawnLocation>> delayedMobs = new HashMap<>();
+    private final Map<String, List<TMobGroupSpawnLocation>> delayedMobGroups = new HashMap<>();
 
     protected MobManager(MobsPlugin plugin) {
 
@@ -206,13 +206,15 @@ public final class MobManager implements Component, MobProvider {
         SpawnableMob mob = new SpawnableMob(mobId, config.getString("name", mobId), type, new YamlMobConfig(config));
         mobs.put(mobId, mob);
         loadedMobs++;
-        TMobSpawnLocation spawnLocation = delayedMobs.remove(mobId);
-        if (spawnLocation != null) {
-            createMobSpawnLocation(spawnLocation).ifPresent(mobSpawnLocation -> {
-                spawnableMobs = Arrays.copyOf(spawnableMobs, spawnableMobs.length + 1);
-                spawnableMobs[spawnableMobs.length - 1] = mobSpawnLocation;
-                respawnTask.updateMobSpawnLocation(spawnableMobs);
-                plugin.getLogger().info("Loaded queued mob: " + mobId);
+        List<TMobSpawnLocation> mobSpawnLocations = delayedMobs.remove(mobId);
+        if (mobSpawnLocations != null) {
+            mobSpawnLocations.forEach(spawnLocation -> {
+                createMobSpawnLocation(spawnLocation).ifPresent(mobSpawnLocation -> {
+                    spawnableMobs = Arrays.copyOf(spawnableMobs, spawnableMobs.length + 1);
+                    spawnableMobs[spawnableMobs.length - 1] = mobSpawnLocation;
+                    respawnTask.updateMobSpawnLocation(spawnableMobs);
+                    plugin.getLogger().info("Loaded queued mob: " + mobId);
+                });
             });
         }
         return mob;
@@ -230,13 +232,15 @@ public final class MobManager implements Component, MobProvider {
         ConfigurableMobGroup group = new ConfigurableMobGroup(id, config);
         groups.put(group.getName(), group);
         loadedMobGroups++;
-        TMobGroupSpawnLocation spawnLocation = delayedMobGroups.remove(id);
-        if (spawnLocation != null) {
-            createMobGroupSpawnLocation(spawnLocation).ifPresent(mobSpawnLocation -> {
-                spawnableGroups = Arrays.copyOf(spawnableGroups, spawnableGroups.length + 1);
-                spawnableGroups[spawnableGroups.length - 1] = mobSpawnLocation;
-                respawnTask.updateMobGroupSpawnLocation(spawnableGroups);
-                plugin.getLogger().info("Loaded queued mob group: " + id);
+        List<TMobGroupSpawnLocation> queuedMobGroupSpawns = delayedMobGroups.remove(id);
+        if (queuedMobGroupSpawns != null) {
+            queuedMobGroupSpawns.forEach(spawnLocation -> {
+                createMobGroupSpawnLocation(spawnLocation).ifPresent(mobSpawnLocation -> {
+                    spawnableGroups = Arrays.copyOf(spawnableGroups, spawnableGroups.length + 1);
+                    spawnableGroups[spawnableGroups.length - 1] = mobSpawnLocation;
+                    respawnTask.updateMobGroupSpawnLocation(spawnableGroups);
+                    plugin.getLogger().info("Loaded queued mob group: " + id);
+                });
             });
         }
     }
@@ -260,7 +264,7 @@ public final class MobManager implements Component, MobProvider {
             createMobSpawnLocation(location).ifPresent(mobSpawnLocations::add);
         }
         spawnableMobs = mobSpawnLocations.toArray(new MobSpawnLocation[0]);
-        plugin.getLogger().info("Loaded " + spawnableMobs.length);
+        plugin.getLogger().info("Loaded " + spawnableMobs.length + " mob spawn locations");
 
         List<MobGroupSpawnLocation> mobGroupSpawnLocations = new ArrayList<>();
         // and now load the group spawn locations
@@ -272,6 +276,7 @@ public final class MobManager implements Component, MobProvider {
             createMobGroupSpawnLocation(location).ifPresent(mobGroupSpawnLocations::add);
         }
         spawnableGroups = mobGroupSpawnLocations.toArray(new MobGroupSpawnLocation[0]);
+        plugin.getLogger().info("Loaded " + mobGroupSpawnLocationList.size() + " mob group spawn locations");
     }
 
     private Optional<MobSpawnLocation> createMobSpawnLocation(TMobSpawnLocation mobLocation) {
@@ -290,7 +295,10 @@ public final class MobManager implements Component, MobProvider {
             }
         } catch (UnknownMobException e) {
             plugin.getLogger().warning(e.getMessage() + " Queueing mob for delayed loading...");
-            delayedMobs.put(mobLocation.getMob(), mobLocation);
+            if (!delayedMobs.containsKey(mobLocation.getMob())) {
+                delayedMobs.put(mobLocation.getMob(), new ArrayList<>());
+            }
+            delayedMobs.get(mobLocation.getMob()).add(mobLocation);
         }
         return Optional.empty();
     }
@@ -311,7 +319,10 @@ public final class MobManager implements Component, MobProvider {
             }
         } catch (UnknownMobException e) {
             plugin.getLogger().warning(e.getMessage() + " Queueing mob group for delayed loading...");
-            delayedMobGroups.put(location.getSpawnGroup(), location);
+            if (!delayedMobGroups.containsKey(location.getSpawnGroup())) {
+                delayedMobGroups.put(location.getSpawnGroup(), new ArrayList<>());
+            }
+            delayedMobGroups.get(location.getSpawnGroup()).add(location);
         }
         return Optional.empty();
     }
@@ -552,23 +563,6 @@ public final class MobManager implements Component, MobProvider {
             return mobs.get(id).getMobName();
         }
         return "";
-    }
-
-    public Optional<CustomNmsEntity> getCustonNmsEntity(World world, String name) {
-
-        try {
-            Class<?> clazz = ReflectionUtil.getNmsClass(MobConstants.NMS_PACKAGE, name);
-            if (clazz == null) {
-                plugin.getLogger().warning("No Custom NMS entity with Class " + name + " found in " + MobConstants.NMS_PACKAGE);
-                return Optional.empty();
-            }
-            Constructor<?> constructor = clazz.getDeclaredConstructor(World.class);
-            constructor.setAccessible(true);
-            return Optional.of((CustomNmsEntity) constructor.newInstance(world));
-        } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
     }
 
     public void despawnMobs(Chunk[] chunks) {

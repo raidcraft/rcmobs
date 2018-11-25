@@ -61,7 +61,7 @@ public class RespawnTask extends BukkitRunnable {
             long endTime = System.nanoTime();
             long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
             if (plugin.getConfiguration().debugFixedSpawnLocations) {
-                plugin.getLogger().info("... checked " + mobBatchCount + " mob spawn locations in " + (duration / 1000000L) + "ms");
+                plugin.getLogger().info("... checked " + mobBatchCount + "/" + mobSpawnLocations.length + " (i=" + mobIndex + ") mob spawn locations in " + (duration / 1000000L) + "ms");
             }
         }
         startIndex = mobGroupIndex;
@@ -77,7 +77,7 @@ public class RespawnTask extends BukkitRunnable {
             long endTime = System.nanoTime();
             long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
             if (plugin.getConfiguration().debugFixedSpawnLocations) {
-                plugin.getLogger().info("... checked " + mobGroupBatchCount + " mob group locations in " + (duration / 1000000L) + "ms");
+                plugin.getLogger().info("... checked " + mobGroupBatchCount + "/" + mobGroupSpawnLocations.length + " (i=" + mobGroupIndex + ") mob group locations in " + (duration / 1000000L) + "ms");
             }
         }
         respawnQueue.forEach(de.raidcraft.mobs.QueuedRespawn::respawn);

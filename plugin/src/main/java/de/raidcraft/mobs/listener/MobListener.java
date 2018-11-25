@@ -300,7 +300,7 @@ public class MobListener implements Listener {
         }
         if (unloadedMobs.size() > 0) {
             plugin.getRcDatabase().saveAll(unloadedMobs);
-            if (plugin.getConfiguration().debugMobSpawning) {
+            if (plugin.getConfiguration().debugMobSpawning && unloadedMobs.size() > 0) {
                 plugin.getLogger().info("Unloaded " + unloadedMobs.size()
                         + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
             }
@@ -314,9 +314,12 @@ public class MobListener implements Listener {
         if (event.getEntity() == null) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         TSpawnedMob spawnedMob = plugin.getMobManager().getSpawnedMob((LivingEntity) event.getEntity());
-        if (spawnedMob != null) {
+        event.getEntity().remove();
+        if (spawnedMob != null && !spawnedMob.isUnloaded()) {
             spawnedMob.delete();
-            event.getEntity().remove();
+            if (plugin.getConfiguration().debugMobSpawning) {
+                plugin.getLogger().info("Deleted " + spawnedMob.getMob() + " (ID:" + spawnedMob.getId() + ") from db because it was removed.");
+            }
         }
     }
 
@@ -348,7 +351,7 @@ public class MobListener implements Listener {
             spawnedMobs.removeAll(respawnedMobs);
             respawnRemovedMobs(spawnedMobs);
         }
-        if (plugin.getConfiguration().debugMobSpawning) {
+        if (plugin.getConfiguration().debugMobSpawning && respawnedMobs.size() > 0) {
             plugin.getLogger().info("Respawned " + respawnedMobs.size()
                     + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
         }
