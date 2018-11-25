@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mobs</artifactId>
     <packaging>jar</packaging>
-    <version>1.12-0.1-SNAPSHOT</version>
+    <version>1.13.2-SNAPSHOT</version>
     <name>RCMobs</name>
 
     <parent>
@@ -18,19 +18,31 @@
         <dependency>
             <groupId>de.faldoria</groupId>
             <artifactId>loot</artifactId>
-            <version>1.12-0.1-SNAPSHOT</version>
+            <version>1.13.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.faldoria.mobs</groupId>
             <artifactId>api</artifactId>
-            <version>1.12-0.1-SNAPSHOT</version>
+            <version>1.13.2-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.faldoria.nms</groupId>
+            <artifactId>api</artifactId>
+            <version>1.13.2-SNAPSHOT</version>
         </dependency>
         <!-- we need to include all nms versions -->
         <dependency>
             <groupId>de.faldoria.mobs</groupId>
             <artifactId>nms-v1_12_R1</artifactId>
             <version>v1_12_R1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>de.faldoria.mobs</groupId>
+            <artifactId>nms-v1_13_R2</artifactId>
+            <version>v1_13_R2</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>

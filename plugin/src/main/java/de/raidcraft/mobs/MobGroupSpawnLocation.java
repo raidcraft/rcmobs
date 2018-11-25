@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Silthus
@@ -76,6 +77,9 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     public void spawn(boolean checkCooldown) {
 
+        MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+        Logger logger = plugin.getLogger();
+
         if (getLocation().getWorld() == null) {
             return;
         }
@@ -84,10 +88,12 @@ public class MobGroupSpawnLocation implements Spawnable {
         }
         // dont spawn stuff if it is still on cooldown
         if (checkCooldown && getLastSpawn() != null && getLastSpawn().toInstant().plusMillis(getCooldown()).isAfter(Instant.now())) {
+            if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " not spawning! Group is still on cooldown.");
             return;
         }
         int mobCount = getSpawnedMobCount();
         if (mobCount > getSpawnTreshhold()) {
+            if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " not spawning! Respawn treshhold (" + mobCount + "/" + getSpawnTreshhold() + ") not met.");
             return;
         }
         List<TSpawnedMob> remainingMobs = new ArrayList<>();
@@ -127,9 +133,10 @@ public class MobGroupSpawnLocation implements Spawnable {
                     db.update(mobGroup);
                 }
                 entry.setLastSpawn(Timestamp.from(Instant.now()));
-                entry.setCooldown(getSpawnable().getRespawnTreshhold());
+                entry.setCooldown(getSpawnable().getSpawnInterval());
                 db.update(entry);
             }
+            if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " spawned " + newSpawnableMobs.size() + " new mobs!");
         }
     }
 
