@@ -8,6 +8,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobManager;
@@ -22,6 +23,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+
+import java.util.Optional;
 
 /**
  * @author Silthus
@@ -65,20 +68,21 @@ public class PacketListener extends PacketAdapter {
 
         WrappedDataWatcher meta = WrappedDataWatcher.getEntityWatcher(mobEntity);
         meta.setObject(ALWAYS_SHOW_INDEX, (!(character instanceof Mob)) || !((Mob) character).isHidingName());
-        String mobName;
+        Object mobName;
         if (character.isInCombat()) {
-            mobName = EntityUtil.drawHealthBar(character.getHealth(), character.getMaxHealth(),
+            mobName = Optional.of(WrappedChatComponent.fromText(EntityUtil.drawHealthBar(character.getHealth(), character.getMaxHealth(),
                     EntityUtil.getConColor(hero.getPlayerLevel(), character.getAttachedLevel().getLevel()),
                     mobEntity.hasMetadata(EntityMetaData.RCMOBS_ELITE),
-                    mobEntity.hasMetadata(EntityMetaData.RCMOBS_RARE));
+                    mobEntity.hasMetadata(EntityMetaData.RCMOBS_RARE))).getHandle());
         } else {
-            mobName = EntityUtil.drawMobName(character.getName(),
+            mobName = Optional.of(WrappedChatComponent.fromText(EntityUtil.drawMobName(character.getName(),
                     character.getAttachedLevel().getLevel(),
                     hero.getPlayerLevel(),
                     mobEntity.hasMetadata(EntityMetaData.RCMOBS_ELITE),
-                    mobEntity.hasMetadata(EntityMetaData.RCMOBS_RARE));
+                    mobEntity.hasMetadata(EntityMetaData.RCMOBS_RARE))).getHandle());
         }
-        meta.setObject(CUSTOM_NAME_INDEX, mobName);
+
+        processDataWatcher(meta, mobName);
 
         if (wrapper instanceof WrapperPlayServerSpawnEntityLiving) {
             ((WrapperPlayServerSpawnEntityLiving) wrapper).setMetadata(meta);
@@ -93,10 +97,11 @@ public class PacketListener extends PacketAdapter {
         event.setPacket(wrapper.getHandle());
     }
 
-    private void processDataWatcher(WrappedDataWatcher watcher, String name) {
+    private void processDataWatcher(WrappedDataWatcher watcher, Object name) {
         // If it's being updated, change it!
+        WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.getChatComponentSerializer();
         if (watcher.getObject(CUSTOM_NAME_INDEX) != null) {
-            watcher.setObject(CUSTOM_NAME_INDEX, name, true);
+            watcher.setObject(CUSTOM_NAME_INDEX, serializer, name, true);
         }
         if (watcher.getObject(ALWAYS_SHOW_INDEX) != null) {
             watcher.setObject(ALWAYS_SHOW_INDEX, true);
