@@ -95,21 +95,25 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
         }
         int amount = MathUtil.RANDOM.nextInt(getMaxSpawnAmount()) + getMinSpawnAmount();
         int i = 0;
+        int maxRadius = getSpawnRadius();
+        int radius = 0;
         while (spawnedMobs.size() < amount) {
             Spawnable mob = mobs.get(i);
             // spawn with a slightly random offset
             // some workarounds to prevent endless loops
-            Location newLocation = getRandomLocation(location, getSpawnRadius());
+            Location newLocation = getRandomLocation(location, radius);
             boolean found = false;
             for (int k = 0; k < 100; k++) {
-                if (BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getType())
-                        && BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getRelative(BlockFace.UP).getType())
-                        && BlockUtil.TRANSPARENT_BLOCKS.contains(newLocation.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType())) {
+                if (radius > maxRadius) radius = 0;
+                if (!newLocation.getBlock().getType().isSolid()
+                        && !newLocation.getBlock().getRelative(BlockFace.UP).getType().isSolid()
+                        && !newLocation.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType().isSolid()) {
                     newLocation = newLocation.getBlock().getRelative(BlockFace.UP).getLocation();
+                    radius++;
                     found = true;
                     break;
                 }
-                newLocation = getRandomLocation(location, getSpawnRadius());
+                newLocation = getRandomLocation(location, radius++);
             }
             if (!found) {
                 throw new SpawnMobException("cannot spawn " + getName() + " at " + location);
@@ -148,7 +152,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
 
         Location newLoc = location.clone().add(
                 RDSRandom.getIntNegativePositiveValue(-radius, radius),
-                RDSRandom.getIntNegativePositiveValue(-radius, radius),
+                RDSRandom.getIntNegativePositiveValue(0, radius),
                 RDSRandom.getIntNegativePositiveValue(-radius, radius));
         if (newLoc.getBlockY() > location.getWorld().getMaxHeight() - 4) newLoc.setY(location.getWorld().getMaxHeight() - 4);
         if (newLoc.getBlockY() < 4) newLoc.setY(4);
