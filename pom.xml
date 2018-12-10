@@ -25,10 +25,10 @@
     <name>RCMobs Parent</name>
 
     <modules>
+        <module>api</module>
         <module>plugin</module>
         <module>nms-v1_12_R1</module>
         <module>nms-v1_13_R2</module>
-        <module>api</module>
     </modules>
 
     <parent>
