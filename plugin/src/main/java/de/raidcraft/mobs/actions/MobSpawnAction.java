@@ -6,6 +6,7 @@ import de.raidcraft.api.locations.Locations;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
+import de.raidcraft.mobs.api.SpawnMobException;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -26,12 +27,17 @@ public class MobSpawnAction implements Action<Player> {
         try {
             SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(config.getString("mob"));
             Locations.fromConfig(config).ifPresent(location -> {
-                for (int i = 0; i < config.getInt("amount", 1); i++) {
-                    if (config.isSet("id")) {
-                        mob.spawn(config.getString("id"), location.getLocation());
-                    } else {
-                        mob.spawn(location.getLocation());
+                try {
+                    for (int i = 0; i < config.getInt("amount", 1); i++) {
+                        if (config.isSet("id")) {
+                            mob.spawn(config.getString("id"), location.getLocation());
+                        } else {
+                            mob.spawn(location.getLocation());
+                        }
                     }
+                } catch (SpawnMobException e) {
+                    RaidCraft.LOGGER.warning(e.getMessage());
+                    player.sendMessage(ChatColor.RED + "Error spawning mob with action! " + e.getMessage());
                 }
             });
         } catch (UnknownMobException e) {

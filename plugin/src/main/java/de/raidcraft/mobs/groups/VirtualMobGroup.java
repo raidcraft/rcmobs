@@ -1,5 +1,7 @@
 package de.raidcraft.mobs.groups;
 
+import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.creatures.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
@@ -70,8 +72,12 @@ public class VirtualMobGroup extends AbstractSpawnable implements MobGroup {
     public List<CharacterTemplate> spawn(Location location) {
 
         if (!spawnables.isEmpty()) {
-            Spawnable spawnable = spawnables.get(MathUtil.RANDOM.nextInt(spawnables.size()));
-            return spawnable.spawn(location);
+            try {
+                Spawnable spawnable = spawnables.get(MathUtil.RANDOM.nextInt(spawnables.size()));
+                return spawnable.spawn(location);
+            } catch (SpawnMobException e) {
+                RaidCraft.LOGGER.warning(e.getMessage());
+            }
         }
         return new ArrayList<>();
     }

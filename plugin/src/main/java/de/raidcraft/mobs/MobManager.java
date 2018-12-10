@@ -213,9 +213,9 @@ public final class MobManager implements Component, MobProvider {
                     spawnableMobs = Arrays.copyOf(spawnableMobs, spawnableMobs.length + 1);
                     spawnableMobs[spawnableMobs.length - 1] = mobSpawnLocation;
                     respawnTask.updateMobSpawnLocation(spawnableMobs);
-                    plugin.getLogger().info("Loaded queued mob: " + mobId);
                 });
             });
+            plugin.getLogger().info("Loaded " + mobSpawnLocations.size() + " queued mob group spawns for " + mobId);
         }
         return mob;
     }
@@ -239,9 +239,9 @@ public final class MobManager implements Component, MobProvider {
                     spawnableGroups = Arrays.copyOf(spawnableGroups, spawnableGroups.length + 1);
                     spawnableGroups[spawnableGroups.length - 1] = mobSpawnLocation;
                     respawnTask.updateMobGroupSpawnLocation(spawnableGroups);
-                    plugin.getLogger().info("Loaded queued mob group: " + id);
                 });
             });
+            plugin.getLogger().info("Loaded " + queuedMobGroupSpawns.size() + " queued mob group spawns for " + group.getName());
         }
     }
 

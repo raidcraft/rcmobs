@@ -2,10 +2,8 @@ package de.raidcraft.mobs.groups;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.random.RDSRandom;
-import de.raidcraft.mobs.MobManager;
-import de.raidcraft.mobs.MobsPlugin;
-import de.raidcraft.mobs.SpawnableMob;
-import de.raidcraft.mobs.UnknownMobException;
+import de.raidcraft.mobs.*;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.creatures.AbstractSpawnable;
 import de.raidcraft.mobs.api.MobGroup;
 import de.raidcraft.mobs.api.Spawnable;
@@ -89,7 +87,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
     }
 
     @Override
-    public List<CharacterTemplate> spawn(Location location) {
+    public List<CharacterTemplate> spawn(Location location) throws SpawnMobException {
 
         List<CharacterTemplate> spawnedMobs = new ArrayList<>();
         if (mobs.isEmpty()) {
@@ -114,9 +112,7 @@ public class ConfigurableMobGroup extends AbstractSpawnable implements MobGroup 
                 newLocation = getRandomLocation(location, getSpawnRadius());
             }
             if (!found) {
-                // really work around the endless loop ^^
-                RaidCraft.LOGGER.warning("cannot spawn " + getName() + " at " + location);
-                return new ArrayList<>();
+                throw new SpawnMobException("cannot spawn " + getName() + " at " + location);
             }
 
             List<CharacterTemplate> spawn = mob.spawn(newLocation);

@@ -1,6 +1,7 @@
 package de.raidcraft.mobs;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
@@ -14,6 +15,7 @@ import org.bukkit.Location;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,44 +66,57 @@ public class MobSpawnLocation implements Spawnable {
 
     public void spawn(boolean checkCooldown) {
 
-        if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
-            return;
-        }
-        if (isSpawned()) {
-            return;
-        }
-        // dont spawn stuff if it is still on cooldown
-        if (getLastSpawn() != null && checkCooldown && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
-            return;
-        }
-        // spawn the mob
-        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), SpawnReason.SPAWN_LOCATION);
-        if (newSpawnableMobs != null) {
-            EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
-            TMobSpawnLocation mobSpawnLocation = getDatabaseEntry();
-            mobSpawnLocation.setLastSpawn(Timestamp.from(Instant.now()));
-            db.update(mobSpawnLocation);
-            for (CharacterTemplate mob : newSpawnableMobs) {
-                TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(mob.getEntity());
-                if (spawnedMob == null) {
-                    spawnedMob = new TSpawnedMob();
-                    spawnedMob.setMob(mobSpawnLocation.getMob());
-                    spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
-                    spawnedMob.setUuid(mob.getEntity().getUniqueId());
-                    spawnedMob.setSpawnLocationSource(mobSpawnLocation);
-                    db.save(spawnedMob);
-                } else {
-                    spawnedMob.setSpawnLocationSource(mobSpawnLocation);
-                    db.update(spawnedMob);
+        try {
+            if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
+                return;
+            }
+            if (isSpawned()) {
+                return;
+            }
+            // dont spawn stuff if it is still on cooldown
+            if (getLastSpawn() != null && checkCooldown && System.currentTimeMillis() < getLastSpawn().getTime() + getCooldown()) {
+                return;
+            }
+            // spawn the mob
+            List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), SpawnReason.SPAWN_LOCATION);
+            if (newSpawnableMobs != null) {
+                EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
+                TMobSpawnLocation mobSpawnLocation = getDatabaseEntry();
+                mobSpawnLocation.setLastSpawn(Timestamp.from(Instant.now()));
+                db.update(mobSpawnLocation);
+                for (CharacterTemplate mob : newSpawnableMobs) {
+                    TSpawnedMob spawnedMob = RaidCraft.getComponent(MobManager.class).getSpawnedMob(mob.getEntity());
+                    if (spawnedMob == null) {
+                        spawnedMob = new TSpawnedMob();
+                        spawnedMob.setMob(mobSpawnLocation.getMob());
+                        spawnedMob.setSpawnTime(Timestamp.from(Instant.now()));
+                        spawnedMob.setUuid(mob.getEntity().getUniqueId());
+                        spawnedMob.setSpawnLocationSource(mobSpawnLocation);
+                        db.save(spawnedMob);
+                    } else {
+                        spawnedMob.setSpawnLocationSource(mobSpawnLocation);
+                        db.update(spawnedMob);
+                    }
                 }
             }
+        } catch (SpawnMobException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
+            RaidCraft.LOGGER.info("deleting mob spawn location...");
+            delete();
         }
     }
 
     @Override
     public List<CharacterTemplate> spawn(Location location) {
 
-        return getSpawnable().spawn(location);
+        try {
+            return getSpawnable().spawn(location);
+        } catch (SpawnMobException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
+            RaidCraft.LOGGER.info("deleting mob spawn location...");
+            delete();
+        }
+        return new ArrayList<>();
     }
 
     public void delete() {

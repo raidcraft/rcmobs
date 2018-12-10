@@ -6,6 +6,7 @@ import de.raidcraft.api.locations.Locations;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.SpawnMobException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,10 +29,15 @@ public class GroupSpawnAction implements Action<Player> {
         try {
             MobGroup group = RaidCraft.getComponent(MobManager.class).getMobGroup(config.getString("group"));
             Locations.fromConfig(config).ifPresent(location -> {
-                if (config.isSet("id")) {
-                    group.spawn(config.getString("id"), location.getLocation());
-                } else {
-                    group.spawn(location.getLocation());
+                try {
+                    if (config.isSet("id")) {
+                        group.spawn(config.getString("id"), location.getLocation());
+                    } else {
+                        group.spawn(location.getLocation());
+                    }
+                } catch (SpawnMobException e) {
+                    RaidCraft.LOGGER.warning(e.getMessage());
+                    player.sendMessage(ChatColor.RED + "Error spawning mob group with action! " + e.getMessage());
                 }
             });
         } catch (UnknownMobException e) {

@@ -10,14 +10,14 @@ import java.util.List;
  */
 public interface Spawnable {
 
-    List<CharacterTemplate> spawn(Location location);
+    List<CharacterTemplate> spawn(Location location) throws SpawnMobException;
 
-    default List<CharacterTemplate> spawn(Location location, SpawnReason reason) {
+    default List<CharacterTemplate> spawn(Location location, SpawnReason reason) throws SpawnMobException {
 
         return spawn(location);
     }
 
-    default List<CharacterTemplate> spawn(String source, Location location) {
+    default List<CharacterTemplate> spawn(String source, Location location) throws SpawnMobException {
 
         return spawn(location);
     }

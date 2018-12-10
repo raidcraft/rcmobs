@@ -10,6 +10,7 @@ import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
 import de.raidcraft.mobs.api.Mob;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.events.RCMobDeathEvent;
 import de.raidcraft.mobs.events.RCMobGroupDeathEvent;
 import de.raidcraft.mobs.tables.TMobPlayerKillLog;
@@ -178,11 +179,15 @@ public class MobListener implements Listener {
             if (virtualGroups.isEmpty()) {
                 return;
             }
-            // okay now we have some groups, lets grap a random one and spawn stuff
-            MobGroup mobGroup = virtualGroups.get(MathUtil.RANDOM.nextInt(virtualGroups.size()));
-            if (debug)
-                plugin.getLogger().info("Spawning mob group " + mobGroup.getName() + " at " + event.getLocation());
-            mobGroup.spawn(event.getLocation());
+            try {
+                // okay now we have some groups, lets grap a random one and spawn stuff
+                MobGroup mobGroup = virtualGroups.get(MathUtil.RANDOM.nextInt(virtualGroups.size()));
+                if (debug)
+                    plugin.getLogger().info("Spawning mob group " + mobGroup.getName() + " at " + event.getLocation());
+                mobGroup.spawn(event.getLocation());
+            } catch (SpawnMobException e) {
+                plugin.getLogger().warning(e.getMessage());
+            }
         }
     }
 

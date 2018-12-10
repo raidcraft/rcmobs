@@ -2,6 +2,7 @@ package de.raidcraft.mobs;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
@@ -77,73 +78,86 @@ public class MobGroupSpawnLocation implements Spawnable {
 
     public void spawn(boolean checkCooldown) {
 
-        MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
-        Logger logger = plugin.getLogger();
+        try {
+            MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+            Logger logger = plugin.getLogger();
 
-        if (getLocation().getWorld() == null) {
-            return;
-        }
-        if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
-            return;
-        }
-        // dont spawn stuff if it is still on cooldown
-        if (checkCooldown && getLastSpawn() != null && getLastSpawn().toInstant().plusMillis(getCooldown()).isAfter(Instant.now())) {
-            if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " not spawning! Group is still on cooldown.");
-            return;
-        }
-        int mobCount = getSpawnedMobCount();
-        if (mobCount > getSpawnTreshhold()) {
-            if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " not spawning! Respawn treshhold (" + mobCount + "/" + getSpawnTreshhold() + ") not met.");
-            return;
-        }
-        List<TSpawnedMob> remainingMobs = new ArrayList<>();
-        if (mobCount > 0) {
-            for (TSpawnedMobGroup group : getDatabaseEntry().getSpawnedMobGroups()) {
-                remainingMobs.addAll(group.getSpawnedMobs());
+            if (getLocation().getWorld() == null) {
+                return;
             }
-        }
-        // spawn the mob
-        List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), SpawnReason.GROUP);
-        if (newSpawnableMobs != null && !newSpawnableMobs.isEmpty()) {
-            EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
-            MobManager component = RaidCraft.getComponent(MobManager.class);
-            TSpawnedMob spawnedMob = component.getSpawnedMob(newSpawnableMobs.get(0).getEntity());
-            if (spawnedMob != null) {
-                TSpawnedMobGroup mobGroup = spawnedMob.getMobGroupSource();
-                TMobGroupSpawnLocation entry = getDatabaseEntry();
-                if (mobGroup == null) {
-                    if (!remainingMobs.isEmpty()) {
-                        mobGroup = remainingMobs.get(0).getMobGroupSource();
-                    } else {
-                        mobGroup = new TSpawnedMobGroup();
-                    }
-                    mobGroup.setMobGroup(getSpawnable().getName());
-                    mobGroup.setSpawnTime(Timestamp.from(Instant.now()));
-                    mobGroup.setSpawnGroupLocationSource(entry);
-                    db.save(mobGroup);
-                    for (CharacterTemplate mob : newSpawnableMobs) {
-                        TSpawnedMob tSpawnedMob = component.getSpawnedMob(mob.getEntity());
-                        if (tSpawnedMob != null) {
-                            tSpawnedMob.setMobGroupSource(mobGroup);
-                            db.update(tSpawnedMob);
-                        }
-                    }
-                } else {
-                    mobGroup.setSpawnGroupLocationSource(entry);
-                    db.update(mobGroup);
+            if (!getLocation().getWorld().isChunkLoaded(getDatabaseEntry().getChunkX(), getDatabaseEntry().getChunkZ())) {
+                return;
+            }
+            // dont spawn stuff if it is still on cooldown
+            if (checkCooldown && getLastSpawn() != null && getLastSpawn().toInstant().plusMillis(getCooldown()).isAfter(Instant.now())) {
+                if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " not spawning! Group is still on cooldown.");
+                return;
+            }
+            int mobCount = getSpawnedMobCount();
+            if (mobCount > getSpawnTreshhold()) {
+                if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " not spawning! Respawn treshhold (" + mobCount + "/" + getSpawnTreshhold() + ") not met.");
+                return;
+            }
+            List<TSpawnedMob> remainingMobs = new ArrayList<>();
+            if (mobCount > 0) {
+                for (TSpawnedMobGroup group : getDatabaseEntry().getSpawnedMobGroups()) {
+                    remainingMobs.addAll(group.getSpawnedMobs());
                 }
-                entry.setLastSpawn(Timestamp.from(Instant.now()));
-                entry.setCooldown(getSpawnable().getSpawnInterval());
-                db.update(entry);
             }
-            if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " spawned " + newSpawnableMobs.size() + " new mobs!");
+            // spawn the mob
+            List<CharacterTemplate> newSpawnableMobs = spawn(getLocation(), SpawnReason.GROUP);
+            if (newSpawnableMobs != null && !newSpawnableMobs.isEmpty()) {
+                EbeanServer db = RaidCraft.getDatabase(MobsPlugin.class);
+                MobManager component = RaidCraft.getComponent(MobManager.class);
+                TSpawnedMob spawnedMob = component.getSpawnedMob(newSpawnableMobs.get(0).getEntity());
+                if (spawnedMob != null) {
+                    TSpawnedMobGroup mobGroup = spawnedMob.getMobGroupSource();
+                    TMobGroupSpawnLocation entry = getDatabaseEntry();
+                    if (mobGroup == null) {
+                        if (!remainingMobs.isEmpty()) {
+                            mobGroup = remainingMobs.get(0).getMobGroupSource();
+                        } else {
+                            mobGroup = new TSpawnedMobGroup();
+                        }
+                        mobGroup.setMobGroup(getSpawnable().getName());
+                        mobGroup.setSpawnTime(Timestamp.from(Instant.now()));
+                        mobGroup.setSpawnGroupLocationSource(entry);
+                        db.save(mobGroup);
+                        for (CharacterTemplate mob : newSpawnableMobs) {
+                            TSpawnedMob tSpawnedMob = component.getSpawnedMob(mob.getEntity());
+                            if (tSpawnedMob != null) {
+                                tSpawnedMob.setMobGroupSource(mobGroup);
+                                db.update(tSpawnedMob);
+                            }
+                        }
+                    } else {
+                        mobGroup.setSpawnGroupLocationSource(entry);
+                        db.update(mobGroup);
+                    }
+                    entry.setLastSpawn(Timestamp.from(Instant.now()));
+                    entry.setCooldown(getSpawnable().getSpawnInterval());
+                    db.update(entry);
+                }
+                if (plugin.getConfiguration().debugMobSpawning) logger.info(toString() + " spawned " + newSpawnableMobs.size() + " new mobs!");
+            }
+        } catch (SpawnMobException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
+            RaidCraft.LOGGER.info("deleting mob group spawn location...");
+            delete();
         }
     }
 
     @Override
     public List<CharacterTemplate> spawn(Location location) {
 
-        return getSpawnable().spawn(location);
+        try {
+            return getSpawnable().spawn(location);
+        } catch (SpawnMobException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
+            RaidCraft.LOGGER.info("deleting mob group spawn location...");
+            delete();
+        }
+        return new ArrayList<>();
     }
 
     public void delete() {

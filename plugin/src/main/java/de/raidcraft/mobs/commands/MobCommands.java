@@ -7,6 +7,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import de.raidcraft.api.config.SimpleConfiguration;
 import de.raidcraft.mobs.*;
 import de.raidcraft.mobs.api.MobGroup;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.api.SpawnReason;
 import de.raidcraft.mobs.tables.TMobGroupSpawnLocation;
 import de.raidcraft.mobs.tables.TMobSpawnLocation;
@@ -73,7 +74,7 @@ public class MobCommands {
         try {
             MobGroup group = plugin.getMobManager().getMobGroup(args.getJoinedStrings(0));
             group.spawn(((Player) sender).getLocation(), SpawnReason.COMMAND);
-        } catch (UnknownMobException e) {
+        } catch (UnknownMobException | SpawnMobException e) {
             throw new CommandException(e);
         }
     }

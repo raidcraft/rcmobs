@@ -3,6 +3,7 @@ package de.raidcraft.mobs.creatures;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.Mob;
+import de.raidcraft.mobs.api.SpawnMobException;
 import de.raidcraft.mobs.api.Spawnable;
 import de.raidcraft.mobs.tables.TSpawnedMob;
 import de.raidcraft.skills.api.character.CharacterTemplate;
@@ -17,7 +18,7 @@ import java.util.List;
 public abstract class AbstractSpawnable implements Spawnable, Listener {
 
     @Override
-    public List<CharacterTemplate> spawn(String source, Location location) {
+    public List<CharacterTemplate> spawn(String source, Location location) throws SpawnMobException {
 
         remove(source);
         List<CharacterTemplate> entities = spawn(location);
