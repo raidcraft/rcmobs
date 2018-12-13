@@ -1,6 +1,7 @@
 package de.raidcraft.mobs.listener;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.action.requirement.tables.TTag;
 import de.raidcraft.api.events.RCEntityRemovedEvent;
 import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
@@ -360,6 +361,17 @@ public class MobListener implements Listener {
             plugin.getLogger().info("Respawned " + respawnedMobs.size()
                     + " mobs in Chunk[" + event.getChunk().getX() + "," + event.getChunk().getZ() + "]");
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onMobDeath(RCMobDeathEvent event) {
+
+        TTag.findOrCreateTag("mob-kill:" + event.getMob().getId(), "Mob KILL: " + event.getMob().getName() + " (" + event.getMob().getId() + ")", true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onMobGroupDeath(RCMobGroupDeathEvent event) {
+        TTag.findOrCreateTag("mob-group-kill:" + event.getMobGroup().getName(), "Mob KILL: " + event.getMobGroup().getName(), true);
     }
 
     /**
