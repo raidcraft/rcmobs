@@ -1,10 +1,9 @@
 package de.raidcraft.mobs.creatures;
 
+import de.faldoria.loot.itemsintegration.ItemsIntegrationComponent;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.disguise.Disguise;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.loot.LootPlugin;
-import de.raidcraft.loot.LootTableManager;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.MobConfig;
 import de.raidcraft.mobs.util.CustomMobUtil;
@@ -105,7 +104,7 @@ public class YamlMobConfig implements MobConfig {
             }
         }
 
-        LootTableManager tableManager = RaidCraft.getComponent(LootPlugin.class).getLootTableManager();
+        ItemsIntegrationComponent tableManager = RaidCraft.getComponent(ItemsIntegrationComponent.class);
         if (tableManager != null) {
             RDSTable lootTable = tableManager.getLevelDependantLootTable(
                     config.getString("loot-table", RaidCraft.getComponent(MobsPlugin.class).getConfiguration().defaultLoottable),

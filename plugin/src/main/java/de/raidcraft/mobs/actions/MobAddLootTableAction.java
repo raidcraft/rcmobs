@@ -1,9 +1,9 @@
 package de.raidcraft.mobs.actions;
 
+import de.faldoria.loot.itemsintegration.ItemsIntegrationComponent;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.action.action.Action;
 import de.raidcraft.api.random.RDSTable;
-import de.raidcraft.loot.LootTableManager;
 import de.raidcraft.mobs.MobManager;
 import de.raidcraft.mobs.SpawnableMob;
 import de.raidcraft.mobs.UnknownMobException;
@@ -25,7 +25,8 @@ public class MobAddLootTableAction implements Action {
 
         try {
             SpawnableMob mob = RaidCraft.getComponent(MobManager.class).getSpwanableMob(config.getString("mob"));
-            RDSTable lootTable = RaidCraft.getComponent(LootTableManager.class).getLevelDependantLootTable(config.getString("loot-table"), mob.getConfig().getMinlevel());
+            RDSTable lootTable = RaidCraft.getComponent(ItemsIntegrationComponent.class)
+                    .getLevelDependantLootTable(config.getString("loot-table"), mob.getConfig().getMinlevel());
             if (lootTable != null) {
                 mob.getConfig().addLootTable(lootTable);
             } else {

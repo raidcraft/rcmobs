@@ -41,9 +41,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>de.faldoria</groupId>
-      <artifactId>loot</artifactId>
-      <version>1.13.2-SNAPSHOT</version>
+      <groupId>de.faldoria.loot</groupId>
+      <artifactId>items-integration</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -72,20 +72,22 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.13.2-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-lang</artifactId>
-          <groupId>commons-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>json-simple</artifactId>
-          <groupId>com.googlecode.json-simple</groupId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.13.2-R0.1-beta.01</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.md-5</groupId>
+      <artifactId>bungeecord-chat</artifactId>
+      <version>1.13-beta.01</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.faldoria</groupId>
+      <artifactId>paper-api</artifactId>
+      <version>1.13.2-R0.1-beta.01</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -94,42 +96,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.citizensnpcs</groupId>
+      <groupId>de.faldoria</groupId>
       <artifactId>citizens</artifactId>
-      <version>2.0.24-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>citizens-main</artifactId>
-          <groupId>net.citizensnpcs</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>citizens-v1_8_R3</artifactId>
-          <groupId>net.citizensnpcs</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>citizens-v1_10_R1</artifactId>
-          <groupId>net.citizensnpcs</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>citizens-v1_11_R1</artifactId>
-          <groupId>net.citizensnpcs</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>citizens-v1_12_R1</artifactId>
-          <groupId>net.citizensnpcs</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>citizens-v1_13_R2</artifactId>
-          <groupId>net.citizensnpcs</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>net.citizensnpcs</groupId>
-      <artifactId>citizensapi</artifactId>
-      <version>2.0.24-SNAPSHOT</version>
-      <scope>provided</scope>
+      <version>2.0.24-beta.01</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.ebean</groupId>
@@ -166,58 +136,34 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.comphenix.packetwrapper</groupId>
+      <groupId>de.faldoria</groupId>
       <artifactId>PacketWrapper</artifactId>
-      <version>1.13-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
+      <version>1.13-R0.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.sk89q.worldguard</groupId>
       <artifactId>worldguard-legacy</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>bukkit</artifactId>
-          <groupId>org.bukkit</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>worldguard-core</artifactId>
-          <groupId>com.sk89q.worldguard</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commandbook</artifactId>
-          <groupId>com.sk89q</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bstats-bukkit</artifactId>
-          <groupId>org.bstats</groupId>
-        </exclusion>
-      </exclusions>
+      <version>7.0.0-beta-02</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.sk89q.worldedit</groupId>
-      <artifactId>worldedit-bukkit</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>bukkit</artifactId>
-          <groupId>org.bukkit</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>dummypermscompat</artifactId>
-          <groupId>com.sk89q</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>paperlib</artifactId>
-          <groupId>io.papermc</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bstats-bukkit</artifactId>
-          <groupId>org.bstats</groupId>
-        </exclusion>
-      </exclusions>
+      <artifactId>worldedit-core</artifactId>
+      <version>7.0.0-beta-02</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.8.1</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
