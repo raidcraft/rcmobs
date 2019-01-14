@@ -25,6 +25,7 @@ public class MobTrigger extends Trigger implements Listener {
 
     @Information(
             value = "mob.kill",
+            aliases = {"mob.kill"},
             desc = "Is triggered when the given mob or any mob was killed by the player.",
             conf = {
                     "mob: id of the mob",

@@ -17,6 +17,7 @@ public class GroupRemoveAction implements Action<Player> {
     @Override
     @Information(
             value = "group.remove",
+            aliases = {"mobgroup.remove"},
             desc = "Removes the mob group with the given tracking id.",
             conf = {
                     "group",

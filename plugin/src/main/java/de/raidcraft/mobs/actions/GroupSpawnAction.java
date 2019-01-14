@@ -22,7 +22,8 @@ public class GroupSpawnAction implements Action<Player> {
     @Information(
             value = "group.spawn",
             desc = "Spawns the given custom mob group at the defined location.",
-            conf = {"group", "x", "y", "z", "world", "id"}
+            conf = {"group", "x", "y", "z", "world", "id"},
+            aliases = {"mobgroup.spawn"}
     )
     public void accept(Player player, ConfigurationSection config) {
 

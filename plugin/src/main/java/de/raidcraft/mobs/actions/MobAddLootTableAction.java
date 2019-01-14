@@ -14,6 +14,7 @@ public class MobAddLootTableAction implements Action {
 
     @Information(
             value = "mob.add.loottable",
+            aliases = {"mob.add.loottable"},
             desc = "Adds the given loot-table to the mob.",
             conf = {
                     "mob: name of the mob",

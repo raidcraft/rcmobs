@@ -17,6 +17,7 @@ public class MobRemoveAction implements Action<Player> {
     @Override
     @Information(
             value = "mob.remove",
+            aliases = {"mob.remove"},
             desc = "Removes the mob with the given tracking id.",
             conf = {
                     "mob",

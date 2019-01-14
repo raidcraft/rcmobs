@@ -19,6 +19,7 @@ public class MobSpawnAction implements Action<Player> {
     @Override
     @Information(
             value = "mob.spawn",
+            aliases = {"mob.spawn"},
             desc = "Spawns the given custom mob at the defined location.",
             conf = {"mob", "x", "y", "z", "world", "id", "amount"}
     )

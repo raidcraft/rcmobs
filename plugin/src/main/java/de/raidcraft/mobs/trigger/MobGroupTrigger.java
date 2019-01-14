@@ -24,6 +24,7 @@ public class MobGroupTrigger extends Trigger implements Listener {
 
     @Information(
             value = "group.kill",
+            aliases = {"mobgroup.kill"},
             desc = "Is triggered when the given mob group was killed. Will inform all involed players",
             conf = {"group", "id"}
     )
