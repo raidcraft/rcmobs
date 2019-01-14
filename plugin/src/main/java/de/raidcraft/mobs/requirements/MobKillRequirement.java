@@ -15,6 +15,14 @@ import org.bukkit.entity.Player;
 public class MobKillRequirement implements Requirement<Player> {
 
     @Override
+    @Information(
+            value = "mob.kill",
+            aliases = {"mob.kill", "mob"},
+            desc = "Checks if the player killed the mob.",
+            conf = {
+                    "mob: id of the mob"
+            }
+    )
     public boolean test(Player player, ConfigurationSection config) {
 
         CharacterManager component = RaidCraft.getComponent(CharacterManager.class);
