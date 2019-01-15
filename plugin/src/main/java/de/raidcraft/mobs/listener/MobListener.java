@@ -1,7 +1,7 @@
 package de.raidcraft.mobs.listener;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.api.action.requirement.tables.TTag;
+import de.raidcraft.api.tags.TTag;
 import de.raidcraft.api.events.RCEntityRemovedEvent;
 import de.raidcraft.api.random.Dropable;
 import de.raidcraft.api.random.RDSTable;
