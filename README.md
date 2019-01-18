@@ -4,10 +4,11 @@
 
 Das RCMobs Plugin ermöglicht das Spawnen von Custom Mobs und Mob Gruppen. Custom Mobs können unter Verwendung des [RCSkill Plugins](https://git.faldoria.de/tof/plugins/raidcraft/rcskills) eigene Zauber und Fähigkeiten besitzen.
 
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-- [Authors](#authors)
+* [Getting Started](#getting-started)
+  * [Prerequisites](#prerequisites)
+  * [Installation](#installation)
+* [Schaden und Leben Formeln](#schaden-und-leben-formeln)
+* [Authors](#authors)
 
 ## Getting Started
 
@@ -82,6 +83,14 @@ default:
   # Folgende Mobs werden nicht ersetzt und nicht gespawnt
   denied-entity-types:
   - IRON_GOLEM
+# Ermöglicht es Standard Formeln für das Berechnen von Leben und Schaden festzulegen.
+# Die Formeln nutzen EvalEx (https://github.com/uklimaschewski/EvalEx) zum Berechnen.
+# Details zu allen Möglichkeiten auf der verlinkten Github Seite.
+# Wenn min-damage und max-damage in der Mob Config angegeben sind greifen die Formeln nicht.
+# Jede Formel kann nochmal in den Mob Configs überschrieben werden.
+formulas:
+  health: "(random() * (20 + level^2)) + (level * 5)"
+  damage: "(random() * (10 + level^2)) + (level * 2.5)"
 # Folgende Werte haben sich bewährt und sollten eigentlich nicht geändert werden
 respawn-task:
   interval: 1.0
@@ -96,6 +105,12 @@ debug:
   fixed-spawn-locations: false
   vanilla-spawning: false
 ```
+
+## Schaden und Leben Formeln
+
+Im `formulas` Abschnitt gibt es die Möglichkeit Standard Formeln zur Berechnung der Leben und des Schadens von Mobs anhand des Levels festzulegen. Jede Formel ermöglicht es die `level` Variable zu nutzen. Außerdem kann man alle Funktionen nutzen die in den [offiziellen Docs von EvalEx](https://github.com/uklimaschewski/EvalEx) beschrieben sind.
+
+> In jeder [Mob Config](docs/ADMIN.md#schaden-und-lebel-formeln) können die Formeln nochmal individuell überschrieben werden.
 
 ## Authors
 

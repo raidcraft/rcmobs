@@ -1,12 +1,12 @@
 package de.raidcraft.mobs.creatures;
 
+import com.udojava.evalex.Expression;
 import de.faldoria.loot.itemsintegration.ItemsIntegrationComponent;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.disguise.Disguise;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.MobConfig;
-import de.raidcraft.mobs.util.CustomMobUtil;
 import de.raidcraft.util.ConfigUtil;
 import lombok.Data;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
@@ -28,10 +28,12 @@ public class YamlMobConfig implements MobConfig {
     private String name;
     private String customEntityType;
     private int minDamage;
+    private Expression damageExpression;
     private int maxDamage;
     private int minlevel;
     private int maxLevel;
     private int minHealth;
+    private Expression healthExpression;
     private int maxHealth;
     private double aggroRange;
     private boolean hidingName;
@@ -62,11 +64,14 @@ public class YamlMobConfig implements MobConfig {
 
     public YamlMobConfig(ConfigurationSection config) {
 
+        MobsPlugin plugin = RaidCraft.getComponent(MobsPlugin.class);
+
         this.config = config;
         this.name = config.getString("name");
         this.customEntityType = config.getString("custom-type");
-        this.minDamage = config.getInt("min-damage");
+        this.minDamage = config.getInt("min-damage", -1);
         this.maxDamage = config.getInt("max-damage", minDamage);
+        this.damageExpression = new Expression(config.getString("damage-expression", plugin.getConfiguration().damageExpression));
         this.resetHealth = config.getBoolean("reset-health", true);
         this.aggroRange = config.getDouble("aggro-range", 8.0);
         this.hidingName = config.getBoolean("hide-name", false);
@@ -86,8 +91,9 @@ public class YamlMobConfig implements MobConfig {
         this.deathSoundPitch = (float) config.getDouble("sound.death-pitch", 0.5);
         this.minlevel = config.getInt("min-level", 1);
         this.maxLevel = config.getInt("max-level", minlevel);
-        this.minHealth = config.getInt("min-health", (int) CustomMobUtil.getMaxHealth(getMinlevel()));
+        this.minHealth = config.getInt("min-health", -1);
         this.maxHealth = config.getInt("max-health", minHealth);
+        this.healthExpression = new Expression(config.getString("health-expression", plugin.getConfiguration().healthExpression));
         this.abilities = config.getConfigurationSection("abilities");
         this.equipment = config.getConfigurationSection("equipment");
         this.targets = config.getStringList("targets");
@@ -107,7 +113,7 @@ public class YamlMobConfig implements MobConfig {
         ItemsIntegrationComponent tableManager = RaidCraft.getComponent(ItemsIntegrationComponent.class);
         if (tableManager != null) {
             RDSTable lootTable = tableManager.getLevelDependantLootTable(
-                    config.getString("loot-table", RaidCraft.getComponent(MobsPlugin.class).getConfiguration().defaultLoottable),
+                    config.getString("loot-table", plugin.getConfiguration().defaultLoottable),
                     getMinlevel());
             if (lootTable == null) {
                 RaidCraft.LOGGER.warning("Loot-Table " + config.getString("loot-table") + " defined in mob " + ConfigUtil.getFileName(config) + " does not exist!");
@@ -124,6 +130,16 @@ public class YamlMobConfig implements MobConfig {
 
     public Optional<TargetedDisguise> getDisguise() {
         return Optional.ofNullable(disguise);
+    }
+
+    @Override
+    public Optional<Expression> geDamageExpression() {
+        return Optional.ofNullable(damageExpression);
+    }
+
+    @Override
+    public Optional<Expression> getHealthExpression() {
+        return Optional.ofNullable(healthExpression);
     }
 
     @Override

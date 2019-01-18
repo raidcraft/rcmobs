@@ -3,6 +3,7 @@ package de.raidcraft.mobs.creatures;
 import com.comphenix.packetwrapper.WrapperPlayServerNamedSoundEffect;
 import com.comphenix.protocol.ProtocolLibrary;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.api.random.RDSRandom;
 import de.raidcraft.api.random.RDSTable;
 import de.raidcraft.mobs.MobsPlugin;
 import de.raidcraft.mobs.api.AbstractMob;
@@ -14,7 +15,10 @@ import de.raidcraft.skills.api.ability.Ability;
 import de.raidcraft.skills.api.effect.common.Combat;
 import de.raidcraft.skills.api.exceptions.CombatException;
 import de.raidcraft.skills.api.exceptions.UnknownSkillException;
-import de.raidcraft.util.*;
+import de.raidcraft.util.EntityMetaData;
+import de.raidcraft.util.EntityUtil;
+import de.raidcraft.util.EnumUtils;
+import de.raidcraft.util.MathUtil;
 import lombok.Data;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,6 +28,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +43,7 @@ public class ConfigurableCreature extends AbstractMob {
     private final MobConfig config;
     private final Location spawnLocation;
     private final boolean hidingName;
+    private double damage = 0;
 
     public ConfigurableCreature(LivingEntity entity, MobConfig config) {
 
@@ -79,8 +85,28 @@ public class ConfigurableCreature extends AbstractMob {
             disguise.startDisguise();
         });
 
-        setMaxHealth(MathUtil.RANDOM.nextInt(config.getMaxHealth()) + config.getMinHealth());
-        setHealth(getMaxHealth());
+        final BigDecimal level = new BigDecimal(getAttachedLevel().getLevel());
+
+        if (config.getMinHealth() < 0 && config.getMaxHealth() < 0) {
+            config.getHealthExpression().ifPresent(expression -> {
+                expression = expression.with("level", level).setPrecision(0);
+                setMaxHealth(expression.eval().doubleValue());
+                setHealth(getMaxHealth());
+            });
+        } else {
+            setMaxHealth(MathUtil.RANDOM.nextInt(config.getMaxHealth()) + config.getMinHealth());
+            setHealth(getMaxHealth());
+        }
+
+        if (config.getMinDamage() < 0 && config.getMaxDamage() < 0) {
+            config.geDamageExpression().ifPresent(expression -> {
+                expression = expression.with("level", level).setPrecision(2);
+                setDamage(expression.eval().doubleValue());
+            });
+        } else {
+            setDamage(RDSRandom.getDoubleValue(config.getMinDamage(), config.getMaxDamage()));
+        }
+
         setName(config.getName());
         getEntity().setCanPickupItems(config.isItemPickup());
         loadAbilities(config.getAbilities());
@@ -222,14 +248,6 @@ public class ConfigurableCreature extends AbstractMob {
             removeEffect(Combat.class);
         } catch (CombatException ignored) {
         }
-    }
-
-    @Override
-    public double getDamage() {
-
-        int maxDmg = getConfig().getMaxDamage();
-        if (getConfig().getMaxDamage() <= getConfig().getMinDamage()) maxDmg = getConfig().getMinDamage() + 1;
-        return MathUtil.RANDOM.nextInt(maxDmg - getConfig().getMinDamage()) + getConfig().getMinDamage();
     }
 
     @Override

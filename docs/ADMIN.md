@@ -2,9 +2,11 @@
 
 Die grundlegende Konfiguration von Mobs ist sehr einfach und in ein paar Minuten erledigt. Wenn man Mobs jedoch eigene Fähigkeiten geben will sollte man sich mit der [Konfiguration von Skills](https://git.faldoria.de/tof/plugins/raidcraft/rcskills/blob/master/docs/Skills.md) auskennen, da Mobs eine abgespeckte Version von Skills verwenden.
 
-- [Basis Config](#basis-config)
-- [Abilities](#abilities)
-- [Mob Gruppen](#mob-gruppen)
+* [Basis Config](#basis-config)
+  * [Minimal Config](#minimal-config)
+  * [Schaden und Lebel Formeln](#schaden-und-lebel-formeln)
+* [Abilities](#abilities)
+* [Mob Gruppen](#mob-gruppen)
 
 ## Basis Config
 
@@ -117,6 +119,29 @@ sound:
 # Für die Konfiguration der Abilities bitte in der extra Dokumentation dafür nachsehen.
 abilities:
     ...
+```
+
+### Minimal Config
+
+Für einen gültigen Mob reicht bereits folgende minimal Config. Alles weitere wird automatisch basierend auf den [Formeln in der Plugin Config](../README.md#schaden-und-leben-formeln) berechnet.
+
+```yml
+name: Name des Mobs
+min-level: 1
+max-level: 5
+```
+
+### Schaden und Lebel Formeln
+
+In jeder Mob Config ist es möglich die [Formeln für Schaden und Leben](../README.md#schaden-und-leben-formeln) aus der Default Config zu überschreiben.
+
+```yml
+name: Name des Mobs
+min-level: 1
+max-level: 5
+# Hier kann man die default Formeln aus der config.yml für jeden Mob individuell setzen.
+health-expression: "level * 2"
+damage-expression: "level + 5"
 ```
 
 ## Abilities

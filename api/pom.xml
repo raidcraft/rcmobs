@@ -15,6 +15,14 @@
     <packaging>jar</packaging>
     <name>RCMobs API</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.udojava</groupId>
+            <artifactId>EvalEx</artifactId>
+            <version>2.1</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

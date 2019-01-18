@@ -1,5 +1,6 @@
 package de.raidcraft.mobs.api;
 
+import com.udojava.evalex.Expression;
 import de.raidcraft.api.random.RDSTable;
 import me.libraryaddict.disguise.disguisetypes.TargetedDisguise;
 
@@ -65,6 +66,10 @@ public interface MobConfig {
     org.bukkit.configuration.ConfigurationSection getEquipment();
 
     java.util.List<RDSTable> getLootTables();
+
+    Optional<Expression> geDamageExpression();
+
+    Optional<Expression> getHealthExpression();
 
     void addLootTable(RDSTable table);
 

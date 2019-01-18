@@ -29,7 +29,6 @@ import de.raidcraft.util.ReflectionUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -227,6 +226,11 @@ public class MobsPlugin extends BasePlugin {
         public double respawnTaskCleanupInterval = 30;
         @Setting("respawn-task.cleanup-removed-characters")
         public boolean respawnTaskCleanupRemovedCharacters = false;
+
+        @Setting("forumlas.health")
+        public String healthExpression = "(random() * (20 + level^2)) + (level * 5)";
+        @Setting("forumlas.damage")
+        public String damageExpression = "(random() * (10 + level^2)) + (level * 2.5)";
 
         private final HashSet<String> replacedMobsSet;
         @Getter
