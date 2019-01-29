@@ -29,7 +29,8 @@ public class MobTrigger extends Trigger implements Listener {
             desc = "Is triggered when the given mob or any mob was killed by the player.",
             conf = {
                     "mob: id of the mob",
-                    "group: id of the group"
+                    "group: id of the group",
+                    "mobs: ['id', 'id'] list of mobs"
             }
     )
     @EventHandler(ignoreCancelled = true)
